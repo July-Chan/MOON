@@ -1,0 +1,180 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, html, #root {
+  width: 100%;
+  height: 100%;
+  background-color: #0f0f1a; 
+}
+
+.app-container {
+  background-color: #0f0a1e;
+  color: white;
+  min-height: 100vh;
+  padding: 20px;
+  font-family: 'Inter', sans-serif;
+  max-width: 450px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 2px solid #8a3ffc;
+}
+
+.search-box {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-box input {
+  background: none;
+  border: none;
+  color: white;
+  margin-left: 10px;
+  outline: none;
+  width: 100%;
+}
+
+.categories {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  margin-bottom: 25px;
+  padding-bottom: 5px;
+}
+
+.category-chip {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 20px;
+  border-radius: 20px;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.category-chip.active {
+  background: #8a3ffc;
+}
+
+.promo-card {
+  position: relative;
+  border-radius: 25px;
+  overflow: hidden;
+  height: 200px;
+  margin-bottom: 30px;
+}
+
+.promo-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.promo-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: linear-gradient(transparent, rgba(15, 10, 30, 0.9));
+}
+
+.play-btn {
+  background: #8a3ffc;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 12px;
+  font-weight: bold;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+:root {
+  font-size: 16px; 
+}
+
+@media (min-width: 1024px) {
+  :root {
+    font-size: 18px;
+  }
+}
+
+
+.delete-movie-btn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: #ff4757; 
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  z-index: 10;
+  
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.movie-card:hover .delete-movie-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.delete-movie-btn:hover {
+  background-color: #ff6b81;
+  transform: scale(1.1) !important;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.95);
+        opacity: 0.5;
+    }
+}
+
+.search-item-card:hover .hover-overlay {
+    opacity: 1 !important;
+}
+
+.search-item-card:hover img {
+    transform: scale(1.05);
+    filter: brightness(0.6);
+}
+
+.search-item-card {
+    transition: all 0.3s ease;
+}
+
+.search-item-card:hover {
+    box-shadow: 0 0 15px rgba(138, 63, 252, 0.3);
+}
