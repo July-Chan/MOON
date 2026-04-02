@@ -18,7 +18,7 @@ const FolderView = () => {
     useEffect(() => {
         const fetchFolder = async () => {
             try {
-                const res = await axios.get(`http://localhost:3000/api/lists?userId=${userEmail}`);
+                const res = await axios.get(`https://moon-z1lm.onrender.com/api/lists?userId=${userEmail}`);
                 const currentFolder = res.data.find(list => list.id === id);
                 setFolderDetails(currentFolder);
             } catch (error) {
@@ -55,7 +55,7 @@ const FolderView = () => {
             releaseDate: movie.release_date || 'Невідомо'
         };
         try {
-            await axios.post(`http://localhost:3000/api/lists/${id}/movies`, movieData);
+            await axios.post(`https://moon-z1lm.onrender.com/api/lists/${id}/movies`, movieData);
             setFolderDetails(prev => ({
                 ...prev,
                 movies: [...prev.movies, movieData]
@@ -70,7 +70,7 @@ const FolderView = () => {
     const handleDeleteMovie = async (tmdbId) => {
         if (!window.confirm("Дійсно хочеш прибрати цей фільм з папки?")) return;
         try {
-            await axios.delete(`http://localhost:3000/api/lists/${id}/movies/${tmdbId}`);
+            await axios.delete(`https://moon-z1lm.onrender.com/api/lists/${id}/movies/${tmdbId}`);
             setFolderDetails(prev => ({
                 ...prev,
                 movies: prev.movies.filter(movie => movie.tmdbId !== tmdbId)

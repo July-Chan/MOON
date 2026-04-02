@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 const api = axios.create({
-    baseURL: 'http://localhost:3000/api', 
+    baseURL: 'https://moon-z1lm.onrender.com/api', 
 });
 
 // ПЕРЕХОПЛЮВАЧ ЗАПИТІВ (Request Interceptor)

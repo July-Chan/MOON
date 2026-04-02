@@ -17,7 +17,7 @@ const MyLists = () => {
     useEffect(() => {
         const fetchLists = async () => {
             try {
-                const response = await axios.get(`http://localhost:3000/api/lists?userId=${userEmail}`);
+                const response = await axios.get(`https://moon-z1lm.onrender.com/api/lists?userId=${userEmail}`);
                 setLists(response.data);
             } catch (error) {
                 console.error("Помилка:", error);
@@ -31,7 +31,7 @@ const MyLists = () => {
         if (!newListName.trim()) return;
 
         try {
-            const response = await axios.post('http://localhost:3000/api/lists', {
+            const response = await axios.post('https://moon-z1lm.onrender.com/api/lists', {
                 userId: userEmail,
                 name: newListName
             });
@@ -49,7 +49,7 @@ const MyLists = () => {
         if (!window.confirm("Точно хочеш видалити цю папку?")) return;
 
         try {
-            await axios.delete(`http://localhost:3000/api/lists/${listId}`);
+            await axios.delete(`https://moon-z1lm.onrender.com/api/lists/${listId}`);
             setLists(lists.filter(list => list.id !== listId));
         } catch (error) {
             console.error("Помилка видалення:", error);
@@ -67,7 +67,7 @@ const MyLists = () => {
         if (!editingName.trim()) return;
 
         try {
-            await axios.put(`http://localhost:3000/api/lists/${listId}`, { name: editingName });
+            await axios.put(`https://moon-z1lm.onrender.com/api/lists/${listId}`, { name: editingName });
             
             setLists(lists.map(list => list.id === listId ? { ...list, name: editingName } : list));
             setEditingListId(null);
