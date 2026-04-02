@@ -18,7 +18,7 @@ const swaggerDocument = {
         version: "1.0.0",
         description: "API для збереження фільмів у додатку Moon. Лабораторні роботи №3 та №4."
     },
-    servers: [{ url: "http://localhost:3000" }],
+    servers: [{ url: "https://moon-z1lm.onrender.com" }],
     components: {
         securitySchemes: {
             bearerAuth: {
