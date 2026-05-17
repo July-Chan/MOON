@@ -3,7 +3,7 @@ const axios = require('axios');
 const { db } = require('./firebaseAdmin'); // Твоє підключення до Firebase Admin SDK
 const router = express.Router();
 
-const TMDB_API_KEY = '15d2ea6d0dc1d476efbca3eba2b9bbfb';
+const TMDB_API_KEY = 'c8282b948e28647029c446fa9bef20f8';
 
 router.get('/movie/:id', async (req, res) => {
     const movieId = req.params.id;
