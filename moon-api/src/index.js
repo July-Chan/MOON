@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import { db } from './firebase.js';import authRoutes from './controllers/AuthController.js';
+import axios from 'axios';
+import { db } from './firebase.js';
+import authRoutes from './controllers/AuthController.js';
 import swaggerUi from 'swagger-ui-express';
 import listRoutes from './routes/listRoutes.js';
 
@@ -31,7 +33,6 @@ const swaggerDocument = {
     security: [{ bearerAuth: [] }],
 
     paths: {
-       
         "/api/auth/register": {
             post: {
                 summary: "Реєстрація нового користувача",
@@ -88,21 +89,56 @@ const swaggerDocument = {
                 responses: { "200": { description: "Успішний вхід" } }
             }
         }
-
     }
 };
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
 app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => {
     res.json({ message: 'API для додатку Moon успішно працює!' });
 });
 
-app.listen(PORT, () => {
-    console.log(`Сервер Moon API запущено на http://localhost:${PORT}`);
-    console.log(`Swagger документація: http://localhost:${PORT}/api-docs`);
+app.get('/api/movie/:id', async (req, res) => {
+    const movieId = req.params.id;
+
+    try {
+        const movieRef = db.collection('movies').doc(movieId);
+        const doc = await movieRef.get();
+
+        if (doc.exists) {
+            console.log('Фільм взято з бази Firestore (Кеш)');
+            return res.json(doc.data());
+        }
+
+        console.log('Фільму немає в базі. Запит до TMDB API...');
+        const TMDB_API_KEY = process.env.TMDB_API_KEY;
+        const tmdbResponse = await axios.get(
+            `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=uk-UA`
+        );
+
+        const tmdbData = tmdbResponse.data;
+
+        const movieData = {
+            id: tmdbData.id,
+            title: tmdbData.title,
+            overview: tmdbData.overview,
+            poster_path: tmdbData.poster_path,
+            release_date: tmdbData.release_date,
+            genres: tmdbData.genres.map(g => g.name),
+            vote_average: tmdbData.vote_average,
+            createdAt: new Date()
+        };
+
+        await movieRef.set(movieData);
+        console.log('Фільм збережено в Firestore!');
+
+        return res.json(movieData);
+
+    } catch (error) {
+        console.error('Помилка при роботі з фільмом:', error);
+        res.status(500).json({ error: 'Не вдалося отримати дані фільму' });
+    }
 });
 
 app.get('/api/admin/stats', async (req, res) => {
@@ -121,11 +157,16 @@ app.get('/api/admin/stats', async (req, res) => {
         });
 
         res.status(200).json({
-            users: totalUsers, 
+            users: totalUsers,
             lists: totalLists,
             movies: totalMovies
         });
     } catch (error) {
         res.status(500).json({ error: "Помилка сервера" });
     }
+});
+
+app.listen(PORT, () => {
+    console.log(`Сервер Moon API запущено на http://localhost:${PORT}`);
+    console.log(`Swagger документація: http://localhost:${PORT}/api-docs`);
 });
