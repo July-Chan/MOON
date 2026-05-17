@@ -19,18 +19,17 @@ const MovieDetails = () => {
     window.addEventListener('resize', handleResize);
     
     const fetchDetails = async () => {
-      try {
-        const response = await fetch(
-          `https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&language=uk-UA`
-        );
-        const data = await response.json();
-        setMovie(data);
-      } catch (error) {
-        console.error("Помилка завантаження деталей:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+          try {
+            // ТЕПЕР ЗАПИТ ЙДЕ НА ТВІЙ БЕКЕНД ДЛЯ КЕШУВАННЯ
+            const response = await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}`);
+            const data = await response.json();
+            setMovie(data);
+          } catch (error) {
+            console.error("Помилка завантаження деталей:", error);
+          } finally {
+            setLoading(false);
+          }
+        };
     
     fetchDetails();
     return () => window.removeEventListener('resize', handleResize);
