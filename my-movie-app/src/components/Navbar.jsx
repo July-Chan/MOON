@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, User, Film } from 'lucide-react';
-import moonLogo from '../assets/moon_logo_ball.svg';
+import moonLogo from '../assets/moon_logo.svg';
+import React from 'react';
+import moonLogo from '../assets/moon_logo.svg';
 
 const Navbar = () => {
   const location = useLocation();
@@ -30,20 +32,13 @@ const Navbar = () => {
       <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
         <img 
           src={moonLogo} 
-          alt="MOON Logo" 
-          style={{ width: '35px', height: '35px', filter: 'drop-shadow(0 0 8px #8a3ffc)' }} 
+                    alt="Moon Logo" 
+                    style={{ 
+                        height: '35px', /* Розмір іконки підігнаний під текст */
+                        filter: 'drop-shadow(0 0 8px rgba(138, 63, 252, 0.6))' /* Легке фіолетове світіння */
+                    }} 
         />
-        <span style={{ 
-          color: 'white', 
-          fontSize: '22px', 
-          fontWeight: '900', 
-          letterSpacing: '3px',
-          background: 'linear-gradient(45deg, #ffffff, #8a3ffc)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent'
-        }}>
-          MOON
-        </span>
+
       </Link>
 
       <div style={{ display: 'flex', gap: '20px' }}>
