@@ -29,16 +29,15 @@ const Navbar = () => {
       }}>
       
       {/* 🌕 ЛОГОТИП ТА НАЗВА (клік повертає на головну) */}
-      <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
+      <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
         <img 
           src={moonLogo} 
-                    alt="Moon Logo" 
-                    style={{ 
-                        height: '35px', /* Розмір іконки підігнаний під текст */
-                        filter: 'drop-shadow(0 0 8px rgba(138, 63, 252, 0.6))' /* Легке фіолетове світіння */
-                    }} 
+          alt="Moon Logo" 
+          style={{ 
+            height: '35px', 
+            filter: 'drop-shadow(0 0 8px rgba(138, 63, 252, 0.6))' // Фіолетове світіння
+          }} 
         />
-
       </Link>
 
       <div style={{ display: 'flex', gap: '20px' }}>
