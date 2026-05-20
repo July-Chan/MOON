@@ -32,7 +32,7 @@ const Navbar = () => {
           src={moonLogo} 
           alt="Moon Logo" 
           style={{ 
-            height: '25px', 
+            height: '20px', 
             display: 'block',
             filter: 'drop-shadow(0 0 8px rgba(138, 63, 252, 0.6))' // Фіолетове світіння
           }} 
