@@ -196,6 +196,8 @@ app.get('/api/movies/popular', async (req, res) => {
     }
 });
 
+
+
 app.listen(PORT, () => {
     console.log(`Сервер Moon API запущено на http://localhost:${PORT}`);
     console.log(`Swagger документація: http://localhost:${PORT}/api-docs`);

@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import Home from './pages/Home';
+import Account from './pages/Account';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import MovieDetails from './pages/MovieDetails';
@@ -27,6 +28,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <Home />
+              </ProtectedRoute>
+            } 
+          />
+
+                    <Route 
+            path="/account" 
+            element={
+              <ProtectedRoute>
+                <Account />
               </ProtectedRoute>
             } 
           />
