@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom'; // Додали Outlet
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import Home from './pages/Home';
 import Account from './pages/Account';
@@ -8,11 +8,20 @@ import Register from './pages/Register';
 import MovieDetails from './pages/MovieDetails';
 import FolderView from './pages/FolderView';
 import AdminPanel from './pages/AdminPanel';
+import Navbar from './components/Navbar';
 import './App.css';
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedLayout = () => {
     const { isLoggedIn } = useContext(AuthContext);
-    return isLoggedIn ? children : <Navigate to="/login" />;
+    
+    return isLoggedIn ? (
+        <>
+            <Navbar />
+            <Outlet />
+        </>
+    ) : (
+        <Navigate to="/login" />
+    );
 };
 
 function App() {
@@ -23,50 +32,13 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           
-          <Route 
-            path="/" 
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            } 
-          />
-
-                    <Route 
-            path="/account" 
-            element={
-              <ProtectedRoute>
-                <Account />
-              </ProtectedRoute>
-            } 
-          />
-          
-          <Route 
-            path="/movie/:id" 
-            element={
-              <ProtectedRoute>
-                <MovieDetails />
-              </ProtectedRoute>
-            } 
-          />
-
-          <Route 
-            path="/lists/:id" 
-            element={
-              <ProtectedRoute>
-                <FolderView />
-              </ProtectedRoute>
-            } 
-          />
-
-          <Route 
-            path="/admin" 
-            element={
-              <ProtectedRoute>
-                <AdminPanel />
-              </ProtectedRoute>
-            } 
-          />
+          <Route element={<ProtectedLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/account" element={<Account />} />
+            <Route path="/movie/:id" element={<MovieDetails />} />
+            <Route path="/lists/:id" element={<FolderView />} />
+            <Route path="/admin" element={<AdminPanel />} />
+          </Route>
 
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
