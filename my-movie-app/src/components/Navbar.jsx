@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, User, Film } from 'lucide-react';
 import moonLogo from '../assets/moon_logo.svg';
+import './App.css'; 
 
 const Navbar = () => {
   const location = useLocation();
