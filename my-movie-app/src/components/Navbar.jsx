@@ -21,7 +21,7 @@ const Navbar = () => {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '15px 50px',
+        padding: '12px 50px',
         background: 'rgba(15, 15, 26, 0.95)', // Зробимо трохи темнішим для тесту
         backdropFilter: 'blur(15px)',
         borderBottom: '1px solid rgba(138, 63, 252, 0.2)',
@@ -70,10 +70,11 @@ const linkStyle = {
   alignItems: 'center',
   gap: '8px',
   textDecoration: 'none',
-  padding: '8px 16px',
-  borderRadius: '10px',
+  padding: '10px 18px',
+  borderRadius: '12px',
   fontSize: '15px',
-  fontWeight: '600',
+  fontFamily: "'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  letterSpacing: '0.4px',
   transition: 'all 0.3s ease',
 };
 
