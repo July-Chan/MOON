@@ -10,18 +10,21 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav style={{
-      position: 'sticky',
-      top: 0,
-      zIndex: 1000,
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: '15px 50px',
-      background: 'rgba(15, 15, 26, 0.75)', // Напівпрозорий темний фон
-      backdropFilter: 'blur(15px)', // Ефект розмитого скла
-      borderBottom: '1px solid rgba(138, 63, 252, 0.2)', // Тонка фіолетова лінія знизу
-    }}>
+      <nav style={{
+        position: 'fixed',     // Змінили з sticky на fixed
+        top: 0,
+        left: 0,
+        width: '100%',         // Розтягуємо на всю ширину екрана
+        boxSizing: 'border-box', // Щоб падінги не розпирали ширину
+        zIndex: 9999,          // Ставимо максимальний пріоритет, щоб банер його не перекривав
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '15px 50px',
+        background: 'rgba(15, 15, 26, 0.95)', // Зробимо трохи темнішим для тесту
+        backdropFilter: 'blur(15px)',
+        borderBottom: '1px solid rgba(138, 63, 252, 0.2)',
+      }}>
       
       {/* 🌕 ЛОГОТИП ТА НАЗВА (клік повертає на головну) */}
       <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
