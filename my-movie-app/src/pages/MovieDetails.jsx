@@ -20,7 +20,6 @@ const MovieDetails = () => {
     
     const fetchDetails = async () => {
           try {
-            // ТЕПЕР ЗАПИТ ЙДЕ НА ТВІЙ БЕКЕНД ДЛЯ КЕШУВАННЯ
             const response = await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}`);
             const data = await response.json();
             setMovie(data);
