@@ -78,4 +78,4 @@ const Account = () => {
     );
 };
 
-export default Home;
+export default Account;
