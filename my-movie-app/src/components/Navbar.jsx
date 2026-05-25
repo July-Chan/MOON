@@ -137,7 +137,8 @@ const Navbar = () => {
             borderRadius: '15px', 
             overflow: 'hidden', 
             boxShadow: '0 15px 40px rgba(0,0,0,0.9)',
-            animation: 'fadeIn 0.2s ease-out'
+            animation: 'fadeIn 0.2s ease-out',
+            fontFamily: 'Inter, sans-serif'
           }}>
             {searchResults.map(movie => (
               <div 
