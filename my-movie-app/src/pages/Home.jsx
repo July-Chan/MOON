@@ -9,6 +9,10 @@ const Home = () => {
   const [heroMovie, setHeroMovie] = useState(null);
   const [popularMovies, setPopularMovies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [recommendedMovies, setRecommendedMovies] = useState([]);
+  const [isLoadingRecs, setIsLoadingRecs] = useState(true);
+
+  const userEmail = localStorage.getItem('userEmail');
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -37,6 +41,38 @@ const Home = () => {
 
     fetchHomeData();
   }, []);
+
+  const fetchRecommendations = async () => {
+      if (!userEmail) {
+        setIsLoadingRecs(false);
+        return;
+      }
+      
+      try {
+        // 1. Запитуємо ID фільмів у нашого Python-мікросервісу
+        // 🚨 ОБОВ'ЯЗКОВО ЗАМІНИ ПОСИЛАННЯ НА СВОЄ З RENDER (без слеша в кінці)
+        const pythonRes = await axios.get(`https://moon-recommender.onrender.com/api/recommend/${userEmail}`);
+        if (pythonRes.data.recommendations && pythonRes.data.recommendations.length > 0) {
+          const API_KEY = 'c8282b948e28647029c446fa9bef20f8';
+          
+          // 2. Для кожного отриманого ID запитуємо деталі у TMDB
+          const moviePromises = pythonRes.data.recommendations.map(async (rec) => {
+            const tmdbRes = await axios.get(`https://api.themoviedb.org/3/movie/${rec.movieId}?api_key=${API_KEY}&language=uk-UA`);
+            return { ...tmdbRes.data, predictedRating: rec.predicted_rating };
+          });
+
+          // Чекаємо, поки завантажаться всі постери та назви
+          const moviesWithDetails = await Promise.all(moviePromises);
+          setRecommendedMovies(moviesWithDetails);
+        }
+      } catch (error) {
+        console.error("Помилка завантаження рекомендацій:", error);
+      } finally {
+        setIsLoadingRecs(false);
+      }
+    };
+
+    fetchRecommendations();
 
   if (loading) return (
     <div className="home-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
