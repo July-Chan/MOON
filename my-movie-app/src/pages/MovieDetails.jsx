@@ -68,39 +68,35 @@ const MovieDetails = () => {
     }
   };
 
-  // Функція додавання фільму до обраного списку
+
 // Функція додавання фільму до обраного списку
-  const handleAddMovieToList = async (listId) => {
-    try {
-      const response = await fetch(`https://moon-z1lm.onrender.com/api/lists/${listId}/movies`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        // 🔥 ПЕРЕДАЄМО ЯВНО ВСІ ПОЛЯ, ЩОБ БЕКЕНД НІЧОГО НЕ ЗАГУБИВ
-        body: JSON.stringify({
-          id: movie.id,
-          tmdbId: movie.id,
-          movieId: movie.id,
-          title: movie.title,
-          poster_path: movie.poster_path,
-          backdrop_path: movie.backdrop_path,
-          release_date: movie.release_date,
-          vote_average: movie.vote_average
-        })
-      });
+const handleAddMovieToList = async (listId) => {
+  try {
+    const response = await fetch(`https://moon-z1lm.onrender.com/api/lists/${listId}/movies`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // 🔥 ТЕПЕР ФОРМАТ ІДЕАЛЬНО СПІВПАДАЄ З FOLDERVIEW
+      body: JSON.stringify({
+        tmdbId: movie.id,
+        title: movie.title,
+        posterPath: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://placehold.co/500x750/1a1a2e/ffffff?text=No+Poster',
+        releaseDate: movie.release_date || 'Невідомо'
+      })
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (response.ok) {
-        setListMessage('Фільм успішно додано до списку! 🎉');
-        setTimeout(() => setIsListModalOpen(false), 1500); 
-      } else {
-        setListMessage(data.error || 'Цей фільм уже є у списку.');
-      }
-    } catch (error) {
-      console.error("Помилка додавання фільму до списку:", error);
-      setListMessage('Сталася помилка при додаванні.');
+    if (response.ok) {
+      setListMessage('Фільм успішно додано до списку! 🎉');
+      setTimeout(() => setIsListModalOpen(false), 1500); 
+    } else {
+      setListMessage(data.error || 'Цей фільм уже є у списку.');
     }
-  };
+  } catch (error) {
+    console.error("Помилка додавання фільму до списку:", error);
+    setListMessage('Сталася помилка при додаванні.');
+  }
+};
 
   const handleRate = async (ratingValue) => {
     if (!userEmail) return alert("Будь ласка, увійдіть в акаунт, щоб ставити оцінки!");
