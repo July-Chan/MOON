@@ -13,10 +13,9 @@ const MovieDetails = () => {
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-  // Стейти для оцінок та модального вікна
   const [userRating, setUserRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0); 
-  const [isModalOpen, setIsModalOpen] = useState(false); // Контроль попапу
+  const [isModalOpen, setIsModalOpen] = useState(false); 
   const userEmail = localStorage.getItem('userEmail'); 
 
   useEffect(() => {
@@ -45,11 +44,12 @@ const MovieDetails = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [id, userEmail]);
 
+  // Функція для надсилання оцінки
   const handleRate = async (ratingValue) => {
     if (!userEmail) return alert("Будь ласка, увійдіть в акаунт, щоб ставити оцінки!");
     
     setUserRating(ratingValue);
-    setIsModalOpen(false); // Автоматично закриваємо вікно після вибору оцінки
+    setIsModalOpen(false); 
 
     try {
       await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}/rate`, {
@@ -59,6 +59,22 @@ const MovieDetails = () => {
       });
     } catch (error) {
       console.error("Помилка при збереженні оцінки:", error);
+    }
+  };
+
+  // 🔥 НОВА ФУНКЦІЯ: ВИДАТИ ОЦІНКУ З БАЗИ ДАНИХ
+  const handleDeleteRating = async () => {
+    if (!userEmail) return;
+
+    setUserRating(0); // Миттєво скидаємо оцінку в інтерфейсі
+    setIsModalOpen(false); // Закриваємо модалку
+
+    try {
+      await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}/rate/${userEmail}`, {
+        method: 'DELETE'
+      });
+    } catch (error) {
+      console.error("Помилка при видаленні оцінки:", error);
     }
   };
 
@@ -134,10 +150,9 @@ const MovieDetails = () => {
             <p style={{ color: '#8a3ffc', fontStyle: 'italic', fontSize: isMobile ? '16px' : '18px', marginBottom: '20px' }}>— {movie.tagline}</p>
           )}
 
-          {/* ІКОНКИ ІНФО */}
           <div style={{ display: 'flex', gap: isMobile ? '15px' : '25px', marginBottom: '30px', flexWrap: 'wrap' }}>
             
-            {/* ⭐️ ІНТЕРАКТИВНИЙ КЛІКАБЕЛЬНИЙ РЕЙТИНГ */}
+            {/* КЛІКАБЕЛЬНИЙ РЕЙТИНГ */}
             <div 
               onClick={() => setIsModalOpen(true)}
               style={{ 
@@ -200,7 +215,7 @@ const MovieDetails = () => {
       {/* 🔮 МОДАЛЬНЕ ВІКНО ДЛЯ ОЦІНЮВАННЯ */}
       {isModalOpen && (
         <div 
-          onClick={() => setIsModalOpen(false)} // Закриття при кліку на задній фон
+          onClick={() => setIsModalOpen(false)} 
           style={{
             position: 'fixed',
             top: 0,
@@ -216,7 +231,7 @@ const MovieDetails = () => {
           }}
         >
           <div 
-            onClick={(e) => e.stopPropagation()} // Зупиняємо закриття при кліку всередині вікна
+            onClick={(e) => e.stopPropagation()} 
             style={{
               background: '#141424',
               border: '1px solid rgba(138, 63, 252, 0.4)',
@@ -226,10 +241,11 @@ const MovieDetails = () => {
               textAlign: 'center',
               position: 'relative',
               minWidth: '280px',
-              animation: 'fadeIn 0.2s ease-out'
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
             }}
           >
-            {/* Кнопка закриття (хрестик) */}
             <button 
               onClick={() => setIsModalOpen(false)}
               style={{ position: 'absolute', top: '15px', right: '15px', background: 'transparent', border: 'none', color: '#a0a0b5', cursor: 'pointer' }}
@@ -263,10 +279,29 @@ const MovieDetails = () => {
               })}
             </div>
             
+            {/* 🔥 КНОПКА ВИДАТИ ОЦІНКУ (З'являється тільки якщо оцінка вже є) */}
             {userRating > 0 && (
-              <p style={{ fontSize: '12px', color: '#a0a0b5', margin: '10px 0 0 0' }}>
-                Поточна оцінка: {userRating} з 5
-              </p>
+              <button
+                onClick={handleDeleteRating}
+                style={{
+                  marginTop: '15px',
+                  background: 'transparent',
+                  border: '1px solid #ff4d4d',
+                  color: '#ff4d4d',
+                  padding: '8px 16px',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: 'bold',
+                  fontFamily: 'Inter, sans-serif',
+                  transition: 'all 0.2s ease',
+                  width: '100%'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 77, 77, 0.12)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+              >
+                Прибрати оцінку
+              </button>
             )}
           </div>
         </div>

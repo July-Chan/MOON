@@ -169,22 +169,20 @@ app.post('/api/movie/:id/rate', async (req, res) => {
     }
 });
 
-app.get('/api/movie/:id/rate/:userId', async (req, res) => {
+app.delete('/api/movie/:id/rate/:userId', async (req, res) => {
     const movieId = req.params.id;
     const userId = req.params.userId;
 
     try {
+        // Знаходимо потрібний документ у Firestore за ID
         const ratingRef = db.collection('ratings').doc(`${userId}_${movieId}`);
-        const doc = await ratingRef.get();
+        await ratingRef.delete(); // Повністю видаляємо документ із бази
 
-        if (doc.exists) {
-            return res.json({ rating: doc.data().rating });
-        }
-
-        res.json({ rating: 0 });
+        console.log(`Користувач ${userId} видалив оцінку для фільму ${movieId}`);
+        res.json({ success: true, message: "Оцінку успішно видалено!" });
     } catch (error) {
-        console.error("Помилка отримання оцінки фільму:", error);
-        res.status(500).json({ error: "Помилка сервера" });
+        console.error("Помилка видалення оцінки:", error);
+        res.status(500).json({ error: "Не вдалося видалити оцінку" });
     }
 });
 
