@@ -13,10 +13,16 @@ const MovieDetails = () => {
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
+  // Стейти для оцінок
   const [userRating, setUserRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0); 
   const [isModalOpen, setIsModalOpen] = useState(false); 
   const userEmail = localStorage.getItem('userEmail'); 
+
+  // 📂 СТЕЙТИ ДЛЯ ДОДАВАННЯ ДО СПИСКІВ
+  const [userLists, setUserLists] = useState([]); // Списки користувача
+  const [isListModalOpen, setIsListModalOpen] = useState(false); // Контроль модалки списків
+  const [listMessage, setListMessage] = useState(''); // Повідомлення про успіх/помилку
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -44,36 +50,76 @@ const MovieDetails = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [id, userEmail]);
 
-  // Функція для надсилання оцінки
+  // Завантажуємо списки користувача, коли він відкриває модалку списків
+  const openListModal = async () => {
+    if (!userEmail) return alert("Будь ласка, увійдіть в акаунт, щоб керувати списками!");
+    setIsListModalOpen(true);
+    setListMessage('');
+    
+    try {
+      // Робимо запит до твого бекенду, щоб отримати кастомні списки користувача
+      const response = await fetch(`https://moon-z1lm.onrender.com/api/lists?userId=${userEmail}`);
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setUserLists(data);
+      }
+    } catch (error) {
+      console.error("Помилка при отриманні списків:", error);
+    }
+  };
+
+  // Функція додавання фільму до обраного списку
+  const handleAddMovieToList = async (listId) => {
+    try {
+      const response = await fetch(`https://moon-z1lm.onrender.com/api/lists/${listId}/movies`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: movie.id,
+          title: movie.title,
+          poster_path: movie.poster_path
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setListMessage('Фільм успішно додано до списку! 🎉');
+        setTimeout(() => setIsListModalOpen(false), 1500); // Закриваємо модалку через 1.5 секунди
+      } else {
+        setListMessage(data.error || 'Цей фільм уже є у списку.');
+      }
+    } catch (error) {
+      console.error("Помилка додавання фільму до списку:", error);
+      setListMessage('Сталася помилка при додаванні.');
+    }
+  };
+
   const handleRate = async (ratingValue) => {
-  if (!userEmail) return alert("Будь ласка, увійдіть в акаунт, щоб ставити оцінки!");
-  
-  setUserRating(ratingValue);
-  setIsModalOpen(false); 
+    if (!userEmail) return alert("Будь ласка, увійдіть в акаунт, щоб ставити оцінки!");
+    setUserRating(ratingValue);
+    setIsModalOpen(false); 
 
-  try {
-    await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}/rate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      // 🔥 ДОДАЛИ ПЕРЕДАЧУ TITLE ТА POSTER_PATH СЮДИ:
-      body: JSON.stringify({ 
-        userId: userEmail, 
-        rating: ratingValue,
-        title: movie.title,
-        poster_path: movie.poster_path
-      })
-    });
-  } catch (error) {
-    console.error("Помилка при збереженні оцінки:", error);
-  }
-};
+    try {
+      await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}/rate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          userId: userEmail, 
+          rating: ratingValue,
+          title: movie.title,
+          poster_path: movie.poster_path
+        })
+      });
+    } catch (error) {
+      console.error("Помилка при збереженні оцінки:", error);
+    }
+  };
 
-  // 🔥 НОВА ФУНКЦІЯ: ВИДАТИ ОЦІНКУ З БАЗИ ДАНИХ
   const handleDeleteRating = async () => {
     if (!userEmail) return;
-
-    setUserRating(0); // Миттєво скидаємо оцінку в інтерфейсі
-    setIsModalOpen(false); // Закриваємо модалку
+    setUserRating(0); 
+    setIsModalOpen(false); 
 
     try {
       await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}/rate/${userEmail}`, {
@@ -156,50 +202,58 @@ const MovieDetails = () => {
             <p style={{ color: '#8a3ffc', fontStyle: 'italic', fontSize: isMobile ? '16px' : '18px', marginBottom: '20px' }}>— {movie.tagline}</p>
           )}
 
-          <div style={{ display: 'flex', gap: isMobile ? '15px' : '25px', marginBottom: '30px', flexWrap: 'wrap' }}>
+          {/* ІКОНКИ ІНФО */}
+          <div style={{ display: 'flex', gap: isMobile ? '12px' : '20px', marginBottom: '30px', flexWrap: 'wrap', alignItems: 'center' }}>
             
-            {/* КЛІКАБЕЛЬНИЙ РЕЙТИНГ */}
+            {/* ⭐️ КЛІКАБЕЛЬНИЙ РЕЙТИНГ */}
             <div 
               onClick={() => setIsModalOpen(true)}
-              style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '8px', 
-                color: 'white', 
-                cursor: 'pointer',
-                background: 'rgba(138, 63, 252, 0.1)',
-                padding: '6px 12px',
-                borderRadius: '8px',
-                border: '1px solid rgba(138, 63, 252, 0.2)',
-                transition: 'all 0.2s ease'
-              }}
+              style={infoBadgeStyle}
               onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(138, 63, 252, 0.25)'}
               onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(138, 63, 252, 0.1)'}
               title="Натисніть, щоб оцінити фільм"
             >
               <Star size={18} color="#ffcc00" fill="#ffcc00" />
-              <span style={{ fontSize: '16px', fontWeight: 'bold' }}>
+              <span style={{ fontSize: '15px', fontWeight: 'bold' }}>
                 {movie.vote_average?.toFixed(1)} (TMDB)
                 {userRating > 0 && <span style={{ color: '#8a3ffc', marginLeft: '8px' }}>• Твоя: {userRating}★</span>}
               </span>
             </div>
+
+            {/* 📂 НОВА КНОПКА: ДОДАТИ ДО СПИСКУ */}
+            <div 
+              onClick={openListModal}
+              style={{ ...infoBadgeStyle, borderColor: 'rgba(138, 63, 252, 0.4)', background: 'rgba(138, 63, 252, 0.05)' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(138, 63, 252, 0.2)';
+                e.currentTarget.style.transform = 'scale(1.02)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(138, 63, 252, 0.05)';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+              title="Додати цей фільм до своєї папки"
+            >
+              <FolderPlus size={18} color="#8a3ffc" />
+              <span style={{ fontSize: '15px', fontWeight: '600', color: '#b19cd9' }}>Додати до списку</span>
+            </div>
             
             <div style={infoItemStyle}>
               <Calendar size={18} color="#a0a0b5" />
-              <span style={{ fontSize: '16px' }}>{movie.release_date ? new Date(movie.release_date).getFullYear() : '—'}</span>
+              <span style={{ fontSize: '15px' }}>{movie.release_date ? new Date(movie.release_date).getFullYear() : '—'}</span>
             </div>
 
             {movie.runtime && (
               <div style={infoItemStyle}>
                 <Clock size={18} color="#a0a0b5" />
-                <span style={{ fontSize: '16px' }}>{movie.runtime} хв</span>
+                <span style={{ fontSize: '15px' }}>{movie.runtime} хв</span>
               </div>
             )}
 
             {movie.genres && movie.genres.length > 0 && (
               <div style={infoItemStyle}>
                 <Film size={18} color="#a0a0b5" />
-                <span style={{ fontSize: '16px' }}>{movie.genres[0]}</span> 
+                <span style={{ fontSize: '15px' }}>{movie.genres[0]}</span> 
               </div>
             )}
           </div>
@@ -220,53 +274,11 @@ const MovieDetails = () => {
 
       {/* 🔮 МОДАЛЬНЕ ВІКНО ДЛЯ ОЦІНЮВАННЯ */}
       {isModalOpen && (
-        <div 
-          onClick={() => setIsModalOpen(false)} 
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            background: 'rgba(10, 10, 18, 0.8)',
-            backdropFilter: 'blur(8px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10000,
-          }}
-        >
-          <div 
-            onClick={(e) => e.stopPropagation()} 
-            style={{
-              background: '#141424',
-              border: '1px solid rgba(138, 63, 252, 0.4)',
-              boxShadow: '0 15px 40px rgba(0,0,0,0.7), 0 0 20px rgba(138, 63, 252, 0.1)',
-              padding: '30px',
-              borderRadius: '20px',
-              textAlign: 'center',
-              position: 'relative',
-              minWidth: '280px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center'
-            }}
-          >
-            <button 
-              onClick={() => setIsModalOpen(false)}
-              style={{ position: 'absolute', top: '15px', right: '15px', background: 'transparent', border: 'none', color: '#a0a0b5', cursor: 'pointer' }}
-            >
-              <X size={20} />
-            </button>
-
-            <h3 style={{ margin: '0 0 10px 0', fontSize: '18px', fontFamily: 'Inter, sans-serif' }}>
-              Оціни фільм
-            </h3>
-            <p style={{ color: '#8a3ffc', fontSize: '14px', fontWeight: 'bold', margin: '0 0 20px 0' }}>
-              {movie.title}
-            </p>
-
-            {/* Зірочки */}
+        <div onClick={() => setIsModalOpen(false)} style={modalOverlayStyle}>
+          <div onClick={(e) => e.stopPropagation()} style={modalContainerStyle}>
+            <button onClick={() => setIsModalOpen(false)} style={closeButtonStyle}><X size={20} /></button>
+            <h3 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>Оціни фільм</h3>
+            <p style={{ color: '#8a3ffc', fontSize: '14px', fontWeight: 'bold', margin: '0 0 20px 0' }}>{movie.title}</p>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '10px' }}>
               {[1, 2, 3, 4, 5].map((star) => {
                 const isFilled = star <= (hoverRating || userRating);
@@ -284,31 +296,74 @@ const MovieDetails = () => {
                 );
               })}
             </div>
-            
-            {/* 🔥 КНОПКА ВИДАТИ ОЦІНКУ (З'являється тільки якщо оцінка вже є) */}
             {userRating > 0 && (
-              <button
-                onClick={handleDeleteRating}
-                style={{
-                  marginTop: '15px',
-                  background: 'transparent',
-                  border: '1px solid #ff4d4d',
-                  color: '#ff4d4d',
-                  padding: '8px 16px',
-                  borderRadius: '10px',
-                  cursor: 'pointer',
-                  fontSize: '13px',
-                  fontWeight: 'bold',
-                  fontFamily: 'Inter, sans-serif',
-                  transition: 'all 0.2s ease',
-                  width: '100%'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 77, 77, 0.12)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-              >
-                Прибрати оцінку
-              </button>
+              <button onClick={handleDeleteRating} style={deleteRatingButtonStyle}>Прибрати оцінку</button>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* 📁 НОВЕ МОДАЛЬНЕ ВІКНО: ВИБІР ПАПКИ/СПИСКУ */}
+      {isListModalOpen && (
+        <div onClick={() => setIsListModalOpen(false)} style={modalOverlayStyle}>
+          <div onClick={(e) => e.stopPropagation()} style={{ ...modalContainerStyle, minWidth: '320px', maxWidth: '400px' }}>
+            <button onClick={() => setIsListModalOpen(false)} style={closeButtonStyle}><X size={20} /></button>
+            
+            <h3 style={{ margin: '0 0 5px 0', fontSize: '18px' }}>Додати до списку</h3>
+            <p style={{ color: '#a0a0b5', fontSize: '13px', marginBottom: '20px' }}>Оберіть папку для фільму <strong>{movie.title}</strong></p>
+
+            {/* Статус-повідомлення (успішно або помилка) */}
+            {listMessage && (
+              <div style={{ 
+                padding: '10px', 
+                borderRadius: '8px', 
+                marginBottom: '15px', 
+                fontSize: '14px',
+                background: listMessage.includes('успішно') ? 'rgba(0, 230, 115, 0.1)' : 'rgba(255, 77, 77, 0.1)',
+                color: listMessage.includes('успішно') ? '#00e673' : '#ff4d4d',
+                width: '100%',
+                boxSizing: 'border-box'
+              }}>
+                {listMessage}
+              </div>
+            )}
+
+            {/* Список папок */}
+            <div style={{ width: '100%', maxHeight: '250px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', paddingRight: '5px', scrollbarWidth: 'thin' }}>
+              {userLists.length === 0 ? (
+                <p style={{ color: '#4e4e6a', fontStyle: 'italic', fontSize: '14px', margin: '20px 0' }}>У вас ще немає створених списків. Створіть їх у профілі!</p>
+              ) : (
+                userLists.map(list => (
+                  <div
+                    key={list.id}
+                    onClick={() => handleAddMovieToList(list.id)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '12px 15px',
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.05)',
+                      borderRadius: '10px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(138, 63, 252, 0.1)';
+                      e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
+                    }}
+                  >
+                    <Folder size={18} color="#8a3ffc" fill="rgba(138, 63, 252, 0.2)" />
+                    <span style={{ fontSize: '15px', fontWeight: '500', color: 'white' }}>{list.name}</span>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -317,6 +372,36 @@ const MovieDetails = () => {
   );
 };
 
+// Стилі-шаблони
 const infoItemStyle = { display: 'flex', alignItems: 'center', gap: '8px', color: 'white' };
+const infoBadgeStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  color: 'white',
+  cursor: 'pointer',
+  background: 'rgba(138, 63, 252, 0.1)',
+  padding: '6px 14px',
+  borderRadius: '8px',
+  border: '1px solid rgba(138, 63, 252, 0.2)',
+  transition: 'all 0.2s ease',
+  height: '32px',
+  boxSizing: 'border-box'
+};
+const modalOverlayStyle = {
+  position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+  background: 'rgba(10, 10, 18, 0.8)', backdropFilter: 'blur(8px)',
+  display: 'flex', alignItems: 'center', justifyCenter: 'center', justifyContent: 'center', zIndex: 10000,
+};
+const modalContainerStyle = {
+  background: '#141424', border: '1px solid rgba(138, 63, 252, 0.4)',
+  boxShadow: '0 15px 40px rgba(0,0,0,0.7), 0 0 20px rgba(138, 63, 252, 0.1)',
+  padding: '30px', borderRadius: '20px', textAlign: 'center', position: 'relative', minWidth: '280px'
+};
+const closeButtonStyle = { position: 'absolute', top: '15px', right: '15px', background: 'transparent', border: 'none', color: '#a0a0b5', cursor: 'pointer' };
+const deleteRatingButtonStyle = {
+  marginTop: '15px', background: 'transparent', border: '1px solid #ff4d4d', color: '#ff4d4d',
+  padding: '8px 16px', borderRadius: '10px', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold', width: '100%', transition: 'all 0.2s'
+};
 
 export default MovieDetails;
