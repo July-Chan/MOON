@@ -143,10 +143,10 @@ app.get('/api/movie/:id', async (req, res) => {
     }
 });
 
-// ⭐️ 1. ЗБЕРЕГТИ АБО ОНОВИТИ ОЦІНКУ ФІЛЬМУ (POST)
 app.post('/api/movie/:id/rate', async (req, res) => {
     const movieId = req.params.id;
-    const { userId, rating } = req.body;
+    // Приймаємо додатково title та poster_path від фронтенду
+    const { userId, rating, title, poster_path } = req.body;
 
     if (!userId || !rating) {
         return res.status(400).json({ error: "ID користувача та оцінка є обов'язковими" });
@@ -159,6 +159,8 @@ app.post('/api/movie/:id/rate', async (req, res) => {
             userId,
             movieId,
             rating: Number(rating),
+            title: title || "Без назви", // Зберігаємо для списку в профілі
+            poster_path: poster_path || null, // Зберігаємо для списку в профілі
             updatedAt: new Date()
         });
 
@@ -257,6 +259,29 @@ app.get('/api/movies/popular', async (req, res) => {
     } catch (error) {
         console.error('Помилка отримання популярних фільмів:', error);
         res.status(500).json({ error: 'Не вдалося завантажити популярні фільми' });
+    }
+});
+
+// 🍿 4. ОТРИМАТИ ВСІ ОЦІНЕНІ ФІЛЬМИ КОРИСТУВАЧА (Для сторінки профілю)
+app.get('/api/users/:userId/ratings', async (req, res) => {
+    const userId = req.params.userId; // Тут буде email користувача
+
+    try {
+        // Шукаємо в колекції ratings усі документи, де userId збігається з поточним
+        const ratingsSnapshot = await db.collection('ratings')
+            .where('userId', '==', userId)
+            .get();
+
+        const ratedMovies = [];
+        ratingsSnapshot.forEach(doc => {
+            ratedMovies.push(doc.data());
+        });
+
+        // Повертаємо масив оцінених фільмів
+        res.json(ratedMovies);
+    } catch (error) {
+        console.error("Помилка отримання оцінених фільмів користувача:", error);
+        res.status(500).json({ error: "Не вдалося завантажити оцінені фільми" });
     }
 });
 

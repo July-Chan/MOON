@@ -46,21 +46,27 @@ const MovieDetails = () => {
 
   // Функція для надсилання оцінки
   const handleRate = async (ratingValue) => {
-    if (!userEmail) return alert("Будь ласка, увійдіть в акаунт, щоб ставити оцінки!");
-    
-    setUserRating(ratingValue);
-    setIsModalOpen(false); 
+  if (!userEmail) return alert("Будь ласка, увійдіть в акаунт, щоб ставити оцінки!");
+  
+  setUserRating(ratingValue);
+  setIsModalOpen(false); 
 
-    try {
-      await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}/rate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: userEmail, rating: ratingValue })
-      });
-    } catch (error) {
-      console.error("Помилка при збереженні оцінки:", error);
-    }
-  };
+  try {
+    await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}/rate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // 🔥 ДОДАЛИ ПЕРЕДАЧУ TITLE ТА POSTER_PATH СЮДИ:
+      body: JSON.stringify({ 
+        userId: userEmail, 
+        rating: ratingValue,
+        title: movie.title,
+        poster_path: movie.poster_path
+      })
+    });
+  } catch (error) {
+    console.error("Помилка при збереженні оцінки:", error);
+  }
+};
 
   // 🔥 НОВА ФУНКЦІЯ: ВИДАТИ ОЦІНКУ З БАЗИ ДАНИХ
   const handleDeleteRating = async () => {
