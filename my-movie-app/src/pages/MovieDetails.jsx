@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Star, Calendar, Clock, Film } from 'lucide-react';
+import { ArrowLeft, Star, Calendar, Clock, Film, X } from 'lucide-react';
 import '../App.css';
 import moonLogo from '../assets/moon_logo_ball.svg';
 
