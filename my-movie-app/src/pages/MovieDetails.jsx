@@ -69,16 +69,22 @@ const MovieDetails = () => {
   };
 
   // Функція додавання фільму до обраного списку
-const handleAddMovieToList = async (listId) => {
+// Функція додавання фільму до обраного списку
+  const handleAddMovieToList = async (listId) => {
     try {
       const response = await fetch(`https://moon-z1lm.onrender.com/api/lists/${listId}/movies`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // 🔥 ПЕРЕДАЄМО ПОВНИЙ ОБ'ЄКТ ФІЛЬМУ + ДУБЛЮЄМО ID
+        // 🔥 ПЕРЕДАЄМО ЯВНО ВСІ ПОЛЯ, ЩОБ БЕКЕНД НІЧОГО НЕ ЗАГУБИВ
         body: JSON.stringify({
-          ...movie,          // Закидаємо всі поля (poster_path, release_date тощо)
-          tmdbId: movie.id,  // Для сумісності з listRoutes.js
-          movieId: movie.id  // На всякий випадок
+          id: movie.id,
+          tmdbId: movie.id,
+          movieId: movie.id,
+          title: movie.title,
+          poster_path: movie.poster_path,
+          backdrop_path: movie.backdrop_path,
+          release_date: movie.release_date,
+          vote_average: movie.vote_average
         })
       });
 
