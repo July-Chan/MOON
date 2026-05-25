@@ -99,6 +99,7 @@ app.get('/', (req, res) => {
     res.json({ message: 'API для додатку Moon успішно працює!' });
 });
 
+// 🎬 ОТРИМАННЯ ТА КЕШУВАННЯ ФІЛЬМУ
 app.get('/api/movie/:id', async (req, res) => {
     const movieId = req.params.id;
 
@@ -124,6 +125,7 @@ app.get('/api/movie/:id', async (req, res) => {
             title: tmdbData.title,
             overview: tmdbData.overview,
             poster_path: tmdbData.poster_path,
+            backdrop_path: tmdbData.backdrop_path, // Додано для коректного відображення тла сторінки
             release_date: tmdbData.release_date,
             genres: tmdbData.genres.map(g => g.name),
             vote_average: tmdbData.vote_average,
@@ -141,17 +143,16 @@ app.get('/api/movie/:id', async (req, res) => {
     }
 });
 
-// ⭐️ 1. ЗБЕРЕГТИ АБО ОНОВИТИ ОЦІНКУ ФІЛЬМУ
+// ⭐️ 1. ЗБЕРЕГТИ АБО ОНОВИТИ ОЦІНКУ ФІЛЬМУ (POST)
 app.post('/api/movie/:id/rate', async (req, res) => {
     const movieId = req.params.id;
-    const { userId, rating } = req.body; // userId — це email користувача
+    const { userId, rating } = req.body;
 
     if (!userId || !rating) {
         return res.status(400).json({ error: "ID користувача та оцінка є обов'язковими" });
     }
 
     try {
-        // Створюємо унікальний ID для пари користувач-фільм
         const ratingRef = db.collection('ratings').doc(`${userId}_${movieId}`);
 
         await ratingRef.set({
@@ -169,15 +170,34 @@ app.post('/api/movie/:id/rate', async (req, res) => {
     }
 });
 
+// 🔍 2. ОТРИМАТИ ОЦІНКУ КОНКРЕТНОГО КОРИСТУВАЧА (GET)
+app.get('/api/movie/:id/rate/:userId', async (req, res) => {
+    const movieId = req.params.id;
+    const userId = req.params.userId;
+
+    try {
+        const ratingRef = db.collection('ratings').doc(`${userId}_${movieId}`);
+        const doc = await ratingRef.get();
+
+        if (doc.exists) {
+            return res.json({ rating: doc.data().rating });
+        }
+
+        res.json({ rating: 0 });
+    } catch (error) {
+        console.error("Помилка отримання оцінки фільму:", error);
+        res.status(500).json({ error: "Помилка сервера" });
+    }
+});
+
+// 🗑 3. ВИДАТИ ОЦІНКУ ФІЛЬМУ (DELETE)
 app.delete('/api/movie/:id/rate/:userId', async (req, res) => {
     const movieId = req.params.id;
     const userId = req.params.userId;
 
     try {
-        // Знаходимо потрібний документ у Firestore за ID
         const ratingRef = db.collection('ratings').doc(`${userId}_${movieId}`);
-        await ratingRef.delete(); // Повністю видаляємо документ із бази
-
+        await ratingRef.delete();
         console.log(`Користувач ${userId} видалив оцінку для фільму ${movieId}`);
         res.json({ success: true, message: "Оцінку успішно видалено!" });
     } catch (error) {
@@ -186,6 +206,7 @@ app.delete('/api/movie/:id/rate/:userId', async (req, res) => {
     }
 });
 
+// 📊 СТАТИСТИКА АДМІНА
 app.get('/api/admin/stats', async (req, res) => {
     try {
         const listsSnapshot = await db.collection('lists').get();
@@ -211,6 +232,7 @@ app.get('/api/admin/stats', async (req, res) => {
     }
 });
 
+// 🍿 НОВИНКИ КІНО
 app.get('/api/movies/now-playing', async (req, res) => {
     try {
         const TMDB_API_KEY = process.env.TMDB_API_KEY;
@@ -224,6 +246,7 @@ app.get('/api/movies/now-playing', async (req, res) => {
     }
 });
 
+// 🔥 ПОПУЛЯРНІ ФІЛЬМИ
 app.get('/api/movies/popular', async (req, res) => {
     try {
         const TMDB_API_KEY = process.env.TMDB_API_KEY;
@@ -236,8 +259,6 @@ app.get('/api/movies/popular', async (req, res) => {
         res.status(500).json({ error: 'Не вдалося завантажити популярні фільми' });
     }
 });
-
-
 
 app.listen(PORT, () => {
     console.log(`Сервер Moon API запущено на http://localhost:${PORT}`);
