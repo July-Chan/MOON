@@ -141,6 +141,53 @@ app.get('/api/movie/:id', async (req, res) => {
     }
 });
 
+// ⭐️ 1. ЗБЕРЕГТИ АБО ОНОВИТИ ОЦІНКУ ФІЛЬМУ
+app.post('/api/movie/:id/rate', async (req, res) => {
+    const movieId = req.params.id;
+    const { userId, rating } = req.body; // userId — це email користувача
+
+    if (!userId || !rating) {
+        return res.status(400).json({ error: "ID користувача та оцінка є обов'язковими" });
+    }
+
+    try {
+        // Створюємо унікальний ID для пари користувач-фільм
+        const ratingRef = db.collection('ratings').doc(`${userId}_${movieId}`);
+
+        await ratingRef.set({
+            userId,
+            movieId,
+            rating: Number(rating),
+            updatedAt: new Date()
+        });
+
+        console.log(`Користувач ${userId} поставив фільму ${movieId} оцінку ${rating}`);
+        res.json({ success: true, message: "Оцінку успішно збережено!" });
+    } catch (error) {
+        console.error("Помилка збереження оцінки:", error);
+        res.status(500).json({ error: "Не вдалося зберегти оцінку" });
+    }
+});
+
+app.get('/api/movie/:id/rate/:userId', async (req, res) => {
+    const movieId = req.params.id;
+    const userId = req.params.userId;
+
+    try {
+        const ratingRef = db.collection('ratings').doc(`${userId}_${movieId}`);
+        const doc = await ratingRef.get();
+
+        if (doc.exists) {
+            return res.json({ rating: doc.data().rating });
+        }
+
+        res.json({ rating: 0 });
+    } catch (error) {
+        console.error("Помилка отримання оцінки фільму:", error);
+        res.status(500).json({ error: "Помилка сервера" });
+    }
+});
+
 app.get('/api/admin/stats', async (req, res) => {
     try {
         const listsSnapshot = await db.collection('lists').get();
@@ -166,14 +213,12 @@ app.get('/api/admin/stats', async (req, res) => {
     }
 });
 
-// 1. ЕНДПОІНТ ДЛЯ HERO-БАНЕРА: Фільми, які зараз ідуть у кіно (Новинки)
 app.get('/api/movies/now-playing', async (req, res) => {
     try {
         const TMDB_API_KEY = process.env.TMDB_API_KEY;
         const response = await axios.get(
             `https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=uk-UA&page=1`
         );
-        // Віддаємо масив із 20 свіжих фільмів
         res.json(response.data.results);
     } catch (error) {
         console.error('Помилка отримання новинок:', error);
@@ -181,14 +226,12 @@ app.get('/api/movies/now-playing', async (req, res) => {
     }
 });
 
-// 2. ЕНДПОІНТ ДЛЯ РЯДКА 1: Популярні фільми за весь час
 app.get('/api/movies/popular', async (req, res) => {
     try {
         const TMDB_API_KEY = process.env.TMDB_API_KEY;
         const response = await axios.get(
             `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=uk-UA&page=1`
         );
-        // Віддаємо масив популярних фільмів
         res.json(response.data.results);
     } catch (error) {
         console.error('Помилка отримання популярних фільмів:', error);
