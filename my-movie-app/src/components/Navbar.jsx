@@ -1,11 +1,54 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Home, User } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Home, User, Search, X } from 'lucide-react';
+import axios from 'axios';
 import moonLogo from '../assets/moon_logo.svg';
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isActive = (path) => location.pathname === path;
+
+  // 🔍 СТЕЙТИ ДЛЯ ПОШУКУ
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const searchRef = useRef(null);
+
+  // Закриття випадаючого списку при кліку поза ним
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setIsSearchOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // 🚀 ФУНКЦІЯ ПОШУКУ
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+
+    const API_KEY = 'c8282b948e28647029c446fa9bef20f8'; 
+    try {
+      const res = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${searchQuery}&language=uk-UA`);
+      // Беремо лише перші 5 результатів для компактного меню
+      setSearchResults(res.data.results.slice(0, 5));
+      setIsSearchOpen(true);
+    } catch (error) {
+      console.error("Помилка пошуку:", error);
+    }
+  };
+
+  // Перехід на фільм і очищення пошуку
+  const handleSelectMovie = (id) => {
+    setSearchQuery('');
+    setSearchResults([]);
+    setIsSearchOpen(false);
+    navigate(`/movie/${id}`);
+  };
 
   return (
     <nav style={{
@@ -25,7 +68,7 @@ const Navbar = () => {
     }}>
       
       {/* 🌕 ЛОГОТИП */}
-      <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+      <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
         <img 
           src={moonLogo} 
           alt="Moon Logo" 
@@ -37,9 +80,101 @@ const Navbar = () => {
         />
       </Link>
 
+      {/* 🔎 РЯДОК ПОШУКУ (ПО ЦЕНТРУ) */}
+      <div ref={searchRef} style={{ position: 'relative', flex: 1, maxWidth: '400px', margin: '0 30px' }}>
+        <form 
+          onSubmit={handleSearch} 
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            background: 'rgba(255,255,255,0.05)', 
+            borderRadius: '20px', 
+            padding: '6px 15px', 
+            border: '1px solid rgba(138, 63, 252, 0.3)',
+            transition: 'all 0.3s ease'
+          }}
+          onFocus={(e) => e.currentTarget.style.borderColor = '#8a3ffc'}
+          onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.3)'}
+        >
+          <Search size={16} color="#a0a0b5" />
+          <input
+            type="text"
+            placeholder="Шукати фільм (натисніть Enter)..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{ 
+              background: 'transparent', 
+              border: 'none', 
+              color: 'white', 
+              padding: '6px 10px', 
+              width: '100%', 
+              outline: 'none', 
+              fontSize: '14px', 
+              fontFamily: 'Inter, sans-serif' 
+            }}
+          />
+          {searchQuery && (
+            <X 
+              size={16} 
+              color="#a0a0b5" 
+              style={{ cursor: 'pointer', transition: 'color 0.2s' }} 
+              onMouseEnter={(e) => e.target.style.color = 'white'}
+              onMouseLeave={(e) => e.target.style.color = '#a0a0b5'}
+              onClick={() => { setSearchQuery(''); setIsSearchOpen(false); }} 
+            />
+          )}
+        </form>
+
+        {/* 📋 ВИПАДАЮЧИЙ СПИСОК РЕЗУЛЬТАТІВ */}
+        {isSearchOpen && searchResults.length > 0 && (
+          <div style={{ 
+            position: 'absolute', 
+            top: '110%', 
+            left: 0, 
+            right: 0, 
+            background: '#141424', 
+            border: '1px solid rgba(138,63,252,0.4)', 
+            borderRadius: '15px', 
+            overflow: 'hidden', 
+            boxShadow: '0 15px 40px rgba(0,0,0,0.9)',
+            animation: 'fadeIn 0.2s ease-out'
+          }}>
+            {searchResults.map(movie => (
+              <div 
+                key={movie.id} 
+                onClick={() => handleSelectMovie(movie.id)} 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  padding: '10px 15px', 
+                  cursor: 'pointer', 
+                  borderBottom: '1px solid rgba(255,255,255,0.05)', 
+                  transition: 'background 0.2s' 
+                }} 
+                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(138,63,252,0.15)'} 
+                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+              >
+                <img 
+                  src={movie.poster_path ? `https://image.tmdb.org/t/p/w92${movie.poster_path}` : 'https://placehold.co/92x138/1a1a2e/ffffff?text=No+Poster'} 
+                  alt={movie.title} 
+                  style={{ width: '40px', height: '60px', objectFit: 'cover', borderRadius: '6px', marginRight: '15px' }} 
+                />
+                <div>
+                  <h4 style={{ margin: '0 0 5px 0', color: 'white', fontSize: '14px', fontFamily: 'Inter, sans-serif' }}>
+                    {movie.title}
+                  </h4>
+                  <span style={{ color: '#8a3ffc', fontSize: '12px', fontWeight: 'bold' }}>
+                    {movie.release_date?.substring(0, 4)} • {movie.vote_average?.toFixed(1)}★
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* 🧭 КНОПКИ НАВІГАЦІЇ */}
-      <div style={{ display: 'flex', gap: '15px' }}>
-        
+      <div style={{ display: 'flex', gap: '15px', flexShrink: 0 }}>
         <Link 
           to="/" 
           style={{
@@ -49,7 +184,6 @@ const Navbar = () => {
           }}
         >
           <Home size={18} />
-          {/* Прописуємо шрифт прямо на спан з !important через звичайний стиль */}
           <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: isActive('/') ? '700' : '500' }}>
             Головна
           </span>
@@ -68,7 +202,6 @@ const Navbar = () => {
             Мій Акаунт
           </span>
         </Link>
-
       </div>
     </nav>
   );
