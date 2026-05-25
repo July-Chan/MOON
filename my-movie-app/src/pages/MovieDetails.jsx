@@ -13,10 +13,11 @@ const MovieDetails = () => {
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-  // Стейт для особистої оцінки користувача (від 0 до 5)
+  // Стейти для оцінок та модального вікна
   const [userRating, setUserRating] = useState(0);
-  const [hoverRating, setHoverRating] = useState(0); // Для красивого ефекту наведення
-  const userEmail = localStorage.getItem('userEmail'); // Беремо email авторизованого юзера
+  const [hoverRating, setHoverRating] = useState(0); 
+  const [isModalOpen, setIsModalOpen] = useState(false); // Контроль попапу
+  const userEmail = localStorage.getItem('userEmail'); 
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -24,18 +25,15 @@ const MovieDetails = () => {
     
     const fetchDetailsAndRating = async () => {
       try {
-        // 1. Завантажуємо деталі фільму
         const response = await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}`);
         const data = await response.json();
         setMovie(data);
 
-        // 2. Завантажуємо особисту оцінку користувача, якщо він авторизований
         if (userEmail) {
           const ratingResponse = await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}/rate/${userEmail}`);
           const ratingData = await ratingResponse.json();
           setUserRating(ratingData.rating || 0);
         }
-
       } catch (error) {
         console.error("Помилка завантаження даних:", error);
       } finally {
@@ -47,11 +45,11 @@ const MovieDetails = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [id, userEmail]);
 
-  // Функція для відправки оцінки на сервер
   const handleRate = async (ratingValue) => {
     if (!userEmail) return alert("Будь ласка, увійдіть в акаунт, щоб ставити оцінки!");
     
     setUserRating(ratingValue);
+    setIsModalOpen(false); // Автоматично закриваємо вікно після вибору оцінки
 
     try {
       await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}/rate`, {
@@ -76,7 +74,8 @@ const MovieDetails = () => {
   );
 
   return (
-    <div className="home-container" style={{ padding: 0, overflowX: 'hidden', paddingTop: '60px' }}>
+    <div className="home-container" style={{ padding: 0, overflowX: 'hidden', paddingTop: '60px', color: 'white' }}>
+      
       {/* ФОНОВИЙ БАНЕР */}
       <div style={{
         position: 'relative',
@@ -121,36 +120,12 @@ const MovieDetails = () => {
       <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '25px' : '40px', padding: isMobile ? '20px' : '40px 50px', maxWidth: '1200px', margin: '0 auto' }}>
         
         {/* ПОСТЕР */}
-        <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+        <div style={{ flexShrink: 0 }}>
           <img 
             src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://placehold.co/500x750/1a1a2e/ffffff?text=No+Poster'} 
             alt={movie.title} 
             style={{ width: isMobile ? '200px' : '300px', borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}
           />
-
-          {/* ⭐️ ІНТЕРАКТИВНИЙ БЛОК ОЦІНЮВАННЯ */}
-          <div style={{ background: 'rgba(255,255,255,0.03)', padding: '15px 25px', borderRadius: '15px', border: '1px solid rgba(138, 63, 252, 0.2)', textAlign: 'center' }}>
-            <p style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#a0a0b5', fontWeight: '600' }}>
-              {userRating > 0 ? 'Твоя оцінка:' : 'Оціни фільм:'}
-            </p>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              {[1, 2, 3, 4, 5].map((star) => {
-                const isFilled = star <= (hoverRating || userRating);
-                return (
-                  <Star
-                    key={star}
-                    size={28}
-                    onClick={() => handleRate(star)}
-                    onMouseEnter={() => setHoverRating(star)}
-                    onMouseLeave={() => setHoverRating(0)}
-                    color={isFilled ? '#8a3ffc' : '#4e4e6a'}
-                    fill={isFilled ? '#8a3ffc' : 'transparent'}
-                    style={{ cursor: 'pointer', transition: 'transform 0.1s', filter: isFilled ? 'drop-shadow(0 0 5px rgba(138, 63, 252, 0.5))' : 'none' }}
-                  />
-                );
-              })}
-            </div>
-          </div>
         </div>
 
         {/* ДЕТАЛІ */}
@@ -161,9 +136,31 @@ const MovieDetails = () => {
 
           {/* ІКОНКИ ІНФО */}
           <div style={{ display: 'flex', gap: isMobile ? '15px' : '25px', marginBottom: '30px', flexWrap: 'wrap' }}>
-            <div style={infoItemStyle}>
+            
+            {/* ⭐️ ІНТЕРАКТИВНИЙ КЛІКАБЕЛЬНИЙ РЕЙТИНГ */}
+            <div 
+              onClick={() => setIsModalOpen(true)}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                color: 'white', 
+                cursor: 'pointer',
+                background: 'rgba(138, 63, 252, 0.1)',
+                padding: '6px 12px',
+                borderRadius: '8px',
+                border: '1px solid rgba(138, 63, 252, 0.2)',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(138, 63, 252, 0.25)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(138, 63, 252, 0.1)'}
+              title="Натисніть, щоб оцінити фільм"
+            >
               <Star size={18} color="#ffcc00" fill="#ffcc00" />
-              <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{movie.vote_average?.toFixed(1)} (TMDB)</span>
+              <span style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                {movie.vote_average?.toFixed(1)} (TMDB)
+                {userRating > 0 && <span style={{ color: '#8a3ffc', marginLeft: '8px' }}>• Твоя: {userRating}★</span>}
+              </span>
             </div>
             
             <div style={infoItemStyle}>
@@ -186,7 +183,7 @@ const MovieDetails = () => {
             )}
           </div>
 
-          <h3 style={{ color: 'white', fontSize: isMobile ? '18px' : '22px', marginBottom: '15px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px' }}>Опис фільму</h3>
+          <h3 style={{ fontSize: isMobile ? '18px' : '22px', marginBottom: '15px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px' }}>Опис фільму</h3>
           <p style={{ fontSize: isMobile ? '14px' : '16px', lineHeight: '1.6', color: '#a0a0b5', textAlign: 'left' }}>
             {movie.overview || 'Опис українською мовою поки відсутній.'}
           </p>
@@ -199,6 +196,82 @@ const MovieDetails = () => {
           )}
         </div>
       </div>
+
+      {/* 🔮 МОДАЛЬНЕ ВІКНО ДЛЯ ОЦІНЮВАННЯ */}
+      {isModalOpen && (
+        <div 
+          onClick={() => setIsModalOpen(false)} // Закриття при кліку на задній фон
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(10, 10, 18, 0.8)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 10000,
+          }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()} // Зупиняємо закриття при кліку всередині вікна
+            style={{
+              background: '#141424',
+              border: '1px solid rgba(138, 63, 252, 0.4)',
+              boxShadow: '0 15px 40px rgba(0,0,0,0.7), 0 0 20px rgba(138, 63, 252, 0.1)',
+              padding: '30px',
+              borderRadius: '20px',
+              textAlign: 'center',
+              position: 'relative',
+              minWidth: '280px',
+              animation: 'fadeIn 0.2s ease-out'
+            }}
+          >
+            {/* Кнопка закриття (хрестик) */}
+            <button 
+              onClick={() => setIsModalOpen(false)}
+              style={{ position: 'absolute', top: '15px', right: '15px', background: 'transparent', border: 'none', color: '#a0a0b5', cursor: 'pointer' }}
+            >
+              <X size={20} />
+            </button>
+
+            <h3 style={{ margin: '0 0 10px 0', fontSize: '18px', fontFamily: 'Inter, sans-serif' }}>
+              Оціни фільм
+            </h3>
+            <p style={{ color: '#8a3ffc', fontSize: '14px', fontWeight: 'bold', margin: '0 0 20px 0' }}>
+              {movie.title}
+            </p>
+
+            {/* Зірочки */}
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '10px' }}>
+              {[1, 2, 3, 4, 5].map((star) => {
+                const isFilled = star <= (hoverRating || userRating);
+                return (
+                  <Star
+                    key={star}
+                    size={32}
+                    onClick={() => handleRate(star)}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    color={isFilled ? '#8a3ffc' : '#4e4e6a'}
+                    fill={isFilled ? '#8a3ffc' : 'transparent'}
+                    style={{ cursor: 'pointer', transition: 'transform 0.1s', filter: isFilled ? 'drop-shadow(0 0 8px rgba(138, 63, 252, 0.6))' : 'none' }}
+                  />
+                );
+              })}
+            </div>
+            
+            {userRating > 0 && (
+              <p style={{ fontSize: '12px', color: '#a0a0b5', margin: '10px 0 0 0' }}>
+                Поточна оцінка: {userRating} з 5
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
