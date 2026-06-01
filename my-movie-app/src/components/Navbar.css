@@ -1,0 +1,89 @@
+/* --- БАЗОВІ СТИЛІ (ДЛЯ КОМП'ЮТЕРА) --- */
+.custom-navbar {
+    position: fixed;     
+    top: 0;
+    left: 0;
+    width: 100%;         
+    box-sizing: border-box; 
+    z-index: 9999;          
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 50px; 
+    background: rgba(15, 15, 26, 0.95); 
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(138, 63, 252, 0.2);
+}
+
+.navbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+}
+
+.hamburger-menu-btn {
+    display: none; /* Ховаємо кнопку на ПК */
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 10001; /* Поверх бокового меню */
+}
+
+
+/* --- АДАПТИВНІСТЬ (ДЛЯ ТЕЛЕФОНІВ) --- */
+@media screen and (max-width: 768px) {
+    .custom-navbar {
+        padding: 12px 20px; /* Зменшуємо бокові відступи на телефоні */
+    }
+
+    .hamburger-menu-btn {
+        display: block; /* Показуємо кнопку меню */
+    }
+
+    .search-container {
+        margin: 0 !important; /* Забираємо відступи пошуку */
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    .navbar-content {
+        position: fixed;
+        top: 0;
+        right: -100%; /* Меню заховане за правий край екрану */
+        width: 280px; /* Ширина бокового меню */
+        height: 100vh;
+        background: rgba(15, 15, 26, 0.98); /* Трохи темніший фон */
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch; /* Розтягуємо елементи на всю ширину */
+        padding: 80px 20px 30px; /* Відступ зверху, щоб не перекривати хрестик */
+        gap: 30px;
+        transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        border-left: 1px solid rgba(138, 63, 252, 0.2);
+    }
+
+    /* Коли натиснуто гамбургер — виїжджаємо меню */
+    .navbar-content.mobile-open {
+        right: 0;
+    }
+
+    .nav-links-container {
+        flex-direction: column; /* Розташовуємо кнопки одна під одною */
+        align-items: stretch !important;
+        gap: 15px;
+    }
+
+    .nav-links-container a {
+        justify-content: flex-start; /* Вирівнюємо іконки і текст по лівому краю */
+        padding: 15px 20px !important;
+    }
+
+    .nav-links-container button {
+        margin-left: 0 !important;
+        padding: 15px 20px !important;
+        justify-content: center !important;
+    }
+}
