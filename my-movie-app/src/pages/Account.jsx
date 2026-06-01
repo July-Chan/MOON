@@ -1,31 +1,28 @@
-import React, { useContext, useEffect, useState } from 'react'; // Додали useEffect та useState
+import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import MyLists from '../components/MyLists'; 
 import './Account.css';
 import moonLogo from '../assets/moon_logo_ball.svg';
 import { useNavigate } from 'react-router-dom';
-import { Star } from 'lucide-react'; // Додали іконку зірки для відображення оцінок
+import { Star } from 'lucide-react';
+import { useTranslation } from 'react-i18next'; // 🔥 1. ДОДАЛИ ІМПОРТ
 
 const Account = () => {
-    // Беремо функцію виходу з контексту
     const { logout } = useContext(AuthContext);
     const navigate = useNavigate();
+    const { t } = useTranslation(); // 🔥 2. ДІСТАЄМО ФУНКЦІЮ ПЕРЕКЛАДУ
     
-    // БЕРЕМО ПОШТУ ТА ІМ'Я З LOCAL STORAGE
     const userEmail = localStorage.getItem('userEmail');
-    const userName = localStorage.getItem('userName') || 'User';
+    const userName = localStorage.getItem('userName') || t('defaultUserName', 'User'); // Переклали ім'я за замовчуванням
 
-    // 🌟 СТЕЙТ ДЛЯ ЗБЕРЕЖЕННЯ ОЦІНЕНИХ ФІЛЬМІВ
     const [ratedMovies, setRatedMovies] = useState([]);
 
-    // 🌟 ЗАВАНТАЖУЄМО ОЦІНКИ КОРИСТУВАЧА ПРИ СТАРТІ СТОРІНКИ
     useEffect(() => {
         if (userEmail) {
             fetch(`https://moon-z1lm.onrender.com/api/users/${userEmail}/ratings`)
                 .then(res => res.json())
                 .then(data => {
                     if (Array.isArray(data)) {
-                        // Сортуємо оцінки, щоб найсвіжіші були на початку списку
                         const sorted = data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
                         setRatedMovies(sorted);
                     }
@@ -34,16 +31,16 @@ const Account = () => {
         }
     }, [userEmail]);
 
-    // Проста функція для кнопки виходу
     const handleLogout = () => {
         logout();
     };
 
     return (
-        <div className="home-container" style={{ paddingTop: '80px' }}> {/* Додано відступ, щоб fixed Navbar не перекривав шапку */}
+        <div className="home-container" style={{ paddingTop: '80px' }}>
             <div className="home-header">
                 <div className="user-info">
-                    <h1>Hello, {userName}!</h1>
+                    {/* 🔥 Переклали привітання */}
+                    <h1>{t('helloUser', 'Hello, {{name}}!', { name: userName })}</h1>
                     <span className="user-email">{userEmail}</span>
                 </div>
                 
@@ -81,26 +78,26 @@ const Account = () => {
                       e.target.style.color = '#b19cd9';
                   }}
               >
-                  Панель адміністратора
+                  {/* 🔥 Переклали кнопку адмін-панелі */}
+                  {t('adminPanelBtn', 'Панель адміністратора')}
               </button>
             )}
 
             <main className="home-main-content">
-                {/* 1. Твої особисті списки / кастомні папки */}
                 <MyLists />
 
-                {/* 🍿 2. ВБУДОВАНИЙ СИСТЕМНИЙ СПИСОК: ОЦІНЕНІ ФІЛЬМИ */}
                 <div style={{ marginTop: '50px', paddingBottom: '20px' }}>
                     <h2 style={{ fontSize: '22px', color: 'white', marginBottom: '20px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px', textAlign: 'left' }}>
-                        Оцінені фільми
+                        {/* 🔥 Переклали заголовок "Оцінені фільми" */}
+                        {t('ratedMoviesTitle', 'Оцінені фільми')}
                     </h2>
                     
                     {ratedMovies.length === 0 ? (
                         <p style={{ color: '#a0a0b5', textAlign: 'left', fontStyle: 'italic', paddingLeft: '15px', fontSize: '14px' }}>
-                            Ви ще не оцінили жодного фільму. Твої оцінки з'являться тут автоматично.
+                            {/* 🔥 Переклали текст-заглушку */}
+                            {t('noRatedMoviesMessage', "Ви ще не оцінили жодного фільму. Твої оцінки з'являться тут автоматично.")}
                         </p>
                     ) : (
-                        /* Контейнер для горизонтального скролу карток */
                         <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '15px', scrollbarWidth: 'thin' }}>
                             {ratedMovies.map(movie => (
                                 <div 
@@ -129,7 +126,8 @@ const Account = () => {
             </main>
 
             <button onClick={handleLogout} className="logout-btn" style={{ marginTop: '40px' }}>
-                Вийти
+                {/* 🔥 Переклали кнопку виходу */}
+                {t('logoutBtn', 'Вийти')}
             </button>
         </div>
     );

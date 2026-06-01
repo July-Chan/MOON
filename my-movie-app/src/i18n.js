@@ -38,6 +38,11 @@ const resources = {
       "noListsFound": "У вас ще немає створених списків. Створіть їх у профілі!",
       "director": "Режисер:",
       "cast": "У ролях:",
+        "helloUser": "Привіт, {{name}}!",
+        "adminPanelBtn": "Панель адміністратора",
+        "ratedMoviesTitle": "Оцінені фільми",
+        "noRatedMoviesMessage": "Ви ще не оцінили жодного фільму. Ваші оцінки з'являться тут автоматично.",
+        "logoutBtn": "Вийти"
     }
   },
   en: {
@@ -76,6 +81,12 @@ const resources = {
       "noListsFound": "You don't have any lists yet. Create them in your profile!",
       "director": "Director:",
       "cast": "Cast:",
+      "defaultUserName": "User",
+          "helloUser": "Hello, {{name}}!",
+          "adminPanelBtn": "Admin Panel",
+         "ratedMoviesTitle": "Rated Movies",
+         "noRatedMoviesMessage": "You haven't rated any movies yet. Your ratings will appear here automatically.",
+          "logoutBtn": "Log Out"
     }
   }
 };
