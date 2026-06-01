@@ -252,28 +252,48 @@ body, html, #root {
   }
 
 
-  /* 🔥 НАША НОВА СІТКА ДЛЯ СПИСКІВ НА ТЕЛЕФОНІ */
-  .lists-grid {
+.folders-grid-layout {
     display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important; /* Строго 2 стовпчики */
-    gap: 16px !important;                             /* Комфортна відстань між папками */
+    grid-template-columns: repeat(2, 1fr) !important; /* Рівно 2 стовпчики на телефоні */
+    gap: 16px !important;                             /* Відстань між папками */
     width: 100% !important;
     box-sizing: border-box !important;
   }
 
-  /* Захист для самої картки списку (папки) */
-  .list-card {
+  /* КА́РТКА ПАПКИ: Скидаємо фіксовану ширину, щоб вона слухалася сітки */
+  .folder-card {
     width: 100% !important;
     max-width: none !important;
     box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
-  
-  /* Переконайся, що картинка-колаж всередині папки масштабується */
-  .list-card img, 
-  .list-card-preview {
+
+  /* КОЛАЖ ПОСТЕРІВ: Робимо його адаптивним і тримаємо квадратні пропорції */
+  .folder-cover-grid {
     width: 100% !important;
     height: auto !important;
-    aspect-ratio: 1 / 1 !important; /* Робимо прев'ю папки ідеальним квадратом */
+    aspect-ratio: 1 / 1 !important; /* Обкладинка папки завжди буде ідеальним квадратом */
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* Колаж 2х2 всередині папки */
+    gap: 2px !important;             /* Маленький проміжок між постерками в колажі */
+    background-color: #1a1a2e;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  /* ПОСТЕРИ ВСЕРЕДИНІ КОЛАЖУ */
+  .grid-poster {
+    width: 100% !important;
+    height: 100% !important;
     object-fit: cover !important;
+  }
+  
+  /* Назва папки під колажем */
+  .folder-name {
+    font-size: 14px !important;
+    margin-top: 8px !important;
+    display: block;
+    text-align: left;
   }
 }
