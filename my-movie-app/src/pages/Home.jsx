@@ -187,35 +187,36 @@ const Home = () => {
         </div>
       )}
 
-      {/* 🍿 РЯДОК: ПОПУЛЯРНІ ФІЛЬМИ */}
-      <div style={{ padding: '0 50px', marginTop: '40px' }}>
-        <h2 style={{ fontSize: '24px', marginBottom: '20px', borderLeft: '4px solid #a0a0b5', paddingLeft: '15px', textAlign: 'left' }}>
-          {t('popularMovies')}
-        </h2>
-        
-        <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '15px', scrollbarWidth: 'thin' }}>
-          {popularMovies.map(movie => (
-            <div 
-              key={movie.id} 
-              onClick={() => navigate(`/movie/${movie.id}`)}
-              style={{ flexShrink: 0, width: '180px', cursor: 'pointer', transition: 'transform 0.2s' }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-            >
-              <img 
-                src={movie.poster_path ? `https://image.tmdb.org/t/p/w300${movie.poster_path}` : 'https://placehold.co/300x450'} 
-                alt={movie.title} 
-                style={{ width: '100%', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.4)' }}
-              />
-              <h4 style={{ margin: '10px 0 5px 0', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textAlign: 'left' }}>
-                {movie.title}
-              </h4>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', color: '#ffcc00' }}>
-                <Star size={12} fill="#ffcc00" /> {movie.vote_average?.toFixed(1)}
-              </div>
-            </div>
-          ))}
-        </div>
+      <div style={{ marginTop: '40px', paddingBottom: '40px' }}>
+          <h2 style={{ fontSize: '24px', color: 'white', marginBottom: '25px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px', textAlign: 'left' }}>
+              {t('popularTitle', 'Популярно на MOON')}
+          </h2>
+          
+          {/* 🔥 Наша нова адаптивна сітка */}
+          <div className="movies-grid-layout">
+              {popularMovies.map(movie => (
+                  <Link to={`/movie/${movie.id}`} key={movie.id} style={{ textDecoration: 'none' }}>
+                      <div 
+                          className="movie-card" 
+                          style={{ display: 'flex', flexDirection: 'column', transition: 'transform 0.2s', cursor: 'pointer' }}
+                          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                      >
+                          <img 
+                              src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://placehold.co/500x750/1a1a2e/ffffff?text=No+Poster'} 
+                              alt={movie.title} 
+                              style={{ width: '100%', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}
+                          />
+                          <span style={{ color: 'white', fontWeight: 'bold', fontSize: '14px', textAlign: 'left', marginTop: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+                              {movie.title}
+                          </span>
+                          <span style={{ color: '#8a3ffc', fontSize: '12px', fontWeight: 'bold', marginTop: '4px', textAlign: 'left', display: 'block' }}>
+                              {movie.release_date?.substring(0, 4) || '----'} • {movie.vote_average?.toFixed(1)}★
+                          </span>
+                      </div>
+                  </Link>
+              ))}
+          </div>
       </div>
 
     </div>
