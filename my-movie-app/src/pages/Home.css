@@ -208,7 +208,7 @@
    ========================================================================== */
 @media screen and (max-width: 768px) {
   .home-container {
-    padding: 85px 20px 20px; /* Зменшуємо загальні рамки сайту */
+    padding: 85px 12px 20px; /* Зменшуємо загальні рамки сайту */
   }
 
   .home-section {
@@ -221,9 +221,16 @@
   }
 
   /* 🎬 Мобільний банер */
-  .hero-banner {
-    height: 45vh; 
-    padding: 0 20px 25px;
+.hero-banner {
+    height: 50vh !important; /* Трохи збільшили висоту, щоб він не був приплюснутим */
+    padding: 0 20px 25px !important;
+    
+    /* Магія: виносимо банер за межі паддінгів головного контейнера */
+    margin-left: -12px !important; 
+    margin-right: -12px !important;
+    width: calc(100% + 24px) !important;
+    
+    border-radius: 0 !important; /* Без заокруглень на весь екран він виглядає набагато просторіше */
   }
 
   .hero-banner-content h1 {
@@ -242,11 +249,12 @@
   }
 
   /* ✨ ТУТ ЗМІНИ: Перетворюємо повзунок рекомендацій ШІ на СІТКУ для телефонів */
-  .recs-scroll-container {
-    display: grid !important; /* Змінюємо флекс на грід */
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* Такі ж красиві 2 стовпчики */
-    gap: 16px; 
-    overflow-x: visible !important; /* Прибираємо непотрібний горизонтальний скрол */
+.recs-scroll-container {
+    display: grid !important;
+    /* Збільшуємо мінімальний розмір картки до 145px */
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)) !important; 
+    gap: 12px !important; /* Менший проміжок = більше простору для самих картинок */
+    overflow-x: visible !important;
     padding-bottom: 0;
     width: 100%;
   }
@@ -271,10 +279,10 @@
     aspect-ratio: 2 / 3;
   }
 
-  /* 📊 Мобільна сітка популярного — акуратні колонки */
-  .movies-grid-layout {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 16px; 
+.movies-grid-layout {
+    /* Збільшуємо мінімальний розмір до 145px і зменшуємо проміжок */
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)) !important;
+    gap: 12px !important; 
   }
 
   .movie-title {
