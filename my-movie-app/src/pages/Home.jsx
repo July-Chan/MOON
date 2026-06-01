@@ -3,7 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Info } from 'lucide-react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import '../App.css'; // Переконайся, що твій CSS лежить тут або в Home.css
+import '../App.css';
+import './Home.css';
 import moonLogo from '../assets/moon_logo_ball.svg';
 
 const Home = () => {
