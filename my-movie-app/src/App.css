@@ -178,3 +178,24 @@ body, html, #root {
 .search-item-card:hover {
     box-shadow: 0 0 15px rgba(138, 63, 252, 0.3);
 }
+
+/* ==========================================================================
+   ГЛОБАЛЬНІ МОБІЛЬНІ СТИЛІ ДЛЯ ВСІХ СТOРІНОК (МЕНШЕ 768px)
+   ========================================================================== */
+@media screen and (max-width: 768px) {
+  
+  /* 🔥 ФІКС ФОРМИ СТВОРЕННЯ ПАПКИ (Працюватиме на будь-якій сторінці) */
+  .create-list-form {
+    flex-direction: column !important; /* Перебудовуємо інпут і кнопку в стовпчик */
+    gap: 12px !important;              /* Акуратний відступ між ними */
+    width: 100% !important;
+    max-width: none !important;        /* Скидаємо обмеження комп'ютерної версії */
+    margin-bottom: 30px !important;
+  }
+
+  .create-list-form input,
+  .create-list-form button {
+    width: 100% !important;            /* Розтягуємо елементи на всю ширину екрана */
+    box-sizing: border-box !important;
+  }
+}
