@@ -250,4 +250,30 @@ body, html, #root {
     display: block !important;
     box-sizing: border-box !important;
   }
+
+
+  /* 🔥 НАША НОВА СІТКА ДЛЯ СПИСКІВ НА ТЕЛЕФОНІ */
+  .lists-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* Строго 2 стовпчики */
+    gap: 16px !important;                             /* Комфортна відстань між папками */
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Захист для самої картки списку (папки) */
+  .list-card {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Переконайся, що картинка-колаж всередині папки масштабується */
+  .list-card img, 
+  .list-card-preview {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1 !important; /* Робимо прев'ю папки ідеальним квадратом */
+    object-fit: cover !important;
+  }
 }
