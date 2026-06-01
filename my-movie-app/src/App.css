@@ -118,23 +118,29 @@ body, html, #root {
 
 
 .delete-movie-btn {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  background-color: #ff4757; 
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
-  font-weight: bold;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-  z-index: 10;
+  display: flex !important;
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
   
-  opacity: 0;
-  transform: scale(0.8);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  /* Стильний напівпрозорий темний кружечок */
+  background: rgba(15, 15, 26, 0.8) !important; 
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border-radius: 50% !important;
+  
+  /* Ідеальний розмір для натискання пальцем */
+  width: 30px !important;
+  height: 30px !important;
+  
+  justify-content: center !important;
+  align-items: center !important;
+  cursor: pointer !important;
+  z-index: 10 !important; /* Гарантує, що хрестик буде поверх обкладинки */
+  transition: all 0.2s ease !important;
+  font-size: 14px !important;
+  padding: 0 !important;
+  line-height: 1 !important;
 }
 
 .movie-card:hover .delete-movie-btn {
@@ -143,8 +149,13 @@ body, html, #root {
 }
 
 .delete-movie-btn:hover {
-  background-color: #ff6b81;
-  transform: scale(1.1) !important;
+  background: #ff4757 !important; /* Стає насичено червоним */
+  border-color: #ff4757 !important;
+  transform: scale(1.1);
+}
+
+.delete-movie-btn:active {
+  background: #ff4757 !important;
 }
 
 @keyframes pulse {
