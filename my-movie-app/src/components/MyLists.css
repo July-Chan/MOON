@@ -6,7 +6,7 @@
   min-height: 100vh;
   background-color: #0f0f1a;
   color: white;
-  padding: 110px 50px 40px; /* Відступ зверху, щоб фіксований навбар нічого не перекривав */
+  padding: 110px 50px 40px; /* Відступ зверху під фіксований навбар */
   display: flex;
   flex-direction: column;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -29,34 +29,37 @@
   margin-bottom: 40px;
   max-width: 600px;
   width: 100%;
-  align-items: center; /* Вирівнюємо інпут та кнопку по центру в ряду */
+  align-items: center; /* Вирівнюємо інпут та кнопку строго по центру */
 }
 
+/* Зовнішня обгортка форми — повністю прозора й безрамочна */
 .create-list-form {
   position: relative;
   display: flex;
   align-items: center;
   flex-grow: 1;
-  background: transparent !important; /* 🔥 Прибираємо зовнішній фон */
-  border: none !important;            /* 🔥 Повністю видаляємо зовнішню обводку */
+  background: transparent !important; 
+  border: none !important;            
   box-shadow: none !important;
   padding: 0 !important;
+  gap: 12px; /* Проміжок між іконкою папки та самим рядком */
 }
 
-.create-list-form:focus-within {
-  border-color: #8a3ffc;
-  background-color: #23233e;
-  box-shadow: 0 0 0 3px rgba(138, 63, 252, 0.2);
+/* ІКОНКА ПАПКИ: Стоїть окремо ліворуч від текстового поля */
+.form-icon-left {
+  position: static !important; 
+  transform: none !important;
+  flex-shrink: 0;
 }
 
+/* ТЕКСТОВИЙ РЯДОК (Самостійна капсула інпута) */
 .create-list-input {
   flex-grow: 1;
-  background: #1a1a2e !important; /* Фон тепер тільки тут */
+  background: #1a1a2e !important; /* Фон тільки всередині поля */
   border: 1px solid rgba(138, 63, 252, 0.3) !important; /* Рамка тільки тут */
   border-radius: 20px;
   color: white;
-  /* Збільшуємо відступ зліва (45px), щоб текст не налізав на іконку папки */
-  padding: 12px 18px 12px 45px !important; 
+  padding: 12px 40px 12px 16px !important; /* 16px зліва (текст не липне), 40px справа під хрестик X */
   outline: none;
   font-size: 16px;
   font-family: 'Inter', sans-serif;
@@ -69,10 +72,27 @@
   color: #a0a0b5;
 }
 
+.create-list-input:focus {
+  border-color: #8a3ffc !important;
+  background-color: #23233e !important;
+  box-shadow: 0 0 0 3px rgba(138, 63, 252, 0.2) !important;
+}
+
+/* Хрестик очищення тексту (абсолютом всередині капсули інпута праворуч) */
+.form-icon-right {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%); 
+  z-index: 5;
+  cursor: pointer;
+}
+
+/* КНОПКА СТВОРЕННЯ ПАПКИ */
 .create-list-btn {
-  flex-shrink: 0 !important; /* 🔥 ГОЛОВНИЙ ФІКС: забороняємо кнопці зменшуватися при зміні ширини */
+  flex-shrink: 0 !important; /* Забороняємо кнопці сплющуватися по ширині */
   padding: 0 25px;
-  height: 48px; /* Фіксуємо висоту під розмір інпута */
+  height: 48px; /* Висота ідеально під розмір інпута */
   border-radius: 20px;
   background-color: #8a3ffc;
   color: white;
@@ -89,26 +109,6 @@
 .create-list-btn:hover {
   background-color: #9b59b6;
   transform: translateY(-2px);
-}
-
-.create-list-input:focus {
-  border-color: #8a3ffc !important;
-  background-color: #23233e !important;
-  box-shadow: 0 0 0 3px rgba(138, 63, 252, 0.2) !important;
-}
-
-.form-icon-left {
-  position: absolute;
-  left: 16px;
-  z-index: 5;
-  pointer-events: none; /* Щоб клік крізь іконку йшов в інпут */
-}
-
-.form-icon-right {
-  position: absolute;
-  right: 16px;
-  z-index: 5;
-  cursor: pointer;
 }
 
 
@@ -149,7 +149,6 @@
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  /* Внутрішні тіні повністю прибрано за твоїм проханням */
 }
 
 .grid-poster {
@@ -180,7 +179,7 @@
   text-overflow: ellipsis;
 }
 
-/* Панель кнопок дій на папці */
+/* Панель дій на папці */
 .folder-actions {
   display: flex;
   gap: 12px;
@@ -201,7 +200,7 @@
 
 
 /* ==========================================================================
-   🔥 СІТКА ДЛЯ ФІЛЬМІВ ВСЕРЕДИНІ ПАПКИ (image_e0146e.png)
+   СІТКА ДЛЯ ФІЛЬМІВ ВСЕРЕДИНІ ПАПКИ
    ========================================================================== */
 
 .movies-grid-layout {
@@ -245,17 +244,14 @@
   text-overflow: ellipsis;
   display: block;
 }
-.create-list-btn:hover {
-  background-color: #9b59b6;
-  transform: translateY(-2px);
-}
+
 
 /* ==========================================================================
    МОБІЛЬНА АДАПТАЦІЯ (ДЛЯ ЕКРАНІВ МЕНШЕ 768px)
    ========================================================================== */
 @media screen and (max-width: 768px) {
   .lists-container {
-    padding: 85px 12px 20px; /* Акуратні мобільні рамки */
+    padding: 85px 12px 20px; 
   }
 
   .lists-title {
@@ -263,32 +259,41 @@
     margin-bottom: 15px;
   }
 
-  /* Перебудовуємо форму створення в стовпчик */
+  /* Форма створення переходить у вертикальний стовпчик */
   .create-list-container {
-      display: flex !important;
-      flex-direction: column !important; 
-      gap: 12px !important;
-      margin-bottom: 30px !important;
-      width: 100% !important;
-    }
+    display: flex !important;
+    flex-direction: column !important; 
+    gap: 12px !important;
+    margin-bottom: 30px !important;
+    width: 100% !important;
+  }
 
+  /* На мобільних форма теж залишається безрамочною, а папка — зліва від інпута */
   .create-list-form {
-      width: 100% !important;
-    }
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    width: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    gap: 12px !important;
+  }
 
   .create-list-input {
-    padding: 12px 5px !important;
+    padding: 12px 40px 12px 16px !important; /* Узгоджений мобільний відступ */
   }
 
   .create-list-btn {
-      width: 100% !important;
-      height: 48px !important;
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-    }
+    width: 100% !important;
+    height: 48px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px !important;
+  }
 
-  /* 🔥 СІТКА ПАПОК: Строго 2 красиві колонки на мобільних */
+  /* СІТКА ПАПОК: Строго 2 красиві колонки на мобільних */
   .folders-grid-layout {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
@@ -297,6 +302,8 @@
 
   .folder-card {
     max-width: none !important;
+    padding: 10px;
+    border-radius: 12px;
   }
 
   .folder-name {
@@ -304,7 +311,7 @@
     margin-top: 8px !important;
   }
 
-  /* 🔥 СІТКА ФІЛЬМІВ ВСЕРЕДИНІ ПАПКИ: Теж строго 2 колонки на телефонах */
+  /* СІТКА ФІЛЬМІВ ВСЕРЕДИНІ ПАПКИ: Строго 2 колонки */
   .movies-grid-layout {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
@@ -314,7 +321,7 @@
     font-size: 13px;
   }
 
-  /* Хрестик видалення фільму поверх мобільного постера */
+  /* Мобільна кнопка видалення фільму поверх постера */
   .delete-movie-btn,
   .remove-movie-icon {
     display: flex !important;
