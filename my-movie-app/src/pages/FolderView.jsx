@@ -4,6 +4,7 @@ import axios from 'axios';
 import { FolderOpen, ArrowLeft, Search, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import '../App.css';
+import '../components/MyLists';
 import moonLogo from '../assets/moon_logo_ball.svg';
 
 const FolderView = () => {
