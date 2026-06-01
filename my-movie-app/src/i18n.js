@@ -5,16 +5,15 @@ const resources = {
   uk: {
     translation: {
       "home": "Головна",
-      "popular": "Популярно на MOON",
-      "recommendations": "Рекомендовано для тебе",
-      // сюди потім додаси інші слова
+      "account": "Мій Акаунт",
+      "searchPlaceholder": "Шукати фільм (натисніть Enter)..."
     }
   },
   en: {
     translation: {
       "home": "Home",
-      "popular": "Popular on MOON",
-      "recommendations": "Recommended for you",
+      "account": "My Account",
+      "searchPlaceholder": "Search movie (press Enter)..."
     }
   }
 };
@@ -23,7 +22,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: "uk",
+    lng: "uk", // Мова за замовчуванням
     fallbackLng: "en",
     interpolation: {
       escapeValue: false 
