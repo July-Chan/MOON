@@ -54,7 +54,9 @@ const resources = {
       "searchMoviePlaceholder": "Шукати фільм...",
       "searchBtn": "Шукати",
       "addBtn": "ДОДАТИ",
-      "moviesInList": "Фільми у списку:"
+      "moviesInList": "Фільми у списку:",
+      "searchResultFor": "Результати для:",
+      "noResults": "На жаль, нічого не знайдено."
     }
   },
   en: {
@@ -110,7 +112,9 @@ const resources = {
       "searchMoviePlaceholder": "Search movie...",
       "searchBtn": "Search",
       "addBtn": "ADD",
-      "moviesInList": "Movies in list:"
+      "moviesInList": "Movies in list:",
+      "searchResultFor": "Results for:",
+      "noResults": "Sorry, no movies found."
     }
   }
 };
