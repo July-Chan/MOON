@@ -9,6 +9,7 @@ import MovieDetails from './pages/MovieDetails';
 import FolderView from './pages/FolderView';
 import AdminPanel from './pages/AdminPanel';
 import Navbar from './components/Navbar';
+import SearchResults from './pages/SearchResults';
 import './App.css';
 import './i18n';
 
@@ -39,6 +40,7 @@ function App() {
             <Route path="/movie/:id" element={<MovieDetails />} />
             <Route path="/lists/:id" element={<FolderView />} />
             <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/search" element={<SearchResults />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" />} />

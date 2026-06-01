@@ -11,7 +11,7 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path;
   const { t, i18n } = useTranslation();
 
-  // 🔍 ЗАЛИШАЄМО ТІЛЬКИ ОДИН СТЕЙТ ДЛЯ ТЕКСТУ ЗАПИТУ
+  // 🔍 СТЕЙТ ДЛЯ ТЕКСТУ ЗАПИТУ
   const [searchQuery, setSearchQuery] = useState('');
 
   // 📱 СТЕЙТ ДЛЯ МОБІЛЬНОГО МЕНЮ
@@ -23,14 +23,13 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   };
 
-  // 🚀 ОНОВЛЕНА ФУНКЦІЯ ПОШУКУ: тепер вона просто перенаправляє на сторінку результатів
   const handleSearch = (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
 
-    setIsMobileMenuOpen(false); // Закриваємо мобільне шторку-меню, якщо вона відкрита
-    navigate(`/search?q=${encodeURIComponent(searchQuery)}`); // Перехід на глобальну сторінку пошуку
-    setSearchQuery(''); // Очищаємо інпут після переходу
+    setIsMobileMenuOpen(false); 
+    navigate(`/search?q=${encodeURIComponent(searchQuery)}`); 
+    setSearchQuery(''); 
   };
 
   return (
@@ -53,13 +52,16 @@ const Navbar = () => {
         {isMobileMenuOpen ? <X size={28} color="#a0a0b5" /> : <Menu size={28} color="#a0a0b5" />}
       </button>
 
-      {/* 📦 БЛОК З НАВІГАЦІЄЮ ТА ПОШУКОМ */}
+      {/* 🔥 ОЬ ЦЬОГО РЯДКА НЕ ВИСТАЧАЛО (Відкриваємо обгортку контенту навбару) */}
       <div className={`navbar-content ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
         
-        {/* 🔎 РЯДОК ПОШУКУ (ОЧИЩЕНИЙ ВІД КЕШУ ТА ВИПАДАЮЧИХ СПИСКІВ) */}
+        {/* 🔎 РЯДОК ПОШУКУ */}
         <div className="search-container" style={{ position: 'relative', flex: 1, maxWidth: '400px', margin: '0 30px' }}>
           <form 
-            onSubmit={handleSearch} 
+            onSubmit={(e) => {
+              e.preventDefault(); 
+              handleSearch(e);
+            }} 
             style={{ 
               display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.05)', 
               borderRadius: '20px', padding: '6px 15px', border: '1px solid rgba(138, 63, 252, 0.3)',
@@ -68,7 +70,6 @@ const Navbar = () => {
             onFocus={(e) => e.currentTarget.style.borderColor = '#8a3ffc'}
             onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.3)'}
           >
-            {/* Клікабельна лупа для зручності на смартфонах */}
             <Search size={16} color="#a0a0b5" onClick={handleSearch} style={{ cursor: 'pointer' }} />
             
             <input
@@ -122,7 +123,6 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* 🌐 КНОПКА ЗМІНИ МОВИ */}
           <button
             onClick={toggleLanguage}
             style={{
@@ -145,7 +145,7 @@ const Navbar = () => {
             {i18n.language === 'uk' ? 'EN' : 'UA'}
           </button>
         </div>
-      </div>
+      </div> {/* Тепер цей закриваючий тег став на своє місце */}
     </nav>
   );
 };
