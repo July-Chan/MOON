@@ -100,19 +100,27 @@ app.get('/', (req, res) => {
 });
 
 // 🎬 ОТРИМАННЯ ТА КЕШУВАННЯ ФІЛЬМУ (З ПІДТРИМКОЮ ЛОКАЛІЗАЦІЇ)
+// 🎬 ОТРИМАННЯ ТА КЕШУВАННЯ ФІЛЬМУ (З АКТОРСЬКИМ СКЛАДОМ ТА РЕЖИСЕРОМ)
 app.get('/api/movie/:id', async (req, res) => {
     const movieId = req.params.id;
-    // 🔥 Беремо мову з запиту
+    // Беремо мову з запиту
     const lang = req.query.language || 'uk-UA';
 
     try {
         const TMDB_API_KEY = process.env.TMDB_API_KEY;
 
-        // ЗАВЖДИ беремо переклади з TMDB
+        // 🔥 ДОДАНО: &append_to_response=credits
         const tmdbResponse = await axios.get(
-            `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=${lang}`
+            `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=${lang}&append_to_response=credits`
         );
         const tmdbData = tmdbResponse.data;
+
+        // 🔥 Шукаємо режисера
+        const director = tmdbData.credits?.crew?.find(person => person.job === 'Director');
+        const directorName = director ? director.name : null;
+
+        // 🔥 Шукаємо 5 головних акторів
+        const topCast = tmdbData.credits?.cast?.slice(0, 5).map(actor => actor.name) || [];
 
         const movieRef = db.collection('movies').doc(movieId);
         const doc = await movieRef.get();
@@ -122,22 +130,27 @@ app.get('/api/movie/:id', async (req, res) => {
         if (doc.exists) {
             console.log(`Фільм є у Firestore. Оновлюємо тексти мовою: ${lang}`);
             const localData = doc.data();
-            // Підміняємо лише текстові поля для фронтенду
+
             finalMovieData = {
                 ...localData,
                 title: tmdbData.title,
                 overview: tmdbData.overview,
+                genres: tmdbData.genres.map(g => g.name), // Усі жанри
+                director: directorName,
+                cast: topCast
             };
         } else {
             console.log('Фільму немає в базі. Зберігаємо...');
             finalMovieData = {
                 id: tmdbData.id,
-                title: tmdbData.title, // У базу запишеться перша мова запиту
+                title: tmdbData.title,
                 overview: tmdbData.overview,
                 poster_path: tmdbData.poster_path,
-                backdrop_path: tmdbData.backdrop_path,
+                backdrop_path: tmdbData.backdrop_path, // Важливо для твого банера!
                 release_date: tmdbData.release_date,
                 genres: tmdbData.genres.map(g => g.name),
+                director: directorName,
+                cast: topCast,
                 vote_average: tmdbData.vote_average,
                 createdAt: new Date()
             };
