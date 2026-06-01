@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, User, Search, X, Menu } from 'lucide-react'; // 🔥 Додали іконку Menu
-import axios from 'axios';
+import { Home, User, Search, X, Menu } from 'lucide-react';
 import moonLogo from '../assets/moon_logo.svg';
 import { useTranslation } from 'react-i18next';
-import './Navbar.css'; // 🔥 Переконайся, що імпортуєш CSS файл!
+import './Navbar.css';
 
 const Navbar = () => {
   const location = useLocation();
@@ -12,56 +11,30 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path;
   const { t, i18n } = useTranslation();
 
-  // 🔍 СТЕЙТИ ДЛЯ ПОШУКУ
+  // 🔍 ЗАЛИШАЄМО ТІЛЬКИ ОДИН СТЕЙТ ДЛЯ ТЕКСТУ ЗАПИТУ
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const searchRef = useRef(null);
 
   // 📱 СТЕЙТ ДЛЯ МОБІЛЬНОГО МЕНЮ
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Закриття випадаючого списку (пошук) при кліку поза ним
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setIsSearchOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const toggleLanguage = () => {
     const newLang = i18n.language === 'uk' ? 'en' : 'uk';
     i18n.changeLanguage(newLang);
-    setIsMobileMenuOpen(false); // 🔥 Закриваємо мобільне меню після зміни мови
+    setIsMobileMenuOpen(false);
   };
 
-  const handleSearch = async (e) => {
+  // 🚀 ОНОВЛЕНА ФУНКЦІЯ ПОШУКУ: тепер вона просто перенаправляє на сторінку результатів
+  const handleSearch = (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
 
-    const API_KEY = 'c8282b948e28647029c446fa9bef20f8'; 
-    try {
-      const res = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${searchQuery}&language=${i18n.language === 'uk' ? 'uk-UA' : 'en-US'}`);
-      setSearchResults(res.data.results.slice(0, 5));
-      setIsSearchOpen(true);
-    } catch (error) {
-      console.error("Помилка пошуку:", error);
-    }
-  };
-
-  const handleSelectMovie = (id) => {
-    setSearchQuery('');
-    setSearchResults([]);
-    setIsSearchOpen(false);
-    setIsMobileMenuOpen(false); // 🔥 Закриваємо мобільне меню після вибору фільму
-    navigate(`/movie/${id}`);
+    setIsMobileMenuOpen(false); // Закриваємо мобільне шторку-меню, якщо вона відкрита
+    navigate(`/search?q=${encodeURIComponent(searchQuery)}`); // Перехід на глобальну сторінку пошуку
+    setSearchQuery(''); // Очищаємо інпут після переходу
   };
 
   return (
-    <nav className="custom-navbar"> {/* 🔥 Використовуємо CSS-клас замість inline-стилів для загального контейнера */}
+    <nav className="custom-navbar">
       
       {/* 🌕 ЛОГОТИП */}
       <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
@@ -72,7 +45,7 @@ const Navbar = () => {
         />
       </Link>
 
-      {/* 📱 ГАМБУРГЕР-КНОПКА (Видно лише на мобільних) */}
+      {/* 📱 ГАМБУРГЕР-КНОПКА */}
       <button 
         className="hamburger-menu-btn" 
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -80,11 +53,11 @@ const Navbar = () => {
         {isMobileMenuOpen ? <X size={28} color="#a0a0b5" /> : <Menu size={28} color="#a0a0b5" />}
       </button>
 
-      {/* 📦 БЛОК З НАВІГАЦІЄЮ ТА ПОШУКОМ (стає боковою панеллю на мобільних) */}
+      {/* 📦 БЛОК З НАВІГАЦІЄЮ ТА ПОШУКОМ */}
       <div className={`navbar-content ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
         
-        {/* 🔎 РЯДОК ПОШУКУ */}
-        <div ref={searchRef} className="search-container" style={{ position: 'relative', flex: 1, maxWidth: '400px', margin: '0 30px' }}>
+        {/* 🔎 РЯДОК ПОШУКУ (ОЧИЩЕНИЙ ВІД КЕШУ ТА ВИПАДАЮЧИХ СПИСКІВ) */}
+        <div className="search-container" style={{ position: 'relative', flex: 1, maxWidth: '400px', margin: '0 30px' }}>
           <form 
             onSubmit={handleSearch} 
             style={{ 
@@ -95,7 +68,9 @@ const Navbar = () => {
             onFocus={(e) => e.currentTarget.style.borderColor = '#8a3ffc'}
             onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.3)'}
           >
-            <Search size={16} color="#a0a0b5" />
+            {/* Клікабельна лупа для зручності на смартфонах */}
+            <Search size={16} color="#a0a0b5" onClick={handleSearch} style={{ cursor: 'pointer' }} />
+            
             <input
               type="text"
               placeholder={t('searchPlaceholder')}
@@ -111,52 +86,17 @@ const Navbar = () => {
                 size={16} color="#a0a0b5" style={{ cursor: 'pointer', transition: 'color 0.2s' }} 
                 onMouseEnter={(e) => e.target.style.color = 'white'}
                 onMouseLeave={(e) => e.target.style.color = '#a0a0b5'}
-                onClick={() => { setSearchQuery(''); setIsSearchOpen(false); }} 
+                onClick={() => setSearchQuery('')} 
               />
             )}
           </form>
-
-          {/* 📋 ВИПАДАЮЧИЙ СПИСОК РЕЗУЛЬТАТІВ */}
-          {isSearchOpen && searchResults.length > 0 && (
-            <div style={{ 
-              position: 'absolute', top: '110%', left: 0, right: 0, background: '#141424', 
-              border: '1px solid rgba(138,63,252,0.4)', borderRadius: '15px', overflow: 'hidden', 
-              boxShadow: '0 15px 40px rgba(0,0,0,0.9)', animation: 'fadeIn 0.2s ease-out', fontFamily: 'Inter, sans-serif'
-            }}>
-              {searchResults.map(movie => (
-                <div 
-                  key={movie.id} onClick={() => handleSelectMovie(movie.id)} 
-                  style={{ 
-                    display: 'flex', alignItems: 'center', padding: '10px 15px', cursor: 'pointer', 
-                    borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'background 0.2s' 
-                  }} 
-                  onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(138,63,252,0.15)'} 
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                >
-                  <img 
-                    src={movie.poster_path ? `https://image.tmdb.org/t/p/w92${movie.poster_path}` : 'https://placehold.co/92x138/1a1a2e/ffffff?text=No+Poster'} 
-                    alt={movie.title} 
-                    style={{ width: '40px', height: '60px', objectFit: 'cover', borderRadius: '6px', marginRight: '15px' }} 
-                  />
-                  <div>
-                    <h4 style={{ margin: '0 0 5px 0', color: 'white', fontSize: '14px', fontFamily: 'Inter, sans-serif' }}>
-                      {movie.title}
-                    </h4>
-                    <span style={{ color: '#8a3ffc', fontSize: '12px', fontWeight: 'bold' }}>
-                      {movie.release_date?.substring(0, 4)} • {movie.vote_average?.toFixed(1)}★
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* 🧭 КНОПКИ НАВІГАЦІЇ + ЗМІНА МОВИ */}
         <div className="nav-links-container" style={{ display: 'flex', gap: '15px', flexShrink: 0, alignItems: 'center' }}>
           <Link 
             to="/" 
-            onClick={() => setIsMobileMenuOpen(false)} // 🔥 Закриваємо меню після кліку
+            onClick={() => setIsMobileMenuOpen(false)}
             style={{
               ...linkStyle, color: isActive('/') ? '#8a3ffc' : '#a0a0b5',
               background: isActive('/') ? 'rgba(138, 63, 252, 0.12)' : 'transparent',
@@ -170,7 +110,7 @@ const Navbar = () => {
 
           <Link 
             to="/account" 
-            onClick={() => setIsMobileMenuOpen(false)} // 🔥 Закриваємо меню після кліку
+            onClick={() => setIsMobileMenuOpen(false)}
             style={{
               ...linkStyle, color: isActive('/account') ? '#8a3ffc' : '#a0a0b5',
               background: isActive('/account') ? 'rgba(138, 63, 252, 0.12)' : 'transparent',
