@@ -143,13 +143,13 @@
   aspect-ratio: 1 / 1;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr); /* 🔥 ОЦЕЙ МАГІЧНИЙ РЯДОК ВСЕ ВИПРАВИТЬ! */
+  grid-template-rows: repeat(2, 1fr); /* За замовчуванням ділимо 50% на 50% */
   gap: 3px;
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: #1a1a2e; /* Глибокий фон, щоб порожні комірки виглядали акуратно */
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* Залишаємо тільки чисту зовнішню тінь */
 }
 
 .grid-poster {
@@ -157,6 +157,25 @@
   height: 100%;
   object-fit: cover;
   object-position: center center;
+  aspect-ratio: 1 / 1 !important; 
+}
+
+.folder-cover-grid:has(> .grid-poster:only-child) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+.folder-cover-grid .grid-poster:only-child {
+  width: 70% !important; /* Робимо його акуратною карткою всередині */
+  height: 70% !important;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* 🔷 КОЛИ 2 ФІЛЬМИ: Два квадратні постери в один ряд чітко посередині папки */
+.folder-cover-grid:has(> .grid-poster:first-child:nth-last-child(2)) {
+  grid-template-rows: 1fr !important; /* Спресовуємо сітку в один рядок */
+  align-items: center !important;
 }
 
 .empty-folder {
@@ -310,10 +329,12 @@
     /* Колір, фон, контури та тіні не чіпаємо — вони залишаються твоїми оригінальними */
   }
 
-  .folder-cover-grid {
+.folder-cover-grid {
     width: 100% !important;
-    aspect-ratio: 1 / 1 !important; /* Гарантуємо, що обкладинка завжди квадратна */
+    aspect-ratio: 1 / 1 !important;
     gap: 2px !important; 
+    border-radius: 12px !important;
+    /* Колір та фон не чіпаємо, вони залишаються твоїми оригінальними */
   }
 
 .folder-name {
