@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { FolderOpen, Pencil, Trash2 } from 'lucide-react';
+import { FolderOpen, Pencil, Trash2, X } from 'lucide-react'; // 🔥 Додали X до імпортів
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './MyLists.css'; 
 
 const MyLists = () => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(); 
+
     const [lists, setLists] = useState([]);
     const [newListName, setNewListName] = useState('');
     
@@ -44,11 +45,10 @@ const MyLists = () => {
         }
     };
 
-
     const handleDeleteList = async (e, listId) => {
         e.stopPropagation();
         
-        if (!window.confirm("Точно хочеш видалити цю папку?")) return;
+        if (!window.confirm(t('confirmDeleteFolder', 'Точно хочеш видалити цю папку?'))) return;
 
         try {
             await axios.delete(`https://moon-z1lm.onrender.com/api/lists/${listId}`);
@@ -80,20 +80,87 @@ const MyLists = () => {
 
     return (
         <div className="lists-container">
-            <h2 style={{ fontSize: '24px', color: 'white', marginBottom: '20px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px' }}>
-                            {t('myListsTitle', 'Мої списки')} {/* 🔥 Переклад */}
-                        </h2>
+            <h2 style={{ fontSize: '24px', color: 'white', marginBottom: '20px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px', textAlign: 'left' }}>
+                {t('myListsTitle', 'Мої списки')}
+            </h2> 
 
-            <form onSubmit={handleCreateList} className="create-list-form">
-                <input
-                    type="text"
-                    placeholder={t('newFolderPlaceholder', 'Назва нової папки...')}
-                    value={newListName}
-                    onChange={(e) => setNewListName(e.target.value)}
-                />
-                <button type="submit">{t('createFolderBtn', 'Створити папку')}</button>
-            </form>
+            {/* 🔥 ОНОВЛЕНИЙ ДИЗАЙН РЯДКА СТВОРЕННЯ ПАПКИ */}
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '40px', justifyContent: 'flex-start' }}>
+                <form 
+                    onSubmit={handleCreateList} 
+                    style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        background: 'rgba(255,255,255,0.05)', 
+                        borderRadius: '20px', 
+                        padding: '6px 18px', 
+                        border: '1px solid rgba(138, 63, 252, 0.3)',
+                        transition: 'all 0.3s ease',
+                        width: '100%',
+                        maxWidth: '400px'
+                    }}
+                    onFocus={(e) => e.currentTarget.style.borderColor = '#8a3ffc'}
+                    onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.3)'}
+                >
+                    <FolderOpen size={18} color="#a0a0b5" />
+                    <input
+                        type="text"
+                        placeholder={t('newFolderPlaceholder', 'Назва нової папки...')}
+                        value={newListName}
+                        onChange={(e) => setNewListName(e.target.value)}
+                        style={{ 
+                            background: 'transparent', 
+                            border: 'none', 
+                            color: 'white', 
+                            padding: '8px 12px', 
+                            width: '100%', 
+                            outline: 'none', 
+                            fontSize: '16px', 
+                            fontFamily: 'Inter, sans-serif' 
+                        }}
+                    />
+                    {newListName && (
+                        <X 
+                            size={18} 
+                            color="#a0a0b5" 
+                            style={{ cursor: 'pointer', transition: 'color 0.2s' }} 
+                            onMouseEnter={(e) => e.target.style.color = 'white'}
+                            onMouseLeave={(e) => e.target.style.color = '#a0a0b5'}
+                            onClick={() => setNewListName('')} 
+                        />
+                    )}
+                </form>
 
+                <button 
+                    onClick={handleCreateList} 
+                    style={{
+                        padding: '0 25px', 
+                        borderRadius: '20px', 
+                        backgroundColor: '#8a3ffc', 
+                        color: 'white', 
+                        border: 'none', 
+                        cursor: 'pointer', 
+                        fontWeight: 'bold',
+                        fontSize: '15px',
+                        fontFamily: 'Inter, sans-serif',
+                        transition: 'all 0.2s ease',
+                        boxShadow: '0 4px 15px rgba(138, 63, 252, 0.3)',
+                        whiteSpace: 'nowrap'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#9b59b6';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#8a3ffc';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                >
+                    {t('createFolderBtn', 'Створити папку')}
+                </button>
+            </div>
+
+            {/* СІТКА ПАПОК */}
             <div className="folders-grid-layout">
                 {lists.map((list) => (
                     <div key={list.id} className="folder-card" onClick={() => navigate(`/lists/${list.id}`)}>
@@ -130,7 +197,7 @@ const MyLists = () => {
                                     type="text" 
                                     value={editingName} 
                                     onChange={(e) => setEditingName(e.target.value)}
-                                    onClick={(e) => e.stopPropagation()} // Щоб можна було клікнути в інпут
+                                    onClick={(e) => e.stopPropagation()} 
                                     style={{ padding: '5px', borderRadius: '5px', width: '100px', backgroundColor: '#2a2a4a', color: 'white', border: '1px solid #6a5acd' }}
                                 />
                                 <button onClick={(e) => handleSaveEdit(e, list.id)} style={{ background: '#00b894', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>✓</button>
