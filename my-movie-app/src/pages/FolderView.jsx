@@ -4,7 +4,6 @@ import axios from 'axios';
 import { FolderOpen, ArrowLeft, Search, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import '../App.css';
-import '../components/MyLists';
 import moonLogo from '../assets/moon_logo_ball.svg';
 
 const FolderView = () => {
@@ -13,7 +12,7 @@ const FolderView = () => {
     const { t, i18n } = useTranslation(); 
     
     const [folderDetails, setFolderDetails] = useState(null);
-    const [localizedMovies, setLocalizedMovies] = useState([]); // 🔥 Стейт для збереження динамічних перекладів
+    const [localizedMovies, setLocalizedMovies] = useState([]); // Стейт для збереження динамічних перекладів
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
@@ -37,7 +36,7 @@ const FolderView = () => {
         if (userEmail) fetchFolder();
     }, [id, userEmail]);
 
-    // 🔥 2. МАГІЯ ДИНАМІЧНОГО ПЕРЕКЛАДУ: Хук відстежує зміну мови або масиву фільмів
+    // 2. МАГІЯ ДИНАМІЧНОГО ПЕРЕКЛАДУ: Хук відстежує зміну мови або масиву фільмів
     useEffect(() => {
         const fetchTranslations = async () => {
             if (!folderDetails?.movies || folderDetails.movies.length === 0) {
@@ -57,26 +56,26 @@ const FolderView = () => {
                         );
                         return {
                             ...movie,
-                            title: tmdbRes.data.title || movie.title, // Свіжий переклад або фолбек на старий
+                            title: tmdbRes.data.title || movie.title, 
                             posterPath: tmdbRes.data.poster_path 
                                 ? `https://image.tmdb.org/t/p/w500${tmdbRes.data.poster_path}` 
                                 : movie.posterPath
                         };
                     } catch (err) {
                         console.error(`Не вдалося оновити мову для фільму ${movie.tmdbId}:`, err);
-                        return movie; // Якщо TMDB ліг — повертаємо збережені дані
+                        return movie; 
                     }
                 });
 
                 const updatedMovies = await Promise.all(translatedPromises);
-                setLocalizedMovies(updatedMovies); // Записуємо перекладені фільми в стейт
+                setLocalizedMovies(updatedMovies); 
             } catch (error) {
                 console.error("Помилка масового перекладу списку:", error);
             }
         };
 
         fetchTranslations();
-    }, [folderDetails?.movies, i18n.language]); // Хук спрацює щоразу, коли ти тиснеш на UA/EN або додаєш/видаляєш фільм
+    }, [folderDetails?.movies, i18n.language]); 
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -260,21 +259,40 @@ const FolderView = () => {
                 </div>
             )}
 
-            {/* СПИСОК ФІЛЬМІВ У ПАПЦІ (Тепер рендериться з локалізованого масиву) */}
-            <div className="movies-grid-layout">
-                {localizedMovies.map((movie, index) => (
-                    <div key={index} className="movie-card">
+            {/* СПИСОК ФІЛЬМІВ У ПАПЦІ */}
+            <h3 style={{ color: 'white', marginBottom: '20px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px', textAlign: 'left' }}>
+                {t('moviesInList', 'Фільми у списку:')}
+            </h3>
+
+            <div className="movies-grid-layout" style={{ alignItems: 'start' }}>
+                {localizedMovies.map((movie) => (
+                    <div key={movie.tmdbId} className="movie-card" style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
                         
-                        {/* Кнопка видалення (завжди видима) */}
                         <button className="delete-movie-btn" onClick={() => handleDeleteMovie(movie.tmdbId)}>
                             ✕
                         </button>
                         
-                        <Link to={`/movie/${movie.tmdbId}`}>
-                            <div className="poster-hover">
-                                <img src={movie.posterPath} alt={movie.title} />
+                        <Link to={`/movie/${movie.tmdbId}`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column' }}>
+                            <div className="poster-hover" style={{ width: '100%', aspectRatio: '2 / 3', borderRadius: '12px', overflow: 'hidden' }}>
+                                <img 
+                                    src={movie.posterPath} 
+                                    alt={movie.title} 
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} 
+                                />
                             </div>
-                            <span className="movie-title">
+                            <span style={{ 
+                                color: 'white', 
+                                fontWeight: 'bold', 
+                                fontSize: '14px', 
+                                textAlign: 'left', 
+                                marginTop: '10px',
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'normal'
+                            }}>
                                 {movie.title}
                             </span>
                         </Link>
