@@ -38,11 +38,23 @@ const resources = {
       "noListsFound": "У вас ще немає створених списків. Створіть їх у профілі!",
       "director": "Режисер:",
       "cast": "У ролях:",
-        "helloUser": "Привіт, {{name}}!",
-        "adminPanelBtn": "Панель адміністратора",
-        "ratedMoviesTitle": "Оцінені фільми",
-        "noRatedMoviesMessage": "Ви ще не оцінили жодного фільму. Ваші оцінки з'являться тут автоматично.",
-        "logoutBtn": "Вийти"
+      "helloUser": "Привіт, {{name}}!",
+      "adminPanelBtn": "Панель адміністратора",
+      "ratedMoviesTitle": "Оцінені фільми",
+      "noRatedMoviesMessage": "Ви ще не оцінили жодного фільму. Ваші оцінки з'являться тут автоматично.",
+      "logoutBtn": "Вийти",
+      "myListsTitle": "Мої списки",
+      "newFolderPlaceholder": "Назва нової папки...",
+      "createFolderBtn": "Створити папку",
+      "movieAlreadyInFolder": "Цей фільм вже є у папці.",
+      "confirmRemoveMovie": "Дійсно хочеш прибрати цей фільм з папки?",
+      "folderNotFound": "Папку не знайдено",
+      "backToHome": "Повернутись на головну",
+      "backToFolders": "Назад до папок",
+      "searchMoviePlaceholder": "Шукати фільм...",
+      "searchBtn": "Шукати",
+      "addBtn": "ДОДАТИ",
+      "moviesInList": "Фільми у списку:"
     }
   },
   en: {
@@ -82,11 +94,23 @@ const resources = {
       "director": "Director:",
       "cast": "Cast:",
       "defaultUserName": "User",
-          "helloUser": "Hello, {{name}}!",
-          "adminPanelBtn": "Admin Panel",
-         "ratedMoviesTitle": "Rated Movies",
-         "noRatedMoviesMessage": "You haven't rated any movies yet. Your ratings will appear here automatically.",
-          "logoutBtn": "Log Out"
+      "helloUser": "Hello, {{name}}!",
+      "adminPanelBtn": "Admin Panel",
+      "ratedMoviesTitle": "Rated Movies",
+      "noRatedMoviesMessage": "You haven't rated any movies yet. Your ratings will appear here automatically.",
+      "logoutBtn": "Log Out",
+      "myListsTitle": "My Lists",
+      "newFolderPlaceholder": "New folder name...",
+      "createFolderBtn": "Create Folder",
+      "movieAlreadyInFolder": "This movie is already in the folder.",
+      "confirmRemoveMovie": "Are you sure you want to remove this movie from the folder?",
+      "folderNotFound": "Folder not found",
+      "backToHome": "Back to Home",
+      "backToFolders": "Back to Folders",
+      "searchMoviePlaceholder": "Search movie...",
+      "searchBtn": "Search",
+      "addBtn": "ADD",
+      "moviesInList": "Movies in list:"
     }
   }
 };
