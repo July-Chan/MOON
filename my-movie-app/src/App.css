@@ -235,30 +235,6 @@ body, html, #root {
    БРОНЕБIЙНИЙ МОБІЛЬНИЙ ФІКС (Пишемо строго окремим чистим блоком)
    ========================================================================== */
 @media screen and (max-width: 768px) {
-  /* Підвищуємо специфічність селектора, щоб перебити будь-які інші стилі */
-  form.create-list-form, 
-  .create-list-form {
-    flex-direction: column !important;
-    gap: 12px !important;
-    width: 100% !important;
-    max-width: none !important;
-  }
-
-  .create-list-form input,
-  .create-list-form button {
-    width: 100% !important;
-    display: block !important;
-    box-sizing: border-box !important;
-  }
-
-
-.folders-grid-layout {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important; /* Рівно 2 стовпчики на телефоні */
-    gap: 16px !important;                             /* Відстань між папками */
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
 
   /* КА́РТКА ПАПКИ: Скидаємо фіксовану ширину, щоб вона слухалася сітки */
   .folder-card {
