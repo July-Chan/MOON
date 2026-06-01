@@ -10,6 +10,7 @@ import FolderView from './pages/FolderView';
 import AdminPanel from './pages/AdminPanel';
 import Navbar from './components/Navbar';
 import './App.css';
+import './i18n';
 
 const ProtectedLayout = () => {
     const { isLoggedIn } = useContext(AuthContext);
