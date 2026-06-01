@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, Calendar, Clock, Film, X, FolderPlus, Folder } from 'lucide-react';
+import { useTranslation } from 'react-i18next'; // 🔥 1. ДОДАНО ІМПОРТ
 import '../App.css';
 import moonLogo from '../assets/moon_logo_ball.svg';
 
@@ -9,6 +10,8 @@ const TMDB_API_KEY = '15d2ea6d0dc1d476efbca3eba2b9bbfb';
 const MovieDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { i18n } = useTranslation(); // 🔥 2. ДІСТАЄМО МОВУ
+
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -20,9 +23,9 @@ const MovieDetails = () => {
   const userEmail = localStorage.getItem('userEmail'); 
 
   // 📂 СТЕЙТИ ДЛЯ ДОДАВАННЯ ДО СПИСКІВ
-  const [userLists, setUserLists] = useState([]); // Списки користувача
-  const [isListModalOpen, setIsListModalOpen] = useState(false); // Контроль модалки списків
-  const [listMessage, setListMessage] = useState(''); // Повідомлення про успіх/помилку
+  const [userLists, setUserLists] = useState([]); 
+  const [isListModalOpen, setIsListModalOpen] = useState(false); 
+  const [listMessage, setListMessage] = useState(''); 
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -30,7 +33,12 @@ const MovieDetails = () => {
     
     const fetchDetailsAndRating = async () => {
       try {
-        const response = await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}`);
+        // 🔥 3. НАДІЙНА ПЕРЕВІРКА МОВИ (як у Home)
+        const currentLang = i18n.language || '';
+        const langParam = currentLang.includes('uk') || currentLang.includes('ua') ? 'uk-UA' : 'en-US';
+
+        // 🔥 4. ПЕРЕДАЄМО МОВУ НА БЕКЕНД
+        const response = await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}?language=${langParam}`);
         const data = await response.json();
         setMovie(data);
 
@@ -48,7 +56,9 @@ const MovieDetails = () => {
     
     fetchDetailsAndRating();
     return () => window.removeEventListener('resize', handleResize);
-  }, [id, userEmail]);
+    
+  // 🔥 5. ДОДАЛИ i18n.language В ЗАЛЕЖНОСТІ, щоб сторінка оновлювалась при перемиканні
+  }, [id, userEmail, i18n.language]);
 
   // Завантажуємо списки користувача, коли він відкриває модалку списків
   const openListModal = async () => {
@@ -57,7 +67,6 @@ const MovieDetails = () => {
     setListMessage('');
     
     try {
-      // Робимо запит до твого бекенду, щоб отримати кастомні списки користувача
       const response = await fetch(`https://moon-z1lm.onrender.com/api/lists?userId=${userEmail}`);
       const data = await response.json();
       if (Array.isArray(data)) {
@@ -75,7 +84,6 @@ const handleAddMovieToList = async (listId) => {
     const response = await fetch(`https://moon-z1lm.onrender.com/api/lists/${listId}/movies`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      // 🔥 ТЕПЕР ФОРМАТ ІДЕАЛЬНО СПІВПАДАЄ З FOLDERVIEW
       body: JSON.stringify({
         tmdbId: movie.id,
         title: movie.title,
@@ -263,7 +271,7 @@ const handleAddMovieToList = async (listId) => {
 
           <h3 style={{ fontSize: isMobile ? '18px' : '22px', marginBottom: '15px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px' }}>Опис фільму</h3>
           <p style={{ fontSize: isMobile ? '14px' : '16px', lineHeight: '1.6', color: '#a0a0b5', textAlign: 'left' }}>
-            {movie.overview || 'Опис українською мовою поки відсутній.'}
+            {movie.overview || 'Опис відсутній.'}
           </p>
 
           {(movie.production_countries || movie.budget) && (
