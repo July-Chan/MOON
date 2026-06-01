@@ -147,7 +147,6 @@ const MovieDetails = () => {
     </div>
   );
 
- // ... (імпорти та весь код до return залишаються незмінними) ...
 
   return (
     <div className="home-container" style={{ padding: 0, overflowX: 'hidden', paddingTop: '60px', color: 'white' }}>
