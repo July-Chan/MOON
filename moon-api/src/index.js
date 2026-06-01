@@ -99,43 +99,54 @@ app.get('/', (req, res) => {
     res.json({ message: 'API для додатку Moon успішно працює!' });
 });
 
-// 🎬 ОТРИМАННЯ ТА КЕШУВАННЯ ФІЛЬМУ
+// 🎬 ОТРИМАННЯ ТА КЕШУВАННЯ ФІЛЬМУ (З ПІДТРИМКОЮ ЛОКАЛІЗАЦІЇ)
 app.get('/api/movie/:id', async (req, res) => {
     const movieId = req.params.id;
+    // 🔥 Беремо мову з запиту
+    const lang = req.query.language || 'uk-UA';
 
     try {
+        const TMDB_API_KEY = process.env.TMDB_API_KEY;
+
+        // ЗАВЖДИ беремо переклади з TMDB
+        const tmdbResponse = await axios.get(
+            `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=${lang}`
+        );
+        const tmdbData = tmdbResponse.data;
+
         const movieRef = db.collection('movies').doc(movieId);
         const doc = await movieRef.get();
 
+        let finalMovieData;
+
         if (doc.exists) {
-            console.log('Фільм взято з бази Firestore (Кеш)');
-            return res.json(doc.data());
+            console.log(`Фільм є у Firestore. Оновлюємо тексти мовою: ${lang}`);
+            const localData = doc.data();
+            // Підміняємо лише текстові поля для фронтенду
+            finalMovieData = {
+                ...localData,
+                title: tmdbData.title,
+                overview: tmdbData.overview,
+            };
+        } else {
+            console.log('Фільму немає в базі. Зберігаємо...');
+            finalMovieData = {
+                id: tmdbData.id,
+                title: tmdbData.title, // У базу запишеться перша мова запиту
+                overview: tmdbData.overview,
+                poster_path: tmdbData.poster_path,
+                backdrop_path: tmdbData.backdrop_path,
+                release_date: tmdbData.release_date,
+                genres: tmdbData.genres.map(g => g.name),
+                vote_average: tmdbData.vote_average,
+                createdAt: new Date()
+            };
+
+            await movieRef.set(finalMovieData);
+            console.log('Фільм збережено в Firestore!');
         }
 
-        console.log('Фільму немає в базі. Запит до TMDB API...');
-        const TMDB_API_KEY = process.env.TMDB_API_KEY;
-        const tmdbResponse = await axios.get(
-            `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=uk-UA`
-        );
-
-        const tmdbData = tmdbResponse.data;
-
-        const movieData = {
-            id: tmdbData.id,
-            title: tmdbData.title,
-            overview: tmdbData.overview,
-            poster_path: tmdbData.poster_path,
-            backdrop_path: tmdbData.backdrop_path, // Додано для коректного відображення тла сторінки
-            release_date: tmdbData.release_date,
-            genres: tmdbData.genres.map(g => g.name),
-            vote_average: tmdbData.vote_average,
-            createdAt: new Date()
-        };
-
-        await movieRef.set(movieData);
-        console.log('Фільм збережено в Firestore!');
-
-        return res.json(movieData);
+        return res.json(finalMovieData);
 
     } catch (error) {
         console.error('Помилка при роботі з фільмом:', error);
@@ -238,6 +249,7 @@ app.get('/api/admin/stats', async (req, res) => {
 app.get('/api/movies/now-playing', async (req, res) => {
     try {
         const TMDB_API_KEY = process.env.TMDB_API_KEY;
+        const lang = req.query.language || 'uk-UA';
         const response = await axios.get(
             `https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=uk-UA&page=1`
         );
@@ -252,6 +264,7 @@ app.get('/api/movies/now-playing', async (req, res) => {
 app.get('/api/movies/popular', async (req, res) => {
     try {
         const TMDB_API_KEY = process.env.TMDB_API_KEY;
+        const lang = req.query.language || 'uk-UA';
         const response = await axios.get(
             `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=uk-UA&page=1`
         );
