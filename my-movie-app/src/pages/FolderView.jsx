@@ -109,8 +109,7 @@ const FolderView = () => {
                 <FolderOpen size={40} color="#6a5acd" /> {folderDetails.name}
             </h1>
 
-            {/* 🔥 НОВИЙ ДИЗАЙН ПОШУКОВОГО РЯДКА (ЯК У НАВБАРІ) */}
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '40px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginBottom: '40px' }}>
                 <form 
                     onSubmit={handleSearch} 
                     style={{ 
@@ -118,16 +117,16 @@ const FolderView = () => {
                         alignItems: 'center', 
                         background: 'rgba(255,255,255,0.05)', 
                         borderRadius: '20px', 
-                        padding: '8px 18px', 
+                        padding: '6px 18px', 
                         border: '1px solid rgba(138, 63, 252, 0.3)',
                         transition: 'all 0.3s ease',
                         width: '100%',
-                        maxWidth: '500px'
+                        maxWidth: '400px' // Зробили трохи меншим, щоб кнопка помістилася
                     }}
                     onFocus={(e) => e.currentTarget.style.borderColor = '#8a3ffc'}
                     onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.3)'}
                 >
-                    <Search size={18} color="#a0a0b5" onClick={handleSearch} style={{ cursor: 'pointer' }} />
+                    <Search size={18} color="#a0a0b5" />
                     <input
                         type="text"
                         placeholder={t('searchMoviePlaceholder', 'Шукати фільм...')}
@@ -155,6 +154,34 @@ const FolderView = () => {
                         />
                     )}
                 </form>
+
+                {/* 🔥 ПОВЕРНУЛИ КНОПКУ */}
+                <button 
+                    onClick={handleSearch} 
+                    style={{
+                        padding: '0 25px', 
+                        borderRadius: '20px', 
+                        backgroundColor: '#8a3ffc', 
+                        color: 'white', 
+                        border: 'none', 
+                        cursor: 'pointer', 
+                        fontWeight: 'bold',
+                        fontSize: '15px',
+                        fontFamily: 'Inter, sans-serif',
+                        transition: 'all 0.2s ease',
+                        boxShadow: '0 4px 15px rgba(138, 63, 252, 0.3)'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#9b59b6';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#8a3ffc';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                >
+                    {t('searchBtn', 'Шукати')}
+                </button>
             </div>
 
             {/* РЕЗУЛЬТАТИ ПОШУКУ */}
