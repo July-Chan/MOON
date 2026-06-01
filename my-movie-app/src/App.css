@@ -180,22 +180,74 @@ body, html, #root {
 }
 
 /* ==========================================================================
-   ГЛОБАЛЬНІ МОБІЛЬНІ СТИЛІ ДЛЯ ВСІХ СТOРІНОК (МЕНШЕ 768px)
+   СТИЛІ ДЛЯ ПК ТА ПЛАНШЕТІВ (Оригінальні)
+   ========================================================================== */
+.create-list-form {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 40px;
+  max-width: 500px;
+}
+
+.create-list-form input {
+  flex-grow: 1;
+  padding: 12px 16px;
+  background-color: #1a1a2e;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.create-list-form input::placeholder {
+  color: #a0a0b5;
+}
+
+.create-list-form input:focus {
+  border-color: #6a5acd;
+  background-color: #23233e;
+  box-shadow: 0 0 0 3px rgba(106, 90, 205, 0.2);
+}
+
+.create-list-form button {
+  padding: 12px 24px;
+  background-color: #6a5acd;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.create-list-form button:hover {
+  background-color: #8a3ffc;
+  box-shadow: 0 4px 12px rgba(106, 90, 205, 0.4);
+  transform: translateY(-2px);
+}
+
+
+/* ==========================================================================
+   БРОНЕБIЙНИЙ МОБІЛЬНИЙ ФІКС (Пишемо строго окремим чистим блоком)
    ========================================================================== */
 @media screen and (max-width: 768px) {
-  
-  /* 🔥 ФІКС ФОРМИ СТВОРЕННЯ ПАПКИ (Працюватиме на будь-якій сторінці) */
+  /* Підвищуємо специфічність селектора, щоб перебити будь-які інші стилі */
+  form.create-list-form, 
   .create-list-form {
-    flex-direction: column !important; /* Перебудовуємо інпут і кнопку в стовпчик */
-    gap: 12px !important;              /* Акуратний відступ між ними */
+    flex-direction: column !important;
+    gap: 12px !important;
     width: 100% !important;
-    max-width: none !important;        /* Скидаємо обмеження комп'ютерної версії */
-    margin-bottom: 30px !important;
+    max-width: none !important;
   }
 
   .create-list-form input,
   .create-list-form button {
-    width: 100% !important;            /* Розтягуємо елементи на всю ширину екрана */
+    width: 100% !important;
+    display: block !important;
     box-sizing: border-box !important;
   }
 }
