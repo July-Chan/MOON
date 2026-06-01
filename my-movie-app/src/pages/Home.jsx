@@ -130,21 +130,28 @@ const Home = () => {
           </h2>
 
           {isLoadingRecs ? (
-            <div className="recs-scroll-container" style={{ overflowX: 'hidden' }}>
-              {[1, 2, 3, 4, 5].map(n => (
-                <div key={n} className="recs-skeleton"></div>
+            /* Використовуємо ту саму сітку для скелетонів завантаження */
+            <div className="movies-grid-layout">
+              {[1, 2, 3, 4].map(n => (
+                <div key={n} className="movie-card" style={{ background: 'rgba(255,255,255,0.05)', aspectRatio: '2/3', borderRadius: '12px', animation: 'pulse 1.5s infinite' }}></div>
               ))}
             </div>
           ) : recommendedMovies.length > 0 ? (
-            <div className="recs-scroll-container">
+            /* 🔥 ТУТ: Абсолютно та ж сама сітка та структура карток, що й у Популярних! */
+            <div className="movies-grid-layout">
               {recommendedMovies.map(movie => (
-                <div key={movie.id} className="rec-movie-card" onClick={() => navigate(`/movie/${movie.id}`)}>
-                  <img
-                    src={movie.poster_path ? `https://image.tmdb.org/t/p/w300${movie.poster_path}` : 'https://placehold.co/300x450/1a1a2e/ffffff?text=No+Poster'}
-                    alt={movie.title}
-                  />
-                  <h4>{movie.title}</h4>
-                </div>
+                <Link to={`/movie/${movie.id}`} key={movie.id}>
+                  <div className="movie-card">
+                    <img
+                      src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://placehold.co/500x750/1a1a2e/ffffff?text=No+Poster'}
+                      alt={movie.title}
+                    />
+                    <span className="movie-title">{movie.title}</span>
+                    <span className="movie-meta">
+                      {movie.release_date?.substring(0, 4) || '----'} • {movie.vote_average?.toFixed(1)}★
+                    </span>
+                  </div>
+                </Link>
               ))}
             </div>
           ) : (
