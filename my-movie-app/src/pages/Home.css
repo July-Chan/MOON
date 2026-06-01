@@ -256,12 +256,26 @@
   /* ✨ ТУТ ЗМІНИ: Перетворюємо повзунок рекомендацій ШІ на СІТКУ для телефонів */
 .recs-scroll-container {
     display: grid !important;
-    /* Збільшуємо мінімальний розмір картки до 145px */
-    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)) !important; 
-    gap: 12px !important; /* Менший проміжок = більше простору для самих картинок */
-    overflow-x: visible !important;
-    padding-bottom: 0;
-    width: 100%;
+    grid-template-rows: repeat(2, min-content) !important; /* Строго 2 рядки */
+    grid-auto-flow: column !important; /* Елементи заповнюють рядки й кучкуються в колонки */
+    grid-auto-columns: 140px !important; /* Фіксована ширина кожної картки в скролі */
+    gap: 12px !important; 
+    overflow-x: auto !important; /* Вмикаємо горизонтальний скрол */
+    overflow-y: hidden !important; /* Заганяємо вертикальний скрол у бан */
+    padding-bottom: 10px;
+    width: calc(100% + 24px) !important;
+    
+    /* Розширюємо зону скролу до країв екрану смартфона */
+    margin-left: -12px !important;
+    margin-right: -12px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    box-sizing: border-box;
+    scrollbar-width: none; /* Ховаємо скролбар на Firefox */
+  }
+
+  .recs-scroll-container::-webkit-scrollbar {
+    display: none;
   }
 
   /* Скидаємо фіксовану ширину карток рекомендацій, щоб вони слухалися сітки */
