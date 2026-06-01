@@ -296,23 +296,32 @@
   /* СІТКА ПАПОК: Строго 2 красиві колонки на мобільних */
   .folders-grid-layout {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
+    gap: 14px !important;
     width: 100% !important;
   }
 
-  .folder-card {
-    max-width: none !important;
-    padding: 10px;
-    border-radius: 12px;
+.folder-card {
+    max-width: none !important; /* Прибираємо обмеження, які звужували правий блок */
+    width: 100% !important;     /* Картка залізно займає свої 50% екрану */
+    display: flex !important;
+    flex-direction: column !important;
+    /* Колір, фон, контури та тіні не чіпаємо — вони залишаються твоїми оригінальними */
   }
 
-  .folder-name {
+  .folder-cover-grid {
+    width: 100% !important;
+    aspect-ratio: 1 / 1 !important; /* Гарантуємо, що обкладинка завжди квадратна */
+    gap: 2px !important; 
+  }
+
+.folder-name {
     font-size: 14px !important;
     margin-top: 8px !important;
+    text-align: left !important;
   }
 
   /* СІТКА ФІЛЬМІВ ВСЕРЕДИНІ ПАПКИ: Строго 2 колонки */
-  .movies-grid-layout {
+.movies-grid-layout {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
   }
@@ -322,7 +331,7 @@
   }
 
   /* Мобільна кнопка видалення фільму поверх постера */
-  .delete-movie-btn,
+.delete-movie-btn,
   .remove-movie-icon {
     display: flex !important;
     position: absolute !important;
