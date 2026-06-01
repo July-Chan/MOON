@@ -231,6 +231,7 @@
   width: 100%;
   box-sizing: border-box;
   margin-top: 20px;
+  align-items: start; /* 🔥 ФІКС: кожна картка бере лише свою рідну висоту і не тягнеться за сусідньою */
 }
 
 .movies-grid-layout a {
@@ -347,6 +348,7 @@
 .movies-grid-layout {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
+    align-items: start !important; /* 🔥 ФІКС ДЛЯ МОБІЛЬНИХ: тримає постери в тонусі */
   }
 
   .movie-title {
