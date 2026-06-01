@@ -138,6 +138,72 @@
    ========================================================================== */
 .movies-grid-layout {
   display: grid;
+  /* Картки автоматично підлаштовуються: мінімум 160px, максимум — займають весь доступний простір */
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 30px; /* Комфортна відстань між картками */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Переконайся, що базовий контейнер має правильні відступи на ПК */
+.home-container {
+  padding: 100px 50px 40px; /* 100px зверху, щоб фіксований навбар нічого не перекривав */
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+
+/* ==========================================================================
+   МОБІЛЬНА АДАПТАЦІЯ ДЛЯ СТOРІНКИ HOME (МЕНШЕ 768px)
+   ========================================================================== */
+@media screen and (max-width: 768px) {
+  .home-container {
+    padding: 90px 20px 20px; /* Зменшуємо бокові відступи на телефонах до 20px */
+  }
+
+  /* Зменшуємо розмір заголовків секцій на смартфонах */
+  .home-container h2 {
+    font-size: 20px !important;
+    margin-bottom: 15px !important;
+  }
+
+  /* Адаптуємо сітку під маленькі екрани телефонів */
+  .movies-grid-layout {
+    /* Робимо картки трохи компактнішими (мінімум 130px), щоб на екрані містилося по 2 картки в ряд */
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 16px; /* Зменшуємо проміжки для економії місця */
+  }
+
+  /* Налаштування шрифтів у картках на мобільних */
+  .movie-card span {
+    font-size: 13px !important; /* Назва фільму трохи менша */
+  }
+  
+  .movie-card span:last-child {
+    font-size: 11px !important; /* Рік та рейтинг */
+  }
+
+  /* Якщо на головній є великий промо-банер (Hero Banner) */
+  .hero-banner {
+    height: 250px !important; /* Зменшуємо висоту банера на смартфонах */
+    padding: 20px !important;
+  }
+
+  .hero-banner h1 {
+    font-size: 24px !important; /* Зменшуємо заголовок банера */
+  }
+
+  .hero-banner p {
+    font-size: 13px !important; /* Зменшуємо опис */
+    max-width: 100% !important;
+  }
+}
+
+/* ==========================================================================
+   УНІВЕРСАЛЬНА СІТКА ДЛЯ КАРТОК ФІЛЬМІВ (ПК ТА ПЛАНШЕТИ)
+   ========================================================================== */
+.movies-grid-layout {
+  display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 30px; 
   width: 100%;
