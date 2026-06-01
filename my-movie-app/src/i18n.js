@@ -35,7 +35,9 @@ const resources = {
       "rateMovieTitle": "Оціни фільм",
       "removeRating": "Прибрати оцінку",
       "chooseFolderFor": "Оберіть папку для фільму",
-      "noListsFound": "У вас ще немає створених списків. Створіть їх у профілі!"
+      "noListsFound": "У вас ще немає створених списків. Створіть їх у профілі!",
+      "director": "Режисер:",
+      "cast": "У ролях:",
     }
   },
   en: {
@@ -71,7 +73,9 @@ const resources = {
       "rateMovieTitle": "Rate Movie",
       "removeRating": "Remove rating",
       "chooseFolderFor": "Choose a folder for",
-      "noListsFound": "You don't have any lists yet. Create them in your profile!"
+      "noListsFound": "You don't have any lists yet. Create them in your profile!",
+      "director": "Director:",
+      "cast": "Cast:",
     }
   }
 };

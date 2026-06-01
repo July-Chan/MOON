@@ -147,6 +147,8 @@ const MovieDetails = () => {
     </div>
   );
 
+ // ... (імпорти та весь код до return залишаються незмінними) ...
+
   return (
     <div className="home-container" style={{ padding: 0, overflowX: 'hidden', paddingTop: '60px', color: 'white' }}>
       
@@ -194,8 +196,10 @@ const MovieDetails = () => {
             <p style={{ color: '#8a3ffc', fontStyle: 'italic', fontSize: isMobile ? '16px' : '18px', marginBottom: '20px' }}>— {movie.tagline}</p>
           )}
 
-          <div style={{ display: 'flex', gap: isMobile ? '12px' : '20px', marginBottom: '30px', flexWrap: 'wrap', alignItems: 'center' }}>
+          {/* 🔥 БЛОК ІЗ ЖАНРАМИ ТА ІНФО (ЗМІНЕНО) */}
+          <div style={{ display: 'flex', gap: isMobile ? '12px' : '20px', marginBottom: '25px', flexWrap: 'wrap', alignItems: 'center' }}>
             
+            {/* Оцінки */}
             <div 
               onClick={() => setIsModalOpen(true)} style={infoBadgeStyle}
               onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(138, 63, 252, 0.25)'}
@@ -209,6 +213,7 @@ const MovieDetails = () => {
               </span>
             </div>
 
+            {/* Додати до списку */}
             <div 
               onClick={openListModal}
               style={{ ...infoBadgeStyle, borderColor: 'rgba(138, 63, 252, 0.4)', background: 'rgba(138, 63, 252, 0.05)' }}
@@ -231,30 +236,71 @@ const MovieDetails = () => {
                 <span style={{ fontSize: '15px' }}>{movie.runtime} {t('minutesAbbr', 'хв')}</span>
               </div>
             )}
-
-            {movie.genres && movie.genres.length > 0 && (
-              <div style={infoItemStyle}>
-                <Film size={18} color="#a0a0b5" />
-                <span style={{ fontSize: '15px' }}>{movie.genres[0]}</span> 
-              </div>
-            )}
           </div>
+
+          {/* 🔥 ВИВЕДЕННЯ ВСІХ ЖАНРІВ (НОВИЙ РЯДОК) */}
+          {movie.genres && movie.genres.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '30px' }}>
+              <Film size={18} color="#a0a0b5" style={{ alignSelf: 'center' }} />
+              {movie.genres.map((genre, index) => (
+                <span 
+                  key={index}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    padding: '4px 12px',
+                    borderRadius: '12px',
+                    fontSize: '14px',
+                    color: '#e0e0e0'
+                  }}
+                >
+                  {genre}
+                </span>
+              ))}
+            </div>
+          )}
 
           <h3 style={{ fontSize: isMobile ? '18px' : '22px', marginBottom: '15px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px' }}>
             {t('movieDescriptionTitle', 'Опис фільму')}
           </h3>
-          <p style={{ fontSize: isMobile ? '14px' : '16px', lineHeight: '1.6', color: '#a0a0b5', textAlign: 'left' }}>
+          <p style={{ fontSize: isMobile ? '14px' : '16px', lineHeight: '1.6', color: '#a0a0b5', textAlign: 'left', marginBottom: '30px' }}>
             {movie.overview || t('noDescription', 'Опис відсутній.')}
           </p>
 
+          {/* 🔥 БЛОК КОМАНДИ ФІЛЬМУ (РЕЖИСЕР ТА АКТОРИ) КОЛОНКОЮ */}
+          {(movie.director || (movie.cast && movie.cast.length > 0)) && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', background: 'rgba(0,0,0,0.2)', padding: '20px', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.05)' }}>
+              
+              {movie.director && (
+                <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '5px' : '15px' }}>
+                  <span style={{ color: '#8a3ffc', fontWeight: 'bold', minWidth: '120px' }}>{t('director', 'Режисер:')}</span>
+                  <span style={{ color: 'white' }}>{movie.director}</span>
+                </div>
+              )}
+              
+              {movie.cast && movie.cast.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '5px' : '15px' }}>
+                  <span style={{ color: '#8a3ffc', fontWeight: 'bold', minWidth: '120px' }}>{t('cast', 'У ролях:')}</span>
+                  <span style={{ color: '#a0a0b5', lineHeight: '1.5' }}>
+                    {movie.cast.join(', ')}
+                  </span>
+                </div>
+              )}
+
+            </div>
+          )}
+
+          {/* Країна та бюджет */}
           {(movie.production_countries || movie.budget) && (
-            <div style={{ marginTop: '30px', padding: '15px', background: 'rgba(255,255,255,0.03)', borderRadius: '15px', fontSize: isMobile ? '14px' : '16px' }}>
+            <div style={{ marginTop: '20px', padding: '15px', background: 'rgba(255,255,255,0.03)', borderRadius: '15px', fontSize: isMobile ? '14px' : '16px' }}>
               {movie.production_countries && <p style={{ margin: '5px 0' }}><strong style={{ color: '#8a3ffc' }}>{t('country', 'Країна:')}</strong> {movie.production_countries?.map(c => c.name).slice(0, 2).join(', ')}</p>}
               {movie.budget ? <p style={{ margin: '5px 0' }}><strong style={{ color: '#8a3ffc' }}>{t('budget', 'Бюджет:')}</strong> ${movie.budget?.toLocaleString()}</p> : null}
             </div>
           )}
         </div>
       </div>
+
+// ... (Модальні вікна залишаються без змін) ...
 
       {/* 🔮 МОДАЛЬНЕ ВІКНО ДЛЯ ОЦІНЮВАННЯ */}
       {isModalOpen && (
