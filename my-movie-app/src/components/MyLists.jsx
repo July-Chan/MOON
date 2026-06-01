@@ -82,7 +82,6 @@ const MyLists = () => {
                 {t('myListsTitle', 'Мої списки')}
             </h2> 
 
-            {/* 🔥 КЛАСИ ЗАМІСТЬ ІНЛАЙН-СТИЛІВ ДЛЯ ФОРМИ */}
             {/* 🔥 Переконайся, що структура форми виглядає саме так */}
             <div className="create-list-container">
                 <form 
@@ -91,9 +90,10 @@ const MyLists = () => {
                     onFocus={(e) => e.currentTarget.style.borderColor = '#8a3ffc'}
                     onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.3)'}
                 >
-                    <FolderOpen size={18} color="#a0a0b5" style={{ flexShrink: 0 }} /> {/* 🔥 Іконка перша */}
+                    <FolderOpen size={18} color="#a0a0b5" className="form-icon-left" />
                     <input
                         type="text"
+                        className="create-list-input"
                         placeholder={t('newFolderPlaceholder', 'Назва нової папки...')}
                         value={newListName}
                         onChange={(e) => setNewListName(e.target.value)}
@@ -102,7 +102,7 @@ const MyLists = () => {
                         <X 
                             size={18} 
                             color="#a0a0b5" 
-                            style={{ cursor: 'pointer', transition: 'color 0.2s', flexShrink: 0 }} 
+                            className="form-icon-right"
                             onClick={() => setNewListName('')} 
                         />
                     )}
