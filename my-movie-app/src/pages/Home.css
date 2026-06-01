@@ -268,9 +268,13 @@
     width: 100% !important;
   }
 
-  .rec-movie-card {
-    width: 100% !important; 
-  }
+.rec-movie-card {
+  flex-shrink: 0;
+  width: 180px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  min-width: 0;
+}
 
   .rec-movie-card img {
     width: 100%;
