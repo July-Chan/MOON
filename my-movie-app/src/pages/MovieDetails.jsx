@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, Calendar, Clock, Film, X, FolderPlus, Folder } from 'lucide-react';
-import { useTranslation } from 'react-i18next'; // 🔥 1. ДОДАНО ІМПОРТ
+import { useTranslation } from 'react-i18next'; 
 import '../App.css';
 import moonLogo from '../assets/moon_logo_ball.svg';
 
@@ -10,19 +10,17 @@ const TMDB_API_KEY = '15d2ea6d0dc1d476efbca3eba2b9bbfb';
 const MovieDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { i18n } = useTranslation(); // 🔥 2. ДІСТАЄМО МОВУ
+  const { t, i18n } = useTranslation(); // 🔥 Дістаємо функцію t()
 
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-  // Стейти для оцінок
   const [userRating, setUserRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0); 
   const [isModalOpen, setIsModalOpen] = useState(false); 
   const userEmail = localStorage.getItem('userEmail'); 
 
-  // 📂 СТЕЙТИ ДЛЯ ДОДАВАННЯ ДО СПИСКІВ
   const [userLists, setUserLists] = useState([]); 
   const [isListModalOpen, setIsListModalOpen] = useState(false); 
   const [listMessage, setListMessage] = useState(''); 
@@ -33,11 +31,9 @@ const MovieDetails = () => {
     
     const fetchDetailsAndRating = async () => {
       try {
-        // 🔥 3. НАДІЙНА ПЕРЕВІРКА МОВИ (як у Home)
         const currentLang = i18n.language || '';
         const langParam = currentLang.includes('uk') || currentLang.includes('ua') ? 'uk-UA' : 'en-US';
 
-        // 🔥 4. ПЕРЕДАЄМО МОВУ НА БЕКЕНД
         const response = await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}?language=${langParam}`);
         const data = await response.json();
         setMovie(data);
@@ -56,13 +52,10 @@ const MovieDetails = () => {
     
     fetchDetailsAndRating();
     return () => window.removeEventListener('resize', handleResize);
-    
-  // 🔥 5. ДОДАЛИ i18n.language В ЗАЛЕЖНОСТІ, щоб сторінка оновлювалась при перемиканні
   }, [id, userEmail, i18n.language]);
 
-  // Завантажуємо списки користувача, коли він відкриває модалку списків
   const openListModal = async () => {
-    if (!userEmail) return alert("Будь ласка, увійдіть в акаунт, щоб керувати списками!");
+    if (!userEmail) return alert(t('loginRequiredLists', 'Будь ласка, увійдіть в акаунт, щоб керувати списками!'));
     setIsListModalOpen(true);
     setListMessage('');
     
@@ -77,37 +70,35 @@ const MovieDetails = () => {
     }
   };
 
+  const handleAddMovieToList = async (listId) => {
+    try {
+      const response = await fetch(`https://moon-z1lm.onrender.com/api/lists/${listId}/movies`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tmdbId: movie.id,
+          title: movie.title,
+          posterPath: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://placehold.co/500x750/1a1a2e/ffffff?text=No+Poster',
+          releaseDate: movie.release_date || 'Невідомо'
+        })
+      });
 
-// Функція додавання фільму до обраного списку
-const handleAddMovieToList = async (listId) => {
-  try {
-    const response = await fetch(`https://moon-z1lm.onrender.com/api/lists/${listId}/movies`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        tmdbId: movie.id,
-        title: movie.title,
-        posterPath: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://placehold.co/500x750/1a1a2e/ffffff?text=No+Poster',
-        releaseDate: movie.release_date || 'Невідомо'
-      })
-    });
+      const data = await response.json();
 
-    const data = await response.json();
-
-    if (response.ok) {
-      setListMessage('Фільм успішно додано до списку! 🎉');
-      setTimeout(() => setIsListModalOpen(false), 1500); 
-    } else {
-      setListMessage(data.error || 'Цей фільм уже є у списку.');
+      if (response.ok) {
+        setListMessage(t('movieAddedSuccess', 'Фільм успішно додано до списку! 🎉'));
+        setTimeout(() => setIsListModalOpen(false), 1500); 
+      } else {
+        setListMessage(data.error || t('movieAlreadyInList', 'Цей фільм уже є у списку.'));
+      }
+    } catch (error) {
+      console.error("Помилка додавання фільму до списку:", error);
+      setListMessage(t('movieAddError', 'Сталася помилка при додаванні.'));
     }
-  } catch (error) {
-    console.error("Помилка додавання фільму до списку:", error);
-    setListMessage('Сталася помилка при додаванні.');
-  }
-};
+  };
 
   const handleRate = async (ratingValue) => {
-    if (!userEmail) return alert("Будь ласка, увійдіть в акаунт, щоб ставити оцінки!");
+    if (!userEmail) return alert(t('loginRequiredRate', 'Будь ласка, увійдіть в акаунт, щоб ставити оцінки!'));
     setUserRating(ratingValue);
     setIsModalOpen(false); 
 
@@ -144,12 +135,16 @@ const handleAddMovieToList = async (listId) => {
   if (loading) return (
       <div className="home-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
           <img src={moonLogo} alt="Loading..." style={{ width: '100px', height: '100px', animation: 'pulse 1.5s infinite ease-in-out', filter: 'drop-shadow(0 0 15px #8a3ffc)' }} />
-          <p style={{ marginTop: '20px', color: '#8a3ffc', fontWeight: 'bold', letterSpacing: '2px', opacity: 0.8 }}>ЗАВАНТАЖЕННЯ...</p>
+          <p style={{ marginTop: '20px', color: '#8a3ffc', fontWeight: 'bold', letterSpacing: '2px', opacity: 0.8 }}>
+            {t('loadingHome', 'ЗАВАНТАЖЕННЯ...')}
+          </p>
       </div>
   ); 
 
   if (!movie || movie.success === false || movie.error) return (
-    <div className="home-container" style={{ textAlign: 'center', paddingTop: '100px', color: 'white' }}>Фільм не знайдено :(</div>
+    <div className="home-container" style={{ textAlign: 'center', paddingTop: '100px', color: 'white' }}>
+      {t('movieNotFound', 'Фільм не знайдено :(')}
+    </div>
   );
 
   return (
@@ -157,37 +152,23 @@ const handleAddMovieToList = async (listId) => {
       
       {/* ФОНОВИЙ БАНЕР */}
       <div style={{
-        position: 'relative',
-        width: '100%',
-        height: isMobile ? '40vh' : '50vh', 
+        position: 'relative', width: '100%', height: isMobile ? '40vh' : '50vh', 
         backgroundImage: `linear-gradient(to bottom, rgba(15, 15, 26, 0.3), #0f0f1a), url(https://image.tmdb.org/t/p/original${movie.backdrop_path || movie.poster_path})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        display: 'flex',
-        alignItems: 'flex-end',
+        backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'flex-end',
         padding: isMobile ? '0 20px 20px' : '0 50px 40px'
       }}>
         <button 
           onClick={() => navigate(-1)} 
           style={{
-            position: 'absolute',
-            top: isMobile ? '15px' : '30px',
-            left: isMobile ? '15px' : '30px',
-            background: 'rgba(0,0,0,0.5)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            color: 'white',
-            padding: isMobile ? '8px 15px' : '10px 20px',
-            borderRadius: '12px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            backdropFilter: 'blur(10px)',
+            position: 'absolute', top: isMobile ? '15px' : '30px', left: isMobile ? '15px' : '30px',
+            background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)', color: 'white',
+            padding: isMobile ? '8px 15px' : '10px 20px', borderRadius: '12px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: '10px', backdropFilter: 'blur(10px)',
             fontSize: isMobile ? '14px' : '16px'
           }}
           className="logout-btn"
         >
-          <ArrowLeft size={isMobile ? 16 : 20} /> Назад
+          <ArrowLeft size={isMobile ? 16 : 20} /> {t('backBtn', 'Назад')}
         </button>
 
         <h1 style={{ fontSize: isMobile ? '28px' : '48px', margin: 0, textShadow: '0 4px 10px rgba(0,0,0,0.8)', lineHeight: 1.2 }}>
@@ -213,40 +194,30 @@ const handleAddMovieToList = async (listId) => {
             <p style={{ color: '#8a3ffc', fontStyle: 'italic', fontSize: isMobile ? '16px' : '18px', marginBottom: '20px' }}>— {movie.tagline}</p>
           )}
 
-          {/* ІКОНКИ ІНФО */}
           <div style={{ display: 'flex', gap: isMobile ? '12px' : '20px', marginBottom: '30px', flexWrap: 'wrap', alignItems: 'center' }}>
             
-            {/* ⭐️ КЛІКАБЕЛЬНИЙ РЕЙТИНГ */}
             <div 
-              onClick={() => setIsModalOpen(true)}
-              style={infoBadgeStyle}
+              onClick={() => setIsModalOpen(true)} style={infoBadgeStyle}
               onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(138, 63, 252, 0.25)'}
               onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(138, 63, 252, 0.1)'}
-              title="Натисніть, щоб оцінити фільм"
+              title={t('clickToRate', 'Натисніть, щоб оцінити фільм')}
             >
               <Star size={18} color="#ffcc00" fill="#ffcc00" />
               <span style={{ fontSize: '15px', fontWeight: 'bold' }}>
                 {movie.vote_average?.toFixed(1)} (TMDB)
-                {userRating > 0 && <span style={{ color: '#8a3ffc', marginLeft: '8px' }}>• Твоя: {userRating}★</span>}
+                {userRating > 0 && <span style={{ color: '#8a3ffc', marginLeft: '8px' }}>• {t('yourRating', 'Твоя:')} {userRating}★</span>}
               </span>
             </div>
 
-            {/* 📂 НОВА КНОПКА: ДОДАТИ ДО СПИСКУ */}
             <div 
               onClick={openListModal}
               style={{ ...infoBadgeStyle, borderColor: 'rgba(138, 63, 252, 0.4)', background: 'rgba(138, 63, 252, 0.05)' }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(138, 63, 252, 0.2)';
-                e.currentTarget.style.transform = 'scale(1.02)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(138, 63, 252, 0.05)';
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-              title="Додати цей фільм до своєї папки"
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(138, 63, 252, 0.2)'; e.currentTarget.style.transform = 'scale(1.02)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(138, 63, 252, 0.05)'; e.currentTarget.style.transform = 'scale(1)'; }}
+              title={t('addToListTooltip', 'Додати цей фільм до своєї папки')}
             >
               <FolderPlus size={18} color="#8a3ffc" />
-              <span style={{ fontSize: '15px', fontWeight: '600', color: '#b19cd9' }}>Додати до списку</span>
+              <span style={{ fontSize: '15px', fontWeight: '600', color: '#b19cd9' }}>{t('addToList', 'Додати до списку')}</span>
             </div>
             
             <div style={infoItemStyle}>
@@ -257,7 +228,7 @@ const handleAddMovieToList = async (listId) => {
             {movie.runtime && (
               <div style={infoItemStyle}>
                 <Clock size={18} color="#a0a0b5" />
-                <span style={{ fontSize: '15px' }}>{movie.runtime} хв</span>
+                <span style={{ fontSize: '15px' }}>{movie.runtime} {t('minutesAbbr', 'хв')}</span>
               </div>
             )}
 
@@ -269,15 +240,17 @@ const handleAddMovieToList = async (listId) => {
             )}
           </div>
 
-          <h3 style={{ fontSize: isMobile ? '18px' : '22px', marginBottom: '15px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px' }}>Опис фільму</h3>
+          <h3 style={{ fontSize: isMobile ? '18px' : '22px', marginBottom: '15px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px' }}>
+            {t('movieDescriptionTitle', 'Опис фільму')}
+          </h3>
           <p style={{ fontSize: isMobile ? '14px' : '16px', lineHeight: '1.6', color: '#a0a0b5', textAlign: 'left' }}>
-            {movie.overview || 'Опис відсутній.'}
+            {movie.overview || t('noDescription', 'Опис відсутній.')}
           </p>
 
           {(movie.production_countries || movie.budget) && (
             <div style={{ marginTop: '30px', padding: '15px', background: 'rgba(255,255,255,0.03)', borderRadius: '15px', fontSize: isMobile ? '14px' : '16px' }}>
-              {movie.production_countries && <p style={{ margin: '5px 0' }}><strong style={{ color: '#8a3ffc' }}>Країна:</strong> {movie.production_countries?.map(c => c.name).slice(0, 2).join(', ')}</p>}
-              {movie.budget ? <p style={{ margin: '5px 0' }}><strong style={{ color: '#8a3ffc' }}>Бюджет:</strong> ${movie.budget?.toLocaleString()}</p> : null}
+              {movie.production_countries && <p style={{ margin: '5px 0' }}><strong style={{ color: '#8a3ffc' }}>{t('country', 'Країна:')}</strong> {movie.production_countries?.map(c => c.name).slice(0, 2).join(', ')}</p>}
+              {movie.budget ? <p style={{ margin: '5px 0' }}><strong style={{ color: '#8a3ffc' }}>{t('budget', 'Бюджет:')}</strong> ${movie.budget?.toLocaleString()}</p> : null}
             </div>
           )}
         </div>
@@ -288,7 +261,7 @@ const handleAddMovieToList = async (listId) => {
         <div onClick={() => setIsModalOpen(false)} style={modalOverlayStyle}>
           <div onClick={(e) => e.stopPropagation()} style={modalContainerStyle}>
             <button onClick={() => setIsModalOpen(false)} style={closeButtonStyle}><X size={20} /></button>
-            <h3 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>Оціни фільм</h3>
+            <h3 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>{t('rateMovieTitle', 'Оціни фільм')}</h3>
             <p style={{ color: '#8a3ffc', fontSize: '14px', fontWeight: 'bold', margin: '0 0 20px 0' }}>{movie.title}</p>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '10px' }}>
               {[1, 2, 3, 4, 5].map((star) => {
@@ -308,7 +281,7 @@ const handleAddMovieToList = async (listId) => {
               })}
             </div>
             {userRating > 0 && (
-              <button onClick={handleDeleteRating} style={deleteRatingButtonStyle}>Прибрати оцінку</button>
+              <button onClick={handleDeleteRating} style={deleteRatingButtonStyle}>{t('removeRating', 'Прибрати оцінку')}</button>
             )}
           </div>
         </div>
@@ -320,54 +293,39 @@ const handleAddMovieToList = async (listId) => {
           <div onClick={(e) => e.stopPropagation()} style={{ ...modalContainerStyle, minWidth: '320px', maxWidth: '400px' }}>
             <button onClick={() => setIsListModalOpen(false)} style={closeButtonStyle}><X size={20} /></button>
             
-            <h3 style={{ margin: '0 0 5px 0', fontSize: '18px' }}>Додати до списку</h3>
-            <p style={{ color: '#a0a0b5', fontSize: '13px', marginBottom: '20px' }}>Оберіть папку для фільму <strong>{movie.title}</strong></p>
+            <h3 style={{ margin: '0 0 5px 0', fontSize: '18px' }}>{t('addToList', 'Додати до списку')}</h3>
+            <p style={{ color: '#a0a0b5', fontSize: '13px', marginBottom: '20px' }}>
+              {t('chooseFolderFor', 'Оберіть папку для фільму')} <strong>{movie.title}</strong>
+            </p>
 
-            {/* Статус-повідомлення (успішно або помилка) */}
             {listMessage && (
               <div style={{ 
-                padding: '10px', 
-                borderRadius: '8px', 
-                marginBottom: '15px', 
-                fontSize: '14px',
-                background: listMessage.includes('успішно') ? 'rgba(0, 230, 115, 0.1)' : 'rgba(255, 77, 77, 0.1)',
-                color: listMessage.includes('успішно') ? '#00e673' : '#ff4d4d',
-                width: '100%',
-                boxSizing: 'border-box'
+                padding: '10px', borderRadius: '8px', marginBottom: '15px', fontSize: '14px',
+                background: listMessage.includes('🎉') ? 'rgba(0, 230, 115, 0.1)' : 'rgba(255, 77, 77, 0.1)',
+                color: listMessage.includes('🎉') ? '#00e673' : '#ff4d4d',
+                width: '100%', boxSizing: 'border-box'
               }}>
                 {listMessage}
               </div>
             )}
 
-            {/* Список папок */}
             <div style={{ width: '100%', maxHeight: '250px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', paddingRight: '5px', scrollbarWidth: 'thin' }}>
               {userLists.length === 0 ? (
-                <p style={{ color: '#4e4e6a', fontStyle: 'italic', fontSize: '14px', margin: '20px 0' }}>У вас ще немає створених списків. Створіть їх у профілі!</p>
+                <p style={{ color: '#4e4e6a', fontStyle: 'italic', fontSize: '14px', margin: '20px 0' }}>
+                  {t('noListsFound', 'У вас ще немає створених списків. Створіть їх у профілі!')}
+                </p>
               ) : (
                 userLists.map(list => (
                   <div
                     key={list.id}
                     onClick={() => handleAddMovieToList(list.id)}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      padding: '12px 15px',
-                      background: 'rgba(255,255,255,0.03)',
-                      border: '1px solid rgba(255,255,255,0.05)',
-                      borderRadius: '10px',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      textAlign: 'left'
+                      display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 15px',
+                      background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)',
+                      borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s ease', textAlign: 'left'
                     }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(138, 63, 252, 0.1)';
-                      e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.3)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
-                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(138, 63, 252, 0.1)'; e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.3)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'; }}
                   >
                     <Folder size={18} color="#8a3ffc" fill="rgba(138, 63, 252, 0.2)" />
                     <span style={{ fontSize: '15px', fontWeight: '500', color: 'white' }}>{list.name}</span>
@@ -383,21 +341,12 @@ const handleAddMovieToList = async (listId) => {
   );
 };
 
-// Стилі-шаблони
+// Стилі
 const infoItemStyle = { display: 'flex', alignItems: 'center', gap: '8px', color: 'white' };
 const infoBadgeStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '8px',
-  color: 'white',
-  cursor: 'pointer',
-  background: 'rgba(138, 63, 252, 0.1)',
-  padding: '6px 14px',
-  borderRadius: '8px',
-  border: '1px solid rgba(138, 63, 252, 0.2)',
-  transition: 'all 0.2s ease',
-  height: '32px',
-  boxSizing: 'border-box'
+  display: 'flex', alignItems: 'center', gap: '8px', color: 'white', cursor: 'pointer',
+  background: 'rgba(138, 63, 252, 0.1)', padding: '6px 14px', borderRadius: '8px',
+  border: '1px solid rgba(138, 63, 252, 0.2)', transition: 'all 0.2s ease', height: '32px', boxSizing: 'border-box'
 };
 const modalOverlayStyle = {
   position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
