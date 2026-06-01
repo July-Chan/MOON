@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { FolderOpen, Pencil, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './MyLists.css'; 
-import { useTranslation } from 'react-i18next';
 
 const MyLists = () => {
+    const { t } = useTranslation();
     const [lists, setLists] = useState([]);
     const [newListName, setNewListName] = useState('');
     

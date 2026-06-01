@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { FolderOpen, ArrowLeft } from 'lucide-react';
-import { useTranslation } from 'react-i18next'; // 🔥 1. Імпорт
+import { useTranslation } from 'react-i18next';
 import '../App.css';
 import moonLogo from '../assets/moon_logo_ball.svg';
 
