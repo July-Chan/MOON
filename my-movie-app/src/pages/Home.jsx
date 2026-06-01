@@ -24,6 +24,8 @@ const Home = () => {
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
+
+        const langParam = i18n.language === 'uk' ? 'uk-UA' : 'en-US';
         const nowPlayingRes = await fetch('https://moon-z1lm.onrender.com/api/movies/now-playing');
         const nowPlayingData = await nowPlayingRes.json();
         
@@ -44,7 +46,7 @@ const Home = () => {
     };
 
     fetchHomeData();
-  }, []);
+  }, [i18n.language]);
 
   // 2. ЗАВАНТАЖЕННЯ РЕКОМЕНДАЦІЙ
   useEffect(() => {
