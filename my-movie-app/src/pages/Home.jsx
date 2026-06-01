@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Star, Play, Info } from 'lucide-react';
-import axios from 'axios'; // 🔥 ДОДАНО ІМПОРТ AXIOS
+import axios from 'axios';
+import { useTranslation } from 'react-i18next'; // 🔥 ДОДАНО ІМПОРТ
 import '../App.css'; 
 import moonLogo from '../assets/moon_logo_ball.svg';
 
 const Home = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation(); // 🔥 ПІДКЛЮЧЕНО ХУК ПЕРЕКЛАДУ
+  
   const [heroMovie, setHeroMovie] = useState(null);
   const [popularMovies, setPopularMovies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,7 +46,7 @@ const Home = () => {
     fetchHomeData();
   }, []);
 
-  // 2. ЗАВАНТАЖЕННЯ РЕКОМЕНДАЦІЙ (🔥 ТЕПЕР ЗАГОРНУТО В USEEFFECT)
+  // 2. ЗАВАНТАЖЕННЯ РЕКОМЕНДАЦІЙ
   useEffect(() => {
     const fetchRecommendations = async () => {
       if (!userEmail) {
@@ -58,7 +61,9 @@ const Home = () => {
           const API_KEY = 'c8282b948e28647029c446fa9bef20f8';
           
           const moviePromises = pythonRes.data.recommendations.map(async (rec) => {
-            const tmdbRes = await axios.get(`https://api.themoviedb.org/3/movie/${rec.movieId}?api_key=${API_KEY}&language=uk-UA`);
+            // 🔥 Динамічна мова для TMDB на основі вибраної в i18n
+            const langParam = i18n.language === 'uk' ? 'uk-UA' : 'en-US';
+            const tmdbRes = await axios.get(`https://api.themoviedb.org/3/movie/${rec.movieId}?api_key=${API_KEY}&language=${langParam}`);
             return { ...tmdbRes.data, predictedRating: rec.predicted_rating };
           });
 
@@ -73,12 +78,14 @@ const Home = () => {
     };
 
     fetchRecommendations();
-  }, [userEmail]); // Залежність: запускається лише при завантаженні або зміні email
+  }, [userEmail, i18n.language]); // 🔥 Додав i18n.language, щоб рекомендації оновлювались при зміні мови
 
   if (loading) return (
     <div className="home-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
         <img src={moonLogo} alt="Loading..." style={{ width: '100px', height: '100px', animation: 'pulse 1.5s infinite ease-in-out', filter: 'drop-shadow(0 0 15px #8a3ffc)' }} />
-        <p style={{ marginTop: '20px', color: '#8a3ffc', fontWeight: 'bold', letterSpacing: '2px' }}>ЗАВАНТАЖЕННЯ ГОЛОВНОЇ...</p>
+        <p style={{ marginTop: '20px', color: '#8a3ffc', fontWeight: 'bold', letterSpacing: '2px' }}>
+          {t('loadingHome')} {/* 🔥 ПЕРЕКЛАД */}
+        </p>
     </div>
   );
 
@@ -103,25 +110,25 @@ const Home = () => {
               {heroMovie.title}
             </h1>
             <p style={{ fontSize: '16px', color: '#a0a0b5', lineHeight: '1.5', marginBottom: '25px', textShadow: '0 2px 8px rgba(0,0,0,0.9)' }}>
-              {heroMovie.overview ? (heroMovie.overview.slice(0, 180) + '...') : 'Опис фільму тимчасово відсутній.'}
+              {heroMovie.overview ? (heroMovie.overview.slice(0, 180) + '...') : t('noDescription')} {/* 🔥 ПЕРЕКЛАД */}
             </p>
             <div style={{ display: 'flex', gap: '15px' }}>
               <button 
                 onClick={() => navigate(`/movie/${heroMovie.id}`)}
                 style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#8a3ffc', color: 'white', border: 'none', padding: '12px 25px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer' }}
               >
-                <Info size={18} /> Детальніше
+                <Info size={18} /> {t('moreInfo')} {/* 🔥 ПЕРЕКЛАД */}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ✨ БЛОК РЕКОМЕНДАЦІЙ ШТУЧНОГО ІНТЕЛЕКТУ (ДЛЯ АВТОРИЗОВАНИХ) ✨ */}
+      {/* ✨ БЛОК РЕКОМЕНДАЦІЙ ШТУЧНОГО ІНТЕЛЕКТУ ✨ */}
       {userEmail && (
         <div style={{ padding: '0 50px', marginTop: '40px' }}>
           <h2 style={{ color: 'white', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px', marginBottom: '20px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px' }}>
-            Рекомендовано для тебе
+            {t('recommendations')} {/* 🔥 ПЕРЕКЛАД */}
             <span style={{ fontSize: '12px', background: 'rgba(138, 63, 252, 0.2)', color: '#8a3ffc', padding: '4px 10px', borderRadius: '12px', verticalAlign: 'middle', fontWeight: 'bold', border: '1px solid rgba(138, 63, 252, 0.5)' }}>
               SVD AI
             </span>
@@ -156,7 +163,7 @@ const Home = () => {
             </div>
           ) : (
             <div style={{ background: 'rgba(255,255,255,0.03)', padding: '30px', borderRadius: '12px', color: '#a0a0b5', textAlign: 'center', border: '1px dashed rgba(138,63,252,0.3)' }}>
-              <p style={{ margin: 0 }}>Поки що недостатньо оцінок. Оціни ще кілька фільмів, щоб алгоритм зміг підібрати персональні рекомендації!</p>
+              <p style={{ margin: 0 }}>{t('notEnoughRatings')}</p> {/* 🔥 ПЕРЕКЛАД */}
             </div>
           )}
         </div>
@@ -165,7 +172,7 @@ const Home = () => {
       {/* 🍿 РЯДОК: ПОПУЛЯРНІ ФІЛЬМИ */}
       <div style={{ padding: '0 50px', marginTop: '40px' }}>
         <h2 style={{ fontSize: '24px', marginBottom: '20px', borderLeft: '4px solid #a0a0b5', paddingLeft: '15px', textAlign: 'left' }}>
-          Популярно на MOON
+          {t('popularMovies')} {/* 🔥 ПЕРЕКЛАД */}
         </h2>
         
         <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '15px', scrollbarWidth: 'thin' }}>
