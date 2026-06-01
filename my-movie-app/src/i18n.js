@@ -5,14 +5,14 @@ const resources = {
   uk: {
     translation: {
       "home": "Головна",
-      "account": "Мій Акаунт",
+      "account": "Акаунт",
       "searchPlaceholder": "Шукати фільм (натисніть Enter)..."
     }
   },
   en: {
     translation: {
       "home": "Home",
-      "account": "My Account",
+      "account": "Account",
       "searchPlaceholder": "Search movie (press Enter)..."
     }
   }
