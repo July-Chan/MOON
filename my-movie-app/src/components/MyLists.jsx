@@ -23,7 +23,7 @@ const MyLists = () => {
                 const response = await axios.get(`https://moon-z1lm.onrender.com/api/lists?userId=${userEmail}`);
                 setLists(response.data);
             } catch (error) {
-                console.error("Помилка:", error);
+                console.error("Помилка завантаження списків:", error);
             }
         };
         if (userEmail) fetchLists();
@@ -41,19 +41,19 @@ const MyLists = () => {
             setLists([...lists, response.data]);
             setNewListName(''); 
         } catch (error) {
-            console.error("Помилка створення:", error);
+            console.error("Помилка створення списку:", error);
         }
     };
 
     const handleDeleteList = async (e, listId) => {
-        e.stopPropagation();
+        e.stopPropagation(); // Не дає перейти в папку при кліку на кошик
         if (!window.confirm(t('confirmDeleteFolder', 'Точно хочеш видалити цю папку?'))) return;
 
         try {
             await axios.delete(`https://moon-z1lm.onrender.com/api/lists/${listId}`);
             setLists(lists.filter(list => list.id !== listId));
         } catch (error) {
-            console.error("Помилка видалення:", error);
+            console.error("Помилка видалення списку:", error);
         }
     };
 
@@ -72,24 +72,19 @@ const MyLists = () => {
             setLists(lists.map(list => list.id === listId ? { ...list, name: editingName } : list));
             setEditingListId(null);
         } catch (error) {
-            console.error("Помилка оновлення:", error);
+            console.error("Помилка оновлення назви:", error);
         }
     };
 
     return (
         <div className="lists-container">
-            <h2 style={{ fontSize: '24px', color: 'white', marginBottom: '20px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px', textAlign: 'left' }}>
+            <h2 className="lists-title">
                 {t('myListsTitle', 'Мої списки')}
             </h2> 
 
-            {/* 🔥 Переконайся, що структура форми виглядає саме так */}
+            {/* Контейнер створення нової папки */}
             <div className="create-list-container">
-                <form 
-                    onSubmit={handleCreateList} 
-                    className="create-list-form"
-                    onFocus={(e) => e.currentTarget.style.borderColor = '#8a3ffc'}
-                    onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.3)'}
-                >
+                <form onSubmit={handleCreateList} className="create-list-form">
                     <FolderOpen size={18} color="#a0a0b5" className="form-icon-left" />
                     <input
                         type="text"
@@ -118,48 +113,44 @@ const MyLists = () => {
                 {lists.map((list) => (
                     <div key={list.id} className="folder-card" onClick={() => navigate(`/lists/${list.id}`)}>
                         
-                        <div style={{ display: 'flex', gap: '10px', alignSelf: 'flex-end', marginBottom: '5px' }}>
-                            <button onClick={(e) => startEditing(e, list)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px' }}>
-                                <Pencil size={16} color="#a0a0b5" />
+                        {/* Панель дій (Редагувати / Видалити) */}
+                        <div className="folder-actions">
+                            <button onClick={(e) => startEditing(e, list)} className="action-btn">
+                                <Pencil size={15} color="#a0a0b5" />
                             </button>
-                            <button 
-                            className="delete-movie-btn" 
-                            onClick={(e) => {
-                                e.stopPropagation(); // 🔥 ЖИТТЄВО НЕОБХІДНО! Не дає браузеру відкрити сторінку фільму при натисканні на хрестик
-                                handleRemoveMovie(movie.id);
-                            }}
-                            >
-                            <X size={16} color="white" />
+                            <button onClick={(e) => handleDeleteList(e, list.id)} className="action-btn delete-btn">
+                                <Trash2 size={15} color="#ff4757" />
                             </button>
                         </div>
 
+                        {/* Колаж із 4 постерів всередині папки */}
                         <div className="folder-cover-grid">
                             {list.movies && list.movies.length > 0 ? (
                                 list.movies.slice(0, 4).map((movie, index) => (
                                     <img 
                                         key={index} 
-                                        src={movie.posterPath} 
+                                        src={movie.posterPath || movie.poster_path ? `https://image.tmdb.org/t/p/w300${movie.posterPath || movie.poster_path}` : 'https://placehold.co/300x450/1a1a2e/ffffff?text=No+Poster'} 
                                         alt="poster" 
                                         className="grid-poster" 
                                     />
                                 ))
                             ) : (
                                 <div className="empty-folder">
-                                    <FolderOpen size={48} color="#6a5acd" />
+                                    <FolderOpen size={40} color="#8a3ffc" />
                                 </div>
                             )}
                         </div>
                         
+                        {/* Назва папки або інпут редагування */}
                         {editingListId === list.id ? (
-                            <div style={{ display: 'flex', gap: '5px', marginTop: '10px' }}>
+                            <div className="edit-input-container" onClick={(e) => e.stopPropagation()}>
                                 <input 
                                     type="text" 
+                                    className="folder-edit-input"
                                     value={editingName} 
                                     onChange={(e) => setEditingName(e.target.value)}
-                                    onClick={(e) => e.stopPropagation()} 
-                                    style={{ padding: '5px', borderRadius: '5px', width: '100px', backgroundColor: '#2a2a4a', color: 'white', border: '1px solid #6a5acd' }}
                                 />
-                                <button onClick={(e) => handleSaveEdit(e, list.id)} style={{ background: '#00b894', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>✓</button>
+                                <button onClick={(e) => handleSaveEdit(e, list.id)} className="save-edit-btn">✓</button>
                             </div>
                         ) : (
                             <span className="folder-name">{list.name}</span>
