@@ -125,27 +125,34 @@ h2 {
 .create-list-form {
   display: flex;
   align-items: center;
-  position: relative;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 20px;
-  padding: 6px 14px; /* Рівномірні внутрішні паддінги для форми */
-  border: 1px solid rgba(138, 63, 252, 0.3);
-  transition: all 0.3s ease;
   width: 100%;
   max-width: 400px;
   box-sizing: border-box;
+  background: transparent !important; /* 🔥 Прибираємо зовнішній фон */
+  border: none !important;             /* 🔥 Прибираємо зовнішній контур */
+  padding: 0 !important;               /* Скидаємо паддінги форми */
+  gap: 12px;
 }
 
 .create-list-input {
   flex-grow: 1;
-  background: transparent;
-  border: none;
+  background: rgba(255, 255, 255, 0.05); /* Переносимо фон сюди */
+  border: 1px solid rgba(138, 63, 252, 0.3); /* Переносимо контур сюди */
+  border-radius: 20px; /* Заокруглення для самого інпута */
   color: white;
-  padding: 8px 10px !important; /* Даємо невеликий відступ по боках від іконушек */
+  padding: 12px 18px !important; /* 🔥 Збільшуємо внутрішній розмір інпута, щоб він був просторим */
   outline: none;
   font-size: 16px;
   font-family: 'Inter', sans-serif;
-  min-width: 0; /* Захист від розпирання */
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.create-list-input:focus {
+  border-color: #8a3ffc;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(138, 63, 252, 0.2);
 }
 
 .create-list-btn {
@@ -236,7 +243,7 @@ h2 {
   /* 🔥 ФІКС ФОРМИ: Перетворюємо рядок у 2 рядки (стовпчик) */
 .create-list-container {
     display: flex !important;
-    flex-direction: column !important; /* Будуємо строго в стовпчик: форма, потім кнопка */
+    flex-direction: column !important; /* Форма та кнопка одна під одною */
     gap: 14px !important;
     margin-bottom: 35px !important;
     width: 100% !important;
@@ -244,22 +251,27 @@ h2 {
 
 .create-list-form {
     display: flex !important;
-    flex-direction: row !important; /* Іконка та інпут залишаються строго в лінію */
+    flex-direction: row !important; /* Іконка та інпут строго в один рядок */
     align-items: center !important;
-    max-width: none !important;
     width: 100% !important;
-    box-sizing: border-box !important;
-    padding: 8px 16px !important;
+    max-width: none !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+
+  .create-list-input {
+    padding: 12px 16px !important; /* Комфортні мобільні відступи всередині поля */
   }
 
 .create-list-btn {
     display: block !important;
     width: 100% !important;
-    padding: 14px 0 !important; /* Робимо її об'ємною та зручною під палець */
+    padding: 14px 0 !important;
     text-align: center !important;
     border-radius: 20px !important;
-    height: auto !important;
     box-sizing: border-box !important;
+    height: auto !important;
   }
 
   /* 🔥 ФІКС СІТКИ ПАПОК: Строго 2 стовпчики, великі картинки */
