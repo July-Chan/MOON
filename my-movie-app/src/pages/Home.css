@@ -208,7 +208,7 @@
    ========================================================================== */
 @media screen and (max-width: 768px) {
   .home-container {
-    padding: 85px 12px 20px; /* Зменшуємо загальні рамки сайту */
+    padding: 85px 12px 20px; 
   }
 
   .home-section {
@@ -218,18 +218,18 @@
   .home-section h2 {
     font-size: 20px;
     margin-bottom: 15px;
-    flex-wrap: wrap;
+    display: flex;
     align-items: center;
     gap: 8px;
   }
 
   .ai-badge {
-    white-space: nowrap !important; /* Забороняє тексту розриватися на два рядки */
-    margin-left: 0 !important;      /* Скидаємо лівий відступ для гнучкості */
+    white-space: nowrap !important;
+    margin-left: 0 !important;
   }
 
   /* 🎬 Мобільний банер */
-.hero-banner {
+  .hero-banner {
     height: 50vh !important; 
     padding: 0 20px 25px !important;
     margin-left: -12px !important; 
@@ -253,32 +253,21 @@
     font-size: 14px;
   }
 
-  /* ✨ ТУТ ЗМІНИ: Перетворюємо повзунок рекомендацій ШІ на СІТКУ для телефонів */
-.recs-scroll-container {
+  /* ✨ ЧИСТА СІТКА РЕКОМЕНДАЦІЙ: Жодного скролу, строго вниз */
+  .recs-scroll-container {
     display: grid !important;
-    grid-template-rows: repeat(2, min-content) !important; /* Строго 2 рядки */
-    grid-auto-flow: column !important; /* Елементи заповнюють рядки й кучкуються в колонки */
-    grid-auto-columns: 140px !important; /* Фіксована ширина кожної картки в скролі */
+    grid-template-columns: repeat(2, 1fr) !important; /* Рівно 2 колонки */
+    grid-template-rows: unset !important;             /* Скидаємо старі налаштування */
+    grid-auto-flow: unset !important;
+    grid-auto-columns: unset !important;
     gap: 12px !important; 
-    overflow-x: auto !important; /* Вмикаємо горизонтальний скрол */
-    overflow-y: hidden !important; /* Заганяємо вертикальний скрол у бан */
-    padding-bottom: 10px;
-    width: calc(100% + 24px) !important;
-    
-    /* Розширюємо зону скролу до країв екрану смартфона */
-    margin-left: -12px !important;
-    margin-right: -12px !important;
-    padding-left: 12px !important;
-    padding-right: 12px !important;
-    box-sizing: border-box;
-    scrollbar-width: none; /* Ховаємо скролбар на Firefox */
+    overflow-x: visible !important;                    /* Повністю вбиваємо горизонтальний скрол */
+    overflow-y: visible !important;
+    margin: 0 !important;                              /* Повертаємо в рамки сайту */
+    padding: 0 !important;
+    width: 100% !important;
   }
 
-  .recs-scroll-container::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Скидаємо фіксовану ширину карток рекомендацій, щоб вони слухалися сітки */
   .rec-movie-card {
     width: 100% !important; 
   }
@@ -290,7 +279,6 @@
     object-fit: cover;
   }
 
-  /* Налаштування для скелетонів під час завантаження ШІ */
   .recs-skeleton {
     min-width: 0 !important; 
     width: 100%;
@@ -298,8 +286,9 @@
     aspect-ratio: 2 / 3;
   }
 
-.movies-grid-layout {
-    grid-template-columns: repeat(2, 1fr) !important; /* Теж жорсткі 2 колонки */
+  /* 📊 СІТКА ПОПУЛЯРНОГО */
+  .movies-grid-layout {
+    grid-template-columns: repeat(2, 1fr) !important; 
     gap: 12px !important; 
   }
 
@@ -309,13 +298,5 @@
 
   .movie-meta {
     font-size: 11px;
-  }
-
-  .recs-scroll-container .rec-movie-card:nth-child(n+5) {
-    display: none !important; /* Ховаємо всі картки, починаючи з 5-ї */
-  }
-
-  .recs-scroll-container .recs-skeleton:nth-child(n+5) {
-    display: none !important; /* Ховаємо зайві скелетони під час завантаження */
   }
 }
