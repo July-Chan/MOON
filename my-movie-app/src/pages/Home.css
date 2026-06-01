@@ -338,4 +338,18 @@
        але й не падали до самого низу екрана */
     margin-top: 10px !important; 
   }
+
+  .create-list-form {
+    flex-direction: column !important; /* Перебудовуємо елементи один під один */
+    gap: 12px !important;              /* Зберігаємо акуратний проміжок між ними */
+    width: 100% !important;
+    max-width: none !important;        /* Знімаємо обмеження ПК версії */
+    margin-bottom: 30px !important;
+  }
+
+  .create-list-form input,
+  .create-list-form button {
+    width: 100% !important;            /* Розтягуємо і інпут, і кнопку на 100% ширини смартфона */
+    box-sizing: border-box !important;
+  }
 }
