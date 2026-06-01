@@ -23,8 +23,9 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   };
 
+  // 🚀 ФУНКЦІЯ ПОШУКУ
   const handleSearch = (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault(); // Безпечний захист
     if (!searchQuery.trim()) return;
 
     setIsMobileMenuOpen(false); 
@@ -52,11 +53,11 @@ const Navbar = () => {
         {isMobileMenuOpen ? <X size={28} color="#a0a0b5" /> : <Menu size={28} color="#a0a0b5" />}
       </button>
 
-      {/* 🔥 ОЬ ЦЬОГО РЯДКА НЕ ВИСТАЧАЛО (Відкриваємо обгортку контенту навбару) */}
+      {/* БЛОК З НАВІГАЦІЄЮ ТА ПОШУКОМ */}
       <div className={`navbar-content ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
         
-        {/* 🔎 РЯДОК ПОШУКУ */}
-        <div ref={searchRef} className="search-container" style={{ position: 'relative', flex: 1, maxWidth: '400px', margin: '0 30px' }}>
+        {/* 🔎 РЯДОК ПОШУКУ (БЕЗ ТЕГУ FORM — ПОВНА ЗАБОРОНА НА ПЕРЕЗАВАНТАЖЕННЯ) */}
+        <div className="search-container" style={{ position: 'relative', flex: 1, maxWidth: '400px', margin: '0 30px' }}>
           <div 
             style={{ 
               display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.05)', 
@@ -66,7 +67,6 @@ const Navbar = () => {
             onFocus={(e) => e.currentTarget.style.borderColor = '#8a3ffc'}
             onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.3)'}
           >
-            {/* Клікабельна лупа */}
             <Search size={16} color="#a0a0b5" onClick={handleSearch} style={{ cursor: 'pointer' }} />
             
             <input
@@ -76,7 +76,7 @@ const Navbar = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  handleSearch(e); // 🔥 Ловимо Enter напряму на інпуті
+                  handleSearch(e); 
                 }
               }}
               style={{ 
@@ -125,6 +125,7 @@ const Navbar = () => {
             </span>
           </Link>
 
+          {/* 🌐 КНОПКА ЗМІНИ МОВИ */}
           <button
             onClick={toggleLanguage}
             style={{
@@ -147,7 +148,7 @@ const Navbar = () => {
             {i18n.language === 'uk' ? 'EN' : 'UA'}
           </button>
         </div>
-      </div> {/* Тепер цей закриваючий тег став на своє місце */}
+      </div>
     </nav>
   );
 };
