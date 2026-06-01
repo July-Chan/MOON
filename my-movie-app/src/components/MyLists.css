@@ -289,4 +289,38 @@ h2 {
     font-size: 14px !important;
     margin-top: 8px !important;
   }
+
+  .movie-card-inside-folder, /* Заміни на свій клас картки фільму, якщо він інший */
+  .movie-card {
+    position: relative !important;
+  }
+
+  .delete-movie-btn, /* ⚠️ ЗАМІНИ ЦІ КЛАСИ НА СВІЙ РЕАЛЬНИЙ КЛАС ХРЕСТИКА */
+  .remove-movie-icon {
+    display: flex !important;          /* Примусово показуємо (скасовуємо display: none від ПК) */
+    position: absolute !important;
+    top: 8px !important;               /* Акуратно притискаємо в верхній правий куток постера */
+    right: 8px !important;
+    
+    /* Робимо красиву круглу темну підкладку, щоб хрестик було видно на будь-якому постері */
+    background: rgba(15, 15, 26, 0.8) !important; 
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 50% !important;
+    
+    /* Ідеальний розмір для тапу пальцем, але не занадто великий */
+    width: 32px !important;
+    height: 32px !important;
+    justify-content: center !important;
+    align-items: center !important;
+    
+    cursor: pointer;
+    z-index: 10 !important; /* Щоб хрестик точно був поверх картини */
+    transition: background 0.2s ease;
+  }
+
+
+  .delete-movie-btn:active {
+    background: #ff4757 !important; /* Стає червоним у момент тапу */
+  }
+  
 }
