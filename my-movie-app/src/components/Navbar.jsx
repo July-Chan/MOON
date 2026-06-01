@@ -56,12 +56,8 @@ const Navbar = () => {
       <div className={`navbar-content ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
         
         {/* 🔎 РЯДОК ПОШУКУ */}
-        <div className="search-container" style={{ position: 'relative', flex: 1, maxWidth: '400px', margin: '0 30px' }}>
-          <form 
-            onSubmit={(e) => {
-              e.preventDefault(); 
-              handleSearch(e);
-            }} 
+        <div ref={searchRef} className="search-container" style={{ position: 'relative', flex: 1, maxWidth: '400px', margin: '0 30px' }}>
+          <div 
             style={{ 
               display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.05)', 
               borderRadius: '20px', padding: '6px 15px', border: '1px solid rgba(138, 63, 252, 0.3)',
@@ -70,6 +66,7 @@ const Navbar = () => {
             onFocus={(e) => e.currentTarget.style.borderColor = '#8a3ffc'}
             onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.3)'}
           >
+            {/* Клікабельна лупа */}
             <Search size={16} color="#a0a0b5" onClick={handleSearch} style={{ cursor: 'pointer' }} />
             
             <input
@@ -77,6 +74,11 @@ const Navbar = () => {
               placeholder={t('searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch(e); // 🔥 Ловимо Enter напряму на інпуті
+                }
+              }}
               style={{ 
                 background: 'transparent', border: 'none', color: 'white', padding: '6px 10px', 
                 width: '100%', outline: 'none', fontSize: '14px', fontFamily: 'Inter, sans-serif' 
@@ -90,7 +92,7 @@ const Navbar = () => {
                 onClick={() => setSearchQuery('')} 
               />
             )}
-          </form>
+          </div>
         </div>
 
         {/* 🧭 КНОПКИ НАВІГАЦІЇ + ЗМІНА МОВИ */}
