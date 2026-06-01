@@ -5,12 +5,12 @@ import './Account.css';
 import moonLogo from '../assets/moon_logo_ball.svg';
 import { useNavigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
-import { useTranslation } from 'react-i18next'; // 🔥 1. ДОДАЛИ ІМПОРТ
+import { useTranslation } from 'react-i18next';
 
 const Account = () => {
     const { logout } = useContext(AuthContext);
     const navigate = useNavigate();
-    const { t } = useTranslation(); // 🔥 2. ДІСТАЄМО ФУНКЦІЮ ПЕРЕКЛАДУ
+    const { t } = useTranslation();
     
     const userEmail = localStorage.getItem('userEmail');
     const userName = localStorage.getItem('userName') || t('defaultUserName', 'User'); // Переклали ім'я за замовчуванням
@@ -18,22 +18,55 @@ const Account = () => {
     const [ratedMovies, setRatedMovies] = useState([]);
 
     useEffect(() => {
-        if (userEmail) {
-            fetch(`https://moon-z1lm.onrender.com/api/users/${userEmail}/ratings`)
-                .then(res => res.json())
-                .then(data => {
-                    if (Array.isArray(data)) {
-                        const sorted = data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-                        setRatedMovies(sorted);
-                    }
-                })
-                .catch(err => console.error("Помилка завантаження оцінених фільмів:", err));
-        }
-    }, [userEmail]);
+            const fetchAndTranslateRatings = async () => {
+                if (!userEmail) return;
 
-    const handleLogout = () => {
-        logout();
-    };
+                try {
+                    // 1. Отримуємо збережені оцінки з бази (зі статичними назвами)
+                    const res = await fetch(`https://moon-z1lm.onrender.com/api/users/${userEmail}/ratings`);
+                    const data = await res.json();
+
+                    if (Array.isArray(data) && data.length > 0) {
+                        // 2. Формуємо мову для TMDB
+                        const currentLang = i18n.language || '';
+                        const langParam = currentLang.includes('uk') || currentLang.includes('ua') ? 'uk-UA' : 'en-US';
+                        const TMDB_API_KEY = '15d2ea6d0dc1d476efbca3eba2b9bbfb'; // Твій ключ TMDB
+
+                        // 3. Для кожного фільму просимо в TMDB актуальну назву
+                        const translatedPromises = data.map(async (movie) => {
+                            try {
+                                const tmdbRes = await fetch(`https://api.themoviedb.org/3/movie/${movie.movieId}?api_key=${TMDB_API_KEY}&language=${langParam}`);
+                                const tmdbData = await tmdbRes.json();
+                                
+                                return {
+                                    ...movie, // Беремо твою оцінку, дату і т.д.
+                                    title: tmdbData.title || movie.title, // 🔥 ПІДМІНЯЄМО НАЗВУ НА ПЕРЕКЛАДЕНУ
+                                    poster_path: tmdbData.poster_path || movie.poster_path
+                                };
+                            } catch (err) {
+                                return movie; // Якщо TMDB не відповів, залишаємо стару назву
+                            }
+                        });
+
+                        // 4. Чекаємо, поки перекладуться всі фільми, сортуємо і зберігаємо
+                        const translatedMovies = await Promise.all(translatedPromises);
+                        const sorted = translatedMovies.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+                        
+                        setRatedMovies(sorted);
+                    } else {
+                        setRatedMovies([]);
+                    }
+                } catch (err) {
+                    console.error("Помилка завантаження оцінених фільмів:", err);
+                }
+            };
+
+            fetchAndTranslateRatings();
+        }, [userEmail, i18n.language]); // 🔥 РЕАГУЄ НА ЗМІНУ МОВИ
+
+        const handleLogout = () => {
+            logout();
+        };
 
     return (
         <div className="home-container" style={{ paddingTop: '80px' }}>
@@ -126,7 +159,6 @@ const Account = () => {
             </main>
 
             <button onClick={handleLogout} className="logout-btn" style={{ marginTop: '40px' }}>
-                {/* 🔥 Переклали кнопку виходу */}
                 {t('logoutBtn', 'Вийти')}
             </button>
         </div>
