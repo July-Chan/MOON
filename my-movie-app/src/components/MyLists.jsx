@@ -3,6 +3,7 @@ import { FolderOpen, Pencil, Trash2 } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './MyLists.css'; 
+import { useTranslation } from 'react-i18next';
 
 const MyLists = () => {
     const [lists, setLists] = useState([]);
@@ -78,16 +79,18 @@ const MyLists = () => {
 
     return (
         <div className="lists-container">
-            <h2>Мої списки</h2>
+            <h2 style={{ fontSize: '24px', color: 'white', marginBottom: '20px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px' }}>
+                            {t('myListsTitle', 'Мої списки')} {/* 🔥 Переклад */}
+                        </h2>
 
             <form onSubmit={handleCreateList} className="create-list-form">
                 <input
                     type="text"
-                    placeholder="Назва нової папки..."
+                    placeholder={t('newFolderPlaceholder', 'Назва нової папки...')}
                     value={newListName}
                     onChange={(e) => setNewListName(e.target.value)}
                 />
-                <button type="submit">Створити папку</button>
+                <button type="submit">{t('createFolderBtn', 'Створити папку')}</button>
             </form>
 
             <div className="folders-grid-layout">

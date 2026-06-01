@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { FolderOpen, ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next'; // 🔥 1. Імпорт
 import '../App.css';
 import moonLogo from '../assets/moon_logo_ball.svg';
 
 const FolderView = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation(); // 🔥 2. Хук
     
     const [folderDetails, setFolderDetails] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -34,8 +36,14 @@ const FolderView = () => {
         e.preventDefault();
         if (!searchQuery.trim()) return;
         const API_KEY = 'c8282b948e28647029c446fa9bef20f8'; 
+        
+        // 🔥 Отримуємо мову для пошуку в TMDB
+        const currentLang = i18n.language || '';
+        const langParam = currentLang.includes('uk') || currentLang.includes('ua') ? 'uk-UA' : 'en-US';
+
         try {
-            const res = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${searchQuery}`);
+            // 🔥 Передаємо language у запит
+            const res = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${searchQuery}&language=${langParam}`);
             setSearchResults(res.data.results);
         } catch (error) {
             console.error("Помилка пошуку:", error);
@@ -45,14 +53,14 @@ const FolderView = () => {
     const handleAddMovie = async (movie) => {
         const isDuplicate = folderDetails.movies?.some(m => m.tmdbId === movie.id);
         if (isDuplicate) {
-            alert("Цей фільм вже є у папці.");
+            alert(t('movieAlreadyInFolder', 'Цей фільм вже є у папці.')); // 🔥 Переклад
             return;
         }
         const movieData = {
             tmdbId: movie.id,
             title: movie.title,
             posterPath: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
-            releaseDate: movie.release_date || 'Невідомо'
+            releaseDate: movie.release_date || 'Невідомо' // Тут можна не перекладати, якщо TMDB повертає дату
         };
         try {
             await axios.post(`https://moon-z1lm.onrender.com/api/lists/${id}/movies`, movieData);
@@ -68,7 +76,7 @@ const FolderView = () => {
     };
 
     const handleDeleteMovie = async (tmdbId) => {
-        if (!window.confirm("Дійсно хочеш прибрати цей фільм з папки?")) return;
+        if (!window.confirm(t('confirmRemoveMovie', 'Дійсно хочеш прибрати цей фільм з папки?'))) return; // 🔥 Переклад
         try {
             await axios.delete(`https://moon-z1lm.onrender.com/api/lists/${id}/movies/${tmdbId}`);
             setFolderDetails(prev => ({
@@ -88,15 +96,15 @@ const FolderView = () => {
 
     if (!folderDetails) return (
         <div className="home-container" style={{ textAlign: 'center', paddingTop: '100px', color: 'white' }}>
-            <h2>Папку не знайдено</h2>
-            <button onClick={() => navigate('/')} className="logout-btn">Повернутись на головну</button>
+            <h2>{t('folderNotFound', 'Папку не знайдено')}</h2>
+            <button onClick={() => navigate('/')} className="logout-btn">{t('backToHome', 'Повернутись на головну')}</button>
         </div>
     );
 
     return (
         <div className="home-container" style={{ padding: '20px' }}>
             <button className="logout-btn" onClick={() => navigate(-1)} style={{ marginBottom: '30px', display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'transparent', color: '#8a3ffc', border: '1px solid #8a3ffc' }}>
-                <ArrowLeft size={18} /> Назад до папок
+                <ArrowLeft size={18} /> {t('backToFolders', 'Назад до папок')}
             </button>
             
             <h1 style={{ color: 'white', textAlign: 'center', marginBottom: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', fontSize: '32px' }}>
@@ -106,12 +114,14 @@ const FolderView = () => {
             <form onSubmit={handleSearch} style={{display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '30px'}}>
                 <input 
                     type="text" 
-                    placeholder="Шукати фільм..." 
+                    placeholder={t('searchMoviePlaceholder', 'Шукати фільм...')} // 🔥 Переклад
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     style={{padding: '12px', borderRadius: '8px', width: '100%', maxWidth: '400px', backgroundColor: '#2a2a4a', color: 'white', border: 'none'}}
                 />
-                <button type="submit" style={{padding: '12px 24px', borderRadius: '8px', backgroundColor: '#6a5acd', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold'}}>Шукати</button>
+                <button type="submit" style={{padding: '12px 24px', borderRadius: '8px', backgroundColor: '#6a5acd', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold'}}>
+                    {t('searchBtn', 'Шукати')} {/* 🔥 Переклад */}
+                </button>
             </form>
 
             {/* РЕЗУЛЬТАТИ ПОШУКУ */}
@@ -137,7 +147,7 @@ const FolderView = () => {
                                     style={{ width: '100%', display: 'block', transition: '0.3s' }} 
                                 />
                                 <div className="hover-overlay" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(138, 63, 252, 0.4)', opacity: 0, transition: '0.3s', color: 'white', fontWeight: 'bold' }}>
-                                    + ДОДАТИ
+                                    + {t('addBtn', 'ДОДАТИ')} {/* 🔥 Переклад */}
                                 </div>
                             </div>
                             <p style={{ color: 'white', fontSize: '12px', marginTop: '8px', height: '30px', overflow: 'hidden' }}>{movie.title}</p>
@@ -146,7 +156,7 @@ const FolderView = () => {
                 </div>
             )}
 
-            <h3 style={{color: 'white', marginBottom: '20px'}}>Фільми у списку:</h3>
+            <h3 style={{color: 'white', marginBottom: '20px'}}>{t('moviesInList', 'Фільми у списку:')}</h3> {/* 🔥 Переклад */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
                 {folderDetails.movies?.map((movie, index) => (
                     <div key={index} className="movie-card" style={{ width: '160px', display: 'flex', flexDirection: 'column', position: 'relative' }}>
