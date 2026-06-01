@@ -299,4 +299,39 @@
   .movie-meta {
     font-size: 11px;
   }
+
+  .navbar-content {
+    position: fixed;
+    top: 0;
+    right: -100%; 
+    width: 290px; 
+    height: 100vh;
+    background: rgba(12, 12, 22, 0.98); 
+    backdrop-filter: blur(20px);
+    border-left: 1px solid rgba(138, 63, 252, 0.15);
+    
+    flex-direction: column;
+    /* 🔥 Змінюємо логіку розташування: все будується строго зверху вниз */
+    justify-content: flex-start !important; 
+    
+    /* 🔥 Зменшуємо верхній відступ з 90px до 75px та нижній до 30px */
+    padding: 75px 24px 30px !important; 
+    
+    /* 🔥 Зменшуємо проміжок між пошуковим рядком та кнопками навігації */
+    gap: 25px !important; 
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.6);
+    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .nav-links-container {
+    flex-direction: column;
+    align-items: stretch !important;
+    /* 🔥 Зменшуємо проміжок між самими кнопками з 16px до 12px для компактності */
+    gap: 12px !important; 
+    width: 100%;
+    
+    /* 🔥 Невеликий відступ зверху від пошукового рядка, щоб кнопки не липли, 
+       але й не падали до самого низу екрана */
+    margin-top: 10px !important; 
+  }
 }
