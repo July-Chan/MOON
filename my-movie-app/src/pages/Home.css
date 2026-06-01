@@ -218,19 +218,24 @@
   .home-section h2 {
     font-size: 20px;
     margin-bottom: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ai-badge {
+    white-space: nowrap !important; /* Забороняє тексту розриватися на два рядки */
+    margin-left: 0 !important;      /* Скидаємо лівий відступ для гнучкості */
   }
 
   /* 🎬 Мобільний банер */
 .hero-banner {
-    height: 50vh !important; /* Трохи збільшили висоту, щоб він не був приплюснутим */
+    height: 50vh !important; 
     padding: 0 20px 25px !important;
-    
-    /* Магія: виносимо банер за межі паддінгів головного контейнера */
     margin-left: -12px !important; 
     margin-right: -12px !important;
     width: calc(100% + 24px) !important;
-    
-    border-radius: 0 !important; /* Без заокруглень на весь екран він виглядає набагато просторіше */
+    border-radius: 0 !important; 
   }
 
   .hero-banner-content h1 {
@@ -280,8 +285,7 @@
   }
 
 .movies-grid-layout {
-    /* Збільшуємо мінімальний розмір до 145px і зменшуємо проміжок */
-    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)) !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* Теж жорсткі 2 колонки */
     gap: 12px !important; 
   }
 
