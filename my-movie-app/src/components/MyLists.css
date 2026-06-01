@@ -29,6 +29,7 @@
   margin-bottom: 40px;
   max-width: 600px;
   width: 100%;
+  align-items: center; /* Вирівнюємо інпут та кнопку по центру в ряду */
 }
 
 .create-list-form {
@@ -36,11 +37,10 @@
   display: flex;
   align-items: center;
   flex-grow: 1;
-  background-color: #1a1a2e;
-  border: 1px solid rgba(138, 63, 252, 0.3);
-  border-radius: 20px; /* Красива кругла форма, як ти хотіла */
-  padding: 0 15px;
-  transition: all 0.3s ease;
+  background: transparent !important; /* 🔥 Прибираємо зовнішній фон */
+  border: none !important;            /* 🔥 Повністю видаляємо зовнішню обводку */
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
 .create-list-form:focus-within {
@@ -51,15 +51,18 @@
 
 .create-list-input {
   flex-grow: 1;
-  background: transparent;
-  border: none;
+  background: #1a1a2e !important; /* Фон тепер тільки тут */
+  border: 1px solid rgba(138, 63, 252, 0.3) !important; /* Рамка тільки тут */
+  border-radius: 20px;
   color: white;
-  padding: 12px 10px;
+  /* Збільшуємо відступ зліва (45px), щоб текст не налізав на іконку папки */
+  padding: 12px 18px 12px 45px !important; 
   outline: none;
   font-size: 16px;
   font-family: 'Inter', sans-serif;
   width: 100%;
   box-sizing: border-box;
+  transition: all 0.3s ease;
 }
 
 .create-list-input::placeholder {
@@ -67,7 +70,9 @@
 }
 
 .create-list-btn {
+  flex-shrink: 0 !important; /* 🔥 ГОЛОВНИЙ ФІКС: забороняємо кнопці зменшуватися при зміні ширини */
   padding: 0 25px;
+  height: 48px; /* Фіксуємо висоту під розмір інпута */
   border-radius: 20px;
   background-color: #8a3ffc;
   color: white;
@@ -77,8 +82,8 @@
   font-size: 15px;
   font-family: 'Inter', sans-serif;
   transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(138, 63, 252, 0.3); /* Тільки чиста зовнішня тінь */
   white-space: nowrap;
-  box-shadow: 0 4px 15px rgba(138, 63, 252, 0.3); /* Тільки зовнішня елегантна тінь */
 }
 
 .create-list-btn:hover {
@@ -86,9 +91,24 @@
   transform: translateY(-2px);
 }
 
-.form-icon-left,
+.create-list-input:focus {
+  border-color: #8a3ffc !important;
+  background-color: #23233e !important;
+  box-shadow: 0 0 0 3px rgba(138, 63, 252, 0.2) !important;
+}
+
+.form-icon-left {
+  position: absolute;
+  left: 16px;
+  z-index: 5;
+  pointer-events: none; /* Щоб клік крізь іконку йшов в інпут */
+}
+
 .form-icon-right {
-  flex-shrink: 0;
+  position: absolute;
+  right: 16px;
+  z-index: 5;
+  cursor: pointer;
 }
 
 
@@ -225,7 +245,10 @@
   text-overflow: ellipsis;
   display: block;
 }
-
+.create-list-btn:hover {
+  background-color: #9b59b6;
+  transform: translateY(-2px);
+}
 
 /* ==========================================================================
    МОБІЛЬНА АДАПТАЦІЯ (ДЛЯ ЕКРАНІВ МЕНШЕ 768px)
@@ -242,36 +265,28 @@
 
   /* Перебудовуємо форму створення в стовпчик */
   .create-list-container {
-    display: flex !important;
-    flex-direction: column !important; 
-    gap: 12px !important;
-    margin-bottom: 30px !important;
-    width: 100% !important;
-  }
+      display: flex !important;
+      flex-direction: column !important; 
+      gap: 12px !important;
+      margin-bottom: 30px !important;
+      width: 100% !important;
+    }
 
   .create-list-form {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    width: 100% !important;
-    background-color: #1a1a2e !important;
-    border: 1px solid rgba(138, 63, 252, 0.3) !important;
-    padding: 0 15px !important;
-    border-radius: 20px !important;
-  }
+      width: 100% !important;
+    }
 
   .create-list-input {
     padding: 12px 5px !important;
   }
 
   .create-list-btn {
-    display: block !important;
-    width: 100% !important;
-    padding: 14px 0 !important;
-    text-align: center !important;
-    border-radius: 20px !important;
-    height: auto !important;
-  }
+      width: 100% !important;
+      height: 48px !important;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+    }
 
   /* 🔥 СІТКА ПАПОК: Строго 2 красиві колонки на мобільних */
   .folders-grid-layout {
