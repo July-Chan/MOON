@@ -3,11 +3,13 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, User, Search, X } from 'lucide-react';
 import axios from 'axios';
 import moonLogo from '../assets/moon_logo.svg';
+import { useTranslation } from 'react-i18next';
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path) => location.pathname === path;
+  const { t, i18n } = useTranslation();
 
   // 🔍 СТЕЙТИ ДЛЯ ПОШУКУ
   const [searchQuery, setSearchQuery] = useState('');
@@ -26,6 +28,11 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'uk' ? 'en' : 'uk';
+    i18n.changeLanguage(newLang);
+  };
+
   // 🚀 ФУНКЦІЯ ПОШУКУ
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -33,7 +40,7 @@ const Navbar = () => {
 
     const API_KEY = 'c8282b948e28647029c446fa9bef20f8'; 
     try {
-      const res = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${searchQuery}&language=uk-UA`);
+      const res = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${searchQuery}&language=${i18n.language === 'uk' ? 'uk-UA' : 'en-US'}`);
       // Беремо лише перші 5 результатів для компактного меню
       setSearchResults(res.data.results.slice(0, 5));
       setIsSearchOpen(true);
@@ -99,6 +106,7 @@ const Navbar = () => {
           <Search size={16} color="#a0a0b5" />
           <input
             type="text"
+            // Замість жорсткого тексту можна буде поставити t('searchPlaceholder')
             placeholder="Шукати фільм (натисніть Enter)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -174,8 +182,8 @@ const Navbar = () => {
         )}
       </div>
 
-      {/* 🧭 КНОПКИ НАВІГАЦІЇ */}
-      <div style={{ display: 'flex', gap: '15px', flexShrink: 0 }}>
+      {/* 🧭 КНОПКИ НАВІГАЦІЇ + ЗМІНА МОВИ */}
+      <div style={{ display: 'flex', gap: '15px', flexShrink: 0, alignItems: 'center' }}>
         <Link 
           to="/" 
           style={{
@@ -186,6 +194,7 @@ const Navbar = () => {
         >
           <Home size={18} />
           <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: isActive('/') ? '700' : '500' }}>
+            {/* Можна замінити на t('home') */}
             Головна
           </span>
         </Link>
@@ -200,9 +209,45 @@ const Navbar = () => {
         >
           <User size={18} />
           <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: isActive('/account') ? '700' : '500' }}>
+            {/* Можна замінити на t('account') */}
             Мій Акаунт
           </span>
         </Link>
+
+        {/* 🌐 КНОПКА ЗМІНИ МОВИ */}
+        <button
+          onClick={toggleLanguage}
+          style={{
+            background: 'transparent',
+            border: '1px solid rgba(138, 63, 252, 0.5)',
+            color: '#a0a0b5',
+            padding: '8px 14px',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: 'bold',
+            fontSize: '13px',
+            letterSpacing: '1px',
+            transition: 'all 0.25s ease',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minWidth: '45px',
+            marginLeft: '5px' // Невеличкий додатковий відступ від інших кнопок
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = 'white';
+            e.currentTarget.style.borderColor = '#8a3ffc';
+            e.currentTarget.style.background = 'rgba(138, 63, 252, 0.12)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = '#a0a0b5';
+            e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.5)';
+            e.currentTarget.style.background = 'transparent';
+          }}
+        >
+          {i18n.language === 'uk' ? 'EN' : 'UA'}
+        </button>
       </div>
     </nav>
   );
