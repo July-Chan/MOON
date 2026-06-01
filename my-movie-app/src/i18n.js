@@ -22,7 +22,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: "uk", // Мова за замовчуванням
+    lng: "uk",
     fallbackLng: "en",
     interpolation: {
       escapeValue: false 

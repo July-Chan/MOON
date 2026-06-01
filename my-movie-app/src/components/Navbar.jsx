@@ -207,7 +207,7 @@ const Navbar = () => {
         >
           <User size={18} />
             <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: isActive('/account') ? '700' : '500' }}>
-              {t('Account')}
+              {t('account')}
             </span>
         </Link>
 
