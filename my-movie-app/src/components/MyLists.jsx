@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FolderOpen, Pencil, Trash2, X } from 'lucide-react'; // 🔥 Додали X до імпортів
+import { FolderOpen, Pencil, Trash2, X } from 'lucide-react'; 
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -47,7 +47,6 @@ const MyLists = () => {
 
     const handleDeleteList = async (e, listId) => {
         e.stopPropagation();
-        
         if (!window.confirm(t('confirmDeleteFolder', 'Точно хочеш видалити цю папку?'))) return;
 
         try {
@@ -70,7 +69,6 @@ const MyLists = () => {
 
         try {
             await axios.put(`https://moon-z1lm.onrender.com/api/lists/${listId}`, { name: editingName });
-            
             setLists(lists.map(list => list.id === listId ? { ...list, name: editingName } : list));
             setEditingListId(null);
         } catch (error) {
@@ -84,21 +82,11 @@ const MyLists = () => {
                 {t('myListsTitle', 'Мої списки')}
             </h2> 
 
-            {/* 🔥 ОНОВЛЕНИЙ ДИЗАЙН РЯДКА СТВОРЕННЯ ПАПКИ */}
-            <div style={{ display: 'flex', gap: '15px', marginBottom: '40px', justifyContent: 'flex-start' }}>
+            {/* 🔥 КЛАСИ ЗАМІСТЬ ІНЛАЙН-СТИЛІВ ДЛЯ ФОРМИ */}
+            <div className="create-list-container">
                 <form 
                     onSubmit={handleCreateList} 
-                    style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        background: 'rgba(255,255,255,0.05)', 
-                        borderRadius: '20px', 
-                        padding: '6px 18px', 
-                        border: '1px solid rgba(138, 63, 252, 0.3)',
-                        transition: 'all 0.3s ease',
-                        width: '100%',
-                        maxWidth: '400px'
-                    }}
+                    className="create-list-form"
                     onFocus={(e) => e.currentTarget.style.borderColor = '#8a3ffc'}
                     onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.3)'}
                 >
@@ -108,16 +96,6 @@ const MyLists = () => {
                         placeholder={t('newFolderPlaceholder', 'Назва нової папки...')}
                         value={newListName}
                         onChange={(e) => setNewListName(e.target.value)}
-                        style={{ 
-                            background: 'transparent', 
-                            border: 'none', 
-                            color: 'white', 
-                            padding: '8px 12px', 
-                            width: '100%', 
-                            outline: 'none', 
-                            fontSize: '16px', 
-                            fontFamily: 'Inter, sans-serif' 
-                        }}
                     />
                     {newListName && (
                         <X 
@@ -133,20 +111,7 @@ const MyLists = () => {
 
                 <button 
                     onClick={handleCreateList} 
-                    style={{
-                        padding: '0 25px', 
-                        borderRadius: '20px', 
-                        backgroundColor: '#8a3ffc', 
-                        color: 'white', 
-                        border: 'none', 
-                        cursor: 'pointer', 
-                        fontWeight: 'bold',
-                        fontSize: '15px',
-                        fontFamily: 'Inter, sans-serif',
-                        transition: 'all 0.2s ease',
-                        boxShadow: '0 4px 15px rgba(138, 63, 252, 0.3)',
-                        whiteSpace: 'nowrap'
-                    }}
+                    className="create-list-btn"
                     onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor = '#9b59b6';
                         e.currentTarget.style.transform = 'translateY(-2px)';
