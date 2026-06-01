@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Star, Info } from 'lucide-react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
