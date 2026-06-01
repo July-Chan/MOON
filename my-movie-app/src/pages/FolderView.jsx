@@ -216,20 +216,34 @@ const FolderView = () => {
                 </div>
             )}
 
-            <h3 style={{color: 'white', marginBottom: '20px'}}>{t('moviesInList', 'Фільми у списку:')}</h3>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-                {folderDetails.movies?.map((movie, index) => (
-                    <div key={index} className="movie-card" style={{ width: '160px', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-                        <button className="delete-movie-btn" onClick={() => handleDeleteMovie(movie.tmdbId)} style={{ zIndex: 2 }}>✕</button>
-                        <Link to={`/movie/${movie.tmdbId}`} style={{ textDecoration: 'none' }}>
-                            <div className="poster-hover" style={{ borderRadius: '12px', overflow: 'hidden' }}>
-                                <img src={movie.posterPath} alt="poster" style={{ width: '100%', display: 'block' }} />
-                            </div>
-                            <span style={{ color: 'white', fontWeight: 'bold', fontSize: '14px', textAlign: 'center', display: 'block', marginTop: '10px' }}>{movie.title}</span>
-                        </Link>
-                    </div>
-                ))}
-            </div>
+                <h3 style={{ color: 'white', marginBottom: '20px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px', textAlign: 'left' }}>
+                    {t('moviesInList', 'Фільми у списку:')}
+                </h3>
+
+                {/* 🔥 Замість інлайнового флексу ставимо наш новий клас адаптивної сітки */}
+                <div className="movies-grid-layout">
+                    {folderDetails.movies?.map((movie, index) => (
+                        /* 🔥 Прибираємо width: '160px' та інші інлайн-стилі, залишаємо тільки чистий клас */
+                        <div key={index} className="movie-card">
+                            
+                            {/* Кнопка видалення (стилізується автоматично через CSS на ПК та смартфонах) */}
+                            <button className="delete-movie-btn" onClick={() => handleDeleteMovie(movie.tmdbId)}>
+                                ✕
+                            </button>
+                            
+                            <Link to={`/movie/${movie.tmdbId}`}>
+                                <div className="poster-hover">
+                                    {/* Картинка тепер слухається CSS правил пропорцій афіші */}
+                                    <img src={movie.posterPath} alt={movie.title} />
+                                </div>
+                                {/* Ставимо наш красивий клас для заголовка фільму */}
+                                <span className="movie-title">
+                                    {movie.title}
+                                </span>
+                            </Link>
+                        </div>
+                    ))}
+                </div>
         </div>
     );
 };

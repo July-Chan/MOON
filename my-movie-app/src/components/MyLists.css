@@ -1,5 +1,5 @@
 /* ==========================================================================
-   БАЗОВІ СТИЛІ СТOРІНКИ (ПК ТА ПЛАНШЕТИ)
+   БАЗОВІ СТИЛІ КОНТЕЙНЕРІВ ТА ЗАГОЛОВКІВ (ПК)
    ========================================================================== */
 
 .lists-container {
@@ -22,7 +22,7 @@
   text-align: left;
 }
 
-/* --- Контейнер та Форма створення папки --- */
+/* --- Контейнер форми створення папки --- */
 .create-list-container {
   display: flex;
   gap: 15px;
@@ -38,7 +38,7 @@
   flex-grow: 1;
   background-color: #1a1a2e;
   border: 1px solid rgba(138, 63, 252, 0.3);
-  border-radius: 10px;
+  border-radius: 20px; /* Красива кругла форма, як ти хотіла */
   padding: 0 15px;
   transition: all 0.3s ease;
 }
@@ -68,7 +68,7 @@
 
 .create-list-btn {
   padding: 0 25px;
-  border-radius: 10px;
+  border-radius: 20px;
   background-color: #8a3ffc;
   color: white;
   border: none;
@@ -77,8 +77,8 @@
   font-size: 15px;
   font-family: 'Inter', sans-serif;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 15px rgba(138, 63, 252, 0.3);
   white-space: nowrap;
+  box-shadow: 0 4px 15px rgba(138, 63, 252, 0.3); /* Тільки зовнішня елегантна тінь */
 }
 
 .create-list-btn:hover {
@@ -91,18 +91,9 @@
   flex-shrink: 0;
 }
 
-.form-icon-right {
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.form-icon-right:hover {
-  color: #ff4757;
-}
-
 
 /* ==========================================================================
-   СІТКА ПАПОК ТА КАРТКИ (ПК ТА ПЛАНШЕТИ)
+   СІТКА ПАПОК (ДЕСКТОП)
    ========================================================================== */
 
 .folders-grid-layout {
@@ -114,48 +105,19 @@
 }
 
 .folder-card {
-  background: rgba(26, 26, 46, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.03);
-  border-radius: 16px;
-  padding: 15px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  width: 100%;
   box-sizing: border-box;
+  transition: transform 0.2s ease;
 }
 
 .folder-card:hover {
   transform: scale(1.03);
-  border-color: rgba(138, 63, 252, 0.4);
-  background: rgba(26, 26, 46, 0.8);
 }
 
-/* Панель з кнопками дій (Олівець / Кошик) */
-.folder-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  width: 100%;
-}
-
-.action-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s;
-}
-
-.action-btn:hover {
-  transform: scale(1.2);
-}
-
-/* Колаж обкладинки (сітка 2х2 для 4 постерів) */
+/* Обкладинка-колаж папки */
 .folder-cover-grid {
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -163,11 +125,11 @@
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
   gap: 3px;
-  background-color: #111122;
-  border-radius: 12px;
+  background-color: #1a1a2e;
+  border-radius: 16px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  /* Внутрішні тіні повністю прибрано за твоїм проханням */
 }
 
 .grid-poster {
@@ -182,7 +144,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(138, 63, 252, 0.05);
+  background: rgba(255, 255, 255, 0.02);
   height: 100%;
 }
 
@@ -191,48 +153,86 @@
   font-weight: bold;
   font-size: 15px;
   text-align: left;
+  margin-top: 12px;
+  display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 100%;
-  display: block;
 }
 
-/* Блок інлайнового редагування назви */
-.edit-input-container {
+/* Панель кнопок дій на папці */
+.folder-actions {
   display: flex;
-  gap: 6px;
+  gap: 12px;
+  justify-content: flex-end;
   width: 100%;
+  margin-bottom: 5px;
 }
 
-.folder-edit-input {
-  flex-grow: 1;
-  padding: 6px 10px;
-  border-radius: 6px;
-  background-color: #2a2a4a;
-  color: white;
-  border: 1px solid #8a3ffc;
-  font-size: 14px;
-  outline: none;
-}
-
-.save-edit-btn {
-  background: #00b894;
-  color: white;
+.action-btn {
+  background: transparent;
   border: none;
-  border-radius: 6px;
-  padding: 0 10px;
   cursor: pointer;
-  font-weight: bold;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 
 /* ==========================================================================
-   МOБIЛЬНА АДАПТАЦІЯ ДЛЯ СТOРІНКИ СПИСКІВ (МЕНШЕ 768px)
+   🔥 СІТКА ДЛЯ ФІЛЬМІВ ВСЕРЕДИНІ ПАПКИ (image_e0146e.png)
+   ========================================================================== */
+
+.movies-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 30px; 
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 20px;
+}
+
+.movies-grid-layout a {
+  min-width: 0;
+  text-decoration: none;
+}
+
+.movie-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+}
+
+.movie-card img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.movie-title {
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  text-align: left;
+  margin-top: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+
+/* ==========================================================================
+   МОБІЛЬНА АДАПТАЦІЯ (ДЛЯ ЕКРАНІВ МЕНШЕ 768px)
    ========================================================================== */
 @media screen and (max-width: 768px) {
   .lists-container {
-    padding: 85px 12px 20px; /* Мобільні рамки під загальний стиль */
+    padding: 85px 12px 20px; /* Акуратні мобільні рамки */
   }
 
   .lists-title {
@@ -251,13 +251,17 @@
 
   .create-list-form {
     display: flex !important;
-    flex-direction: row !important; /* Внутрішні іконки та інпут — в один рядок */
+    flex-direction: row !important;
     align-items: center !important;
     width: 100% !important;
     background-color: #1a1a2e !important;
     border: 1px solid rgba(138, 63, 252, 0.3) !important;
     padding: 0 15px !important;
-    border-radius: 10px !important;
+    border-radius: 20px !important;
+  }
+
+  .create-list-input {
+    padding: 12px 5px !important;
   }
 
   .create-list-btn {
@@ -265,11 +269,11 @@
     width: 100% !important;
     padding: 14px 0 !important;
     text-align: center !important;
-    border-radius: 10px !important;
+    border-radius: 20px !important;
     height: auto !important;
   }
 
-  /* Строгі мобільні 2 стовпчики для карток папок */
+  /* 🔥 СІТКА ПАПОК: Строго 2 красиві колонки на мобільних */
   .folders-grid-layout {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
@@ -277,21 +281,25 @@
   }
 
   .folder-card {
-    padding: 10px;
-    border-radius: 12px;
     max-width: none !important;
   }
 
   .folder-name {
     font-size: 14px !important;
-    margin-top: 4px !important;
+    margin-top: 8px !important;
   }
 
-  /* Мобільна адаптація кнопки швидкого видалення фільму/папки */
-  .movie-card {
-    position: relative !important;
+  /* 🔥 СІТКА ФІЛЬМІВ ВСЕРЕДИНІ ПАПКИ: Теж строго 2 колонки на телефонах */
+  .movies-grid-layout {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
   }
 
+  .movie-title {
+    font-size: 13px;
+  }
+
+  /* Хрестик видалення фільму поверх мобільного постера */
   .delete-movie-btn,
   .remove-movie-icon {
     display: flex !important;
@@ -306,9 +314,5 @@
     justify-content: center !important;
     align-items: center !important;
     z-index: 10 !important;
-  }
-
-  .delete-movie-btn:active {
-    background: #ff4757 !important;
   }
 }
