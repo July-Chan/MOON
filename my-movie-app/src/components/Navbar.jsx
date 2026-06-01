@@ -106,8 +106,7 @@ const Navbar = () => {
           <Search size={16} color="#a0a0b5" />
           <input
             type="text"
-            // Замість жорсткого тексту можна буде поставити t('searchPlaceholder')
-            placeholder="Шукати фільм (натисніть Enter)..."
+            placeholder={t('searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{ 
@@ -193,10 +192,9 @@ const Navbar = () => {
           }}
         >
           <Home size={18} />
-          <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: isActive('/') ? '700' : '500' }}>
-            {/* Можна замінити на t('home') */}
-            Головна
-          </span>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: isActive('/') ? '700' : '500' }}>
+              {t('home')}
+            </span>
         </Link>
 
         <Link 
@@ -208,10 +206,9 @@ const Navbar = () => {
           }}
         >
           <User size={18} />
-          <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: isActive('/account') ? '700' : '500' }}>
-            {/* Можна замінити на t('account') */}
-            Мій Акаунт
-          </span>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: isActive('/account') ? '700' : '500' }}>
+              {t('account')}
+            </span>
         </Link>
 
         {/* 🌐 КНОПКА ЗМІНИ МОВИ */}
@@ -233,7 +230,7 @@ const Navbar = () => {
             alignItems: 'center',
             justifyContent: 'center',
             minWidth: '45px',
-            marginLeft: '5px' // Невеличкий додатковий відступ від інших кнопок
+            marginLeft: '5px'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color = 'white';
