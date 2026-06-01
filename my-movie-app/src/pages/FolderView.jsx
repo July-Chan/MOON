@@ -17,10 +17,17 @@ const FolderView = () => {
     const [searchResults, setSearchResults] = useState([]);
     const userEmail = localStorage.getItem('userEmail');
 
+    // 🔥 ОНОВЛЕНИЙ ХУК ЗАВАНТАЖЕННЯ: Тепер підтримує динамічний переклад
     useEffect(() => {
         const fetchFolder = async () => {
             try {
-                const res = await axios.get(`https://moon-z1lm.onrender.com/api/lists?userId=${userEmail}`);
+                // 1. Визначаємо мову для запиту (uk-UA або en-US)
+                const currentLang = i18n.language || '';
+                const langParam = currentLang.includes('uk') || currentLang.includes('ua') ? 'uk-UA' : 'en-US';
+
+                // 2. Передаємо langParam на бекенд за допомогою &language=
+                const res = await axios.get(`https://moon-z1lm.onrender.com/api/lists?userId=${userEmail}&language=${langParam}`);
+                
                 const currentFolder = res.data.find(list => list.id === id);
                 setFolderDetails(currentFolder);
             } catch (error) {
@@ -29,8 +36,9 @@ const FolderView = () => {
                 setLoading(false);
             }
         };
-        fetchFolder();
-    }, [id, userEmail]);
+        
+        if (userEmail) fetchFolder();
+    }, [id, userEmail, i18n.language]); // 🔥 ДОДАЛИ i18n.language СЮДИ. Тепер React реагує на клік по кнопці мови!
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -121,7 +129,7 @@ const FolderView = () => {
                         border: '1px solid rgba(138, 63, 252, 0.3)',
                         transition: 'all 0.3s ease',
                         width: '100%',
-                        maxWidth: '400px' // Зробили трохи меншим, щоб кнопка помістилася
+                        maxWidth: '400px'
                     }}
                     onFocus={(e) => e.currentTarget.style.borderColor = '#8a3ffc'}
                     onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.3)'}
@@ -155,7 +163,6 @@ const FolderView = () => {
                     )}
                 </form>
 
-                {/* 🔥 ПОВЕРНУЛИ КНОПКУ */}
                 <button 
                     onClick={handleSearch} 
                     style={{
@@ -205,6 +212,7 @@ const FolderView = () => {
                                     src={movie.poster_path ? `https://image.tmdb.org/t/p/w200${movie.poster_path}` : 'https://placehold.co/200x300/2a2a4a/ffffff?text=No+Poster'} 
                                     alt="poster" 
                                     style={{ width: '100%', display: 'block', transition: '0.3s' }} 
+                                Dino
                                 />
                                 <div className="hover-overlay" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(138, 63, 252, 0.4)', opacity: 0, transition: '0.3s', color: 'white', fontWeight: 'bold' }}>
                                     + {t('addBtn', 'ДОДАТИ')}
@@ -216,34 +224,26 @@ const FolderView = () => {
                 </div>
             )}
 
-                <h3 style={{ color: 'white', marginBottom: '20px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px', textAlign: 'left' }}>
-                    {t('moviesInList', 'Фільми у списку:')}
-                </h3>
-
-                {/* 🔥 Замість інлайнового флексу ставимо наш новий клас адаптивної сітки */}
-                <div className="movies-grid-layout">
-                    {folderDetails.movies?.map((movie, index) => (
-                        /* 🔥 Прибираємо width: '160px' та інші інлайн-стилі, залишаємо тільки чистий клас */
-                        <div key={index} className="movie-card">
-                            
-                            {/* Кнопка видалення (стилізується автоматично через CSS на ПК та смартфонах) */}
-                            <button className="delete-movie-btn" onClick={() => handleDeleteMovie(movie.tmdbId)}>
-                                ✕
-                            </button>
-                            
-                            <Link to={`/movie/${movie.tmdbId}`}>
-                                <div className="poster-hover">
-                                    {/* Картинка тепер слухається CSS правил пропорцій афіші */}
-                                    <img src={movie.posterPath} alt={movie.title} />
-                                </div>
-                                {/* Ставимо наш красивий клас для заголовка фільму */}
-                                <span className="movie-title">
-                                    {movie.title}
-                                </span>
-                            </Link>
-                        </div>
-                    ))}
-                </div>
+            {/* СПИСОК ФІЛЬМІВ У ПАПЦІ */}
+            <div className="movies-grid-layout">
+                {folderDetails.movies?.map((movie, index) => (
+                    <div key={index} className="movie-card">
+                        
+                        <button className="delete-movie-btn" onClick={() => handleDeleteMovie(movie.tmdbId)}>
+                            ✕
+                        </button>
+                        
+                        <Link to={`/movie/${movie.tmdbId}`}>
+                            <div className="poster-hover">
+                                <img src={movie.posterPath} alt={movie.title} />
+                            </div>
+                            <span className="movie-title">
+                                {movie.title}
+                            </span>
+                        </Link>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };
