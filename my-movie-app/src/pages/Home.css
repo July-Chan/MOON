@@ -34,7 +34,7 @@
 .hero-banner {
   position: relative;
   width: 100%;
-  height: 75vh; /* 🔥 Збільшили висоту з 65vh до 75vh, щоб він був великим */
+  height: 75vh;
   background-size: cover;
   background-position: center;
   display: flex;
@@ -203,6 +203,9 @@
 /* ==========================================================================
    МОБІЛЬНА АДАПТАЦІЯ (ДЛЯ ЕКРАНІВ МЕНШЕ 768px)
    ========================================================================== */
+/* ==========================================================================
+   МОБІЛЬНА АДАПТАЦІЯ (ДЛЯ ЕКРАНІВ МЕНШЕ 768px)
+   ========================================================================== */
 @media screen and (max-width: 768px) {
   .home-container {
     padding: 85px 20px 20px; /* Зменшуємо загальні рамки сайту */
@@ -217,14 +220,14 @@
     margin-bottom: 15px;
   }
 
-  /* Мобільний банер */
+  /* 🎬 Мобільний банер */
   .hero-banner {
-    height: 45vh; /* На телефонах робимо банер компактнішим */
+    height: 45vh; 
     padding: 0 20px 25px;
   }
 
   .hero-banner-content h1 {
-    font-size: 28px; /* Зменшуємо гігантські літери */
+    font-size: 28px; 
     margin-bottom: 8px;
   }
 
@@ -238,15 +241,40 @@
     font-size: 14px;
   }
 
-  /* Мобільні рекомендації */
-  .rec-movie-card {
-    width: 140px; /* Робимо горизонтальні картки компактнішими */
+  /* ✨ ТУТ ЗМІНИ: Перетворюємо повзунок рекомендацій ШІ на СІТКУ для телефонів */
+  .recs-scroll-container {
+    display: grid !important; /* Змінюємо флекс на грід */
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* Такі ж красиві 2 стовпчики */
+    gap: 16px; 
+    overflow-x: visible !important; /* Прибираємо непотрібний горизонтальний скрол */
+    padding-bottom: 0;
+    width: 100%;
   }
 
-  /* Мобільна сітка «Популярно» — строгі 2 стовпчики */
+  /* Скидаємо фіксовану ширину карток рекомендацій, щоб вони слухалися сітки */
+  .rec-movie-card {
+    width: 100% !important; 
+  }
+
+  .rec-movie-card img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+  }
+
+  /* Налаштування для скелетонів під час завантаження ШІ */
+  .recs-skeleton {
+    min-width: 0 !important; 
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3;
+  }
+
+  /* 📊 Мобільна сітка популярного — акуратні колонки */
   .movies-grid-layout {
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 16px; /* Зменшуємо проміжки, щоб все виглядало щільно */
+    gap: 16px; 
   }
 
   .movie-title {
