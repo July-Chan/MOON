@@ -296,4 +296,12 @@
   .movie-meta {
     font-size: 11px;
   }
+
+  .recs-scroll-container .rec-movie-card:nth-child(n+5) {
+    display: none !important; /* Ховаємо всі картки, починаючи з 5-ї */
+  }
+
+  .recs-scroll-container .recs-skeleton:nth-child(n+5) {
+    display: none !important; /* Ховаємо зайві скелетони під час завантаження */
+  }
 }
