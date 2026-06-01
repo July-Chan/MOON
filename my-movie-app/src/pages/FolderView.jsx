@@ -12,22 +12,19 @@ const FolderView = () => {
     const { t, i18n } = useTranslation(); 
     
     const [folderDetails, setFolderDetails] = useState(null);
+    const [localizedMovies, setLocalizedMovies] = useState([]); // 🔥 Стейт для збереження динамічних перекладів
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const userEmail = localStorage.getItem('userEmail');
 
-    // 🔥 ОНОВЛЕНИЙ ХУК ЗАВАНТАЖЕННЯ: Тепер підтримує динамічний переклад
+    const API_KEY = 'c8282b948e28647029c446fa9bef20f8';
+
+    // 1. Завантажуємо базові дані папки з твого бекенду
     useEffect(() => {
         const fetchFolder = async () => {
             try {
-                // 1. Визначаємо мову для запиту (uk-UA або en-US)
-                const currentLang = i18n.language || '';
-                const langParam = currentLang.includes('uk') || currentLang.includes('ua') ? 'uk-UA' : 'en-US';
-
-                // 2. Передаємо langParam на бекенд за допомогою &language=
-                const res = await axios.get(`https://moon-z1lm.onrender.com/api/lists?userId=${userEmail}&language=${langParam}`);
-                
+                const res = await axios.get(`https://moon-z1lm.onrender.com/api/lists?userId=${userEmail}`);
                 const currentFolder = res.data.find(list => list.id === id);
                 setFolderDetails(currentFolder);
             } catch (error) {
@@ -36,14 +33,53 @@ const FolderView = () => {
                 setLoading(false);
             }
         };
-        
         if (userEmail) fetchFolder();
-    }, [id, userEmail, i18n.language]); // 🔥 ДОДАЛИ i18n.language СЮДИ. Тепер React реагує на клік по кнопці мови!
+    }, [id, userEmail]);
+
+    // 🔥 2. МАГІЯ ДИНАМІЧНОГО ПЕРЕКЛАДУ: Хук відстежує зміну мови або масиву фільмів
+    useEffect(() => {
+        const fetchTranslations = async () => {
+            if (!folderDetails?.movies || folderDetails.movies.length === 0) {
+                setLocalizedMovies([]);
+                return;
+            }
+
+            const currentLang = i18n.language || '';
+            const langParam = currentLang.includes('uk') || currentLang.includes('ua') ? 'uk-UA' : 'en-US';
+
+            try {
+                // Робимо паралельні запити до TMDB для кожного фільму в папці
+                const translatedPromises = folderDetails.movies.map(async (movie) => {
+                    try {
+                        const tmdbRes = await axios.get(
+                            `https://api.themoviedb.org/3/movie/${movie.tmdbId}?api_key=${API_KEY}&language=${langParam}`
+                        );
+                        return {
+                            ...movie,
+                            title: tmdbRes.data.title || movie.title, // Свіжий переклад або фолбек на старий
+                            posterPath: tmdbRes.data.poster_path 
+                                ? `https://image.tmdb.org/t/p/w500${tmdbRes.data.poster_path}` 
+                                : movie.posterPath
+                        };
+                    } catch (err) {
+                        console.error(`Не вдалося оновити мову для фільму ${movie.tmdbId}:`, err);
+                        return movie; // Якщо TMDB ліг — повертаємо збережені дані
+                    }
+                });
+
+                const updatedMovies = await Promise.all(translatedPromises);
+                setLocalizedMovies(updatedMovies); // Записуємо перекладені фільми в стейт
+            } catch (error) {
+                console.error("Помилка масового перекладу списку:", error);
+            }
+        };
+
+        fetchTranslations();
+    }, [folderDetails?.movies, i18n.language]); // Хук спрацює щоразу, коли ти тиснеш на UA/EN або додаєш/видаляєш фільм
 
     const handleSearch = async (e) => {
         e.preventDefault();
         if (!searchQuery.trim()) return;
-        const API_KEY = 'c8282b948e28647029c446fa9bef20f8'; 
         
         const currentLang = i18n.language || '';
         const langParam = currentLang.includes('uk') || currentLang.includes('ua') ? 'uk-UA' : 'en-US';
@@ -212,7 +248,6 @@ const FolderView = () => {
                                     src={movie.poster_path ? `https://image.tmdb.org/t/p/w200${movie.poster_path}` : 'https://placehold.co/200x300/2a2a4a/ffffff?text=No+Poster'} 
                                     alt="poster" 
                                     style={{ width: '100%', display: 'block', transition: '0.3s' }} 
-                                Dino
                                 />
                                 <div className="hover-overlay" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(138, 63, 252, 0.4)', opacity: 0, transition: '0.3s', color: 'white', fontWeight: 'bold' }}>
                                     + {t('addBtn', 'ДОДАТИ')}
@@ -224,11 +259,12 @@ const FolderView = () => {
                 </div>
             )}
 
-            {/* СПИСОК ФІЛЬМІВ У ПАПЦІ */}
+            {/* СПИСОК ФІЛЬМІВ У ПАПЦІ (Тепер рендериться з локалізованого масиву) */}
             <div className="movies-grid-layout">
-                {folderDetails.movies?.map((movie, index) => (
+                {localizedMovies.map((movie, index) => (
                     <div key={index} className="movie-card">
                         
+                        {/* Кнопка видалення (завжди видима) */}
                         <button className="delete-movie-btn" onClick={() => handleDeleteMovie(movie.tmdbId)}>
                             ✕
                         </button>
