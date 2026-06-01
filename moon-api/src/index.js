@@ -251,8 +251,7 @@ app.get('/api/movies/now-playing', async (req, res) => {
         const TMDB_API_KEY = process.env.TMDB_API_KEY;
         const lang = req.query.language || 'uk-UA';
         const response = await axios.get(
-            `https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=uk-UA&page=1`
-        );
+            `https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=${lang}&page=1`        );
         res.json(response.data.results);
     } catch (error) {
         console.error('Помилка отримання новинок:', error);
