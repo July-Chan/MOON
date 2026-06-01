@@ -122,8 +122,14 @@ const MyLists = () => {
                             <button onClick={(e) => startEditing(e, list)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px' }}>
                                 <Pencil size={16} color="#a0a0b5" />
                             </button>
-                            <button onClick={(e) => handleDeleteList(e, list.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px' }}>
-                                <Trash2 size={16} color="#ff4757" />
+                            <button 
+                            className="delete-movie-btn" 
+                            onClick={(e) => {
+                                e.stopPropagation(); // 🔥 ЖИТТЄВО НЕОБХІДНО! Не дає браузеру відкрити сторінку фільму при натисканні на хрестик
+                                handleRemoveMovie(movie.id);
+                            }}
+                            >
+                            <X size={16} color="white" />
                             </button>
                         </div>
 
