@@ -226,22 +226,35 @@ h2 {
    ========================================================================== */
 @media screen and (max-width: 768px) {
   
-  /* 🔥 ФІКС ФОРМИ: Перетворюємо рядок у 2 рядки (стовпчик) */
   .create-list-container {
     flex-direction: column !important;
     gap: 12px !important;
     margin-bottom: 30px !important;
-  }
-
-  .create-list-form {
-    max-width: none !important; /* Дозволяємо інпуту зайняти всю ширину */
     width: 100% !important;
   }
 
+.create-list-form {
+    display: flex !important;
+    flex-direction: row !important; /* Гарантує рядок для іконки та інпута */
+    align-items: center !important;
+    gap: 8px !important;
+    max-width: none !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 10px 16px !important; /* Робимо інпут акуратним та просторим */
+  }
+
+.create-list-form input {
+    flex-grow: 1 !important;
+    width: auto !important; /* Дозволяє інпуту зайняти весь вільний простір праворуч від іконки */
+  }
+
+  /* Кнопка створення під формою */
   .create-list-btn {
     width: 100% !important;
-    padding: 12px 0 !important; /* Робимо кнопку високою та зручною для тапу */
+    padding: 14px 0 !important;
     text-align: center;
+    border-radius: 20px !important;
   }
 
   /* 🔥 ФІКС СІТКИ ПАПОК: Строго 2 стовпчики, великі картинки */

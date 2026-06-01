@@ -83,6 +83,7 @@ const MyLists = () => {
             </h2> 
 
             {/* 🔥 КЛАСИ ЗАМІСТЬ ІНЛАЙН-СТИЛІВ ДЛЯ ФОРМИ */}
+            {/* 🔥 Переконайся, що структура форми виглядає саме так */}
             <div className="create-list-container">
                 <form 
                     onSubmit={handleCreateList} 
@@ -90,7 +91,7 @@ const MyLists = () => {
                     onFocus={(e) => e.currentTarget.style.borderColor = '#8a3ffc'}
                     onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.3)'}
                 >
-                    <FolderOpen size={18} color="#a0a0b5" />
+                    <FolderOpen size={18} color="#a0a0b5" style={{ flexShrink: 0 }} /> {/* 🔥 Іконка перша */}
                     <input
                         type="text"
                         placeholder={t('newFolderPlaceholder', 'Назва нової папки...')}
@@ -101,26 +102,13 @@ const MyLists = () => {
                         <X 
                             size={18} 
                             color="#a0a0b5" 
-                            style={{ cursor: 'pointer', transition: 'color 0.2s' }} 
-                            onMouseEnter={(e) => e.target.style.color = 'white'}
-                            onMouseLeave={(e) => e.target.style.color = '#a0a0b5'}
+                            style={{ cursor: 'pointer', transition: 'color 0.2s', flexShrink: 0 }} 
                             onClick={() => setNewListName('')} 
                         />
                     )}
                 </form>
 
-                <button 
-                    onClick={handleCreateList} 
-                    className="create-list-btn"
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#9b59b6';
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#8a3ffc';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                    }}
-                >
+                <button onClick={handleCreateList} className="create-list-btn">
                     {t('createFolderBtn', 'Створити папку')}
                 </button>
             </div>
