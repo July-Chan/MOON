@@ -10,14 +10,15 @@ const TMDB_API_KEY = '15d2ea6d0dc1d476efbca3eba2b9bbfb';
 const MovieDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation(); // 🔥 Дістаємо функцію t()
+  const { t, i18n } = useTranslation();
 
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   const [userRating, setUserRating] = useState(0);
-  const [hoverRating, setHoverRating] = useState(0); 
+  const [hoverRating, setHoverRating] = useState(0);
+  const [moonAverage, setMoonAverage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false); 
   const userEmail = localStorage.getItem('userEmail'); 
 
@@ -37,6 +38,16 @@ const MovieDetails = () => {
         const response = await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}?language=${langParam}`);
         const data = await response.json();
         setMovie(data);
+
+        try {
+          const avgResponse = await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}/average`);
+          const avgData = await avgResponse.json();
+          if (avgData.average) {
+            setMoonAverage(avgData.average); // Зберігаємо середню оцінку в стейт
+          }
+        } catch (error) {
+          console.error("Не вдалося отримати середню оцінку MOON:", error);
+        }
 
         if (userEmail) {
           const ratingResponse = await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}/rate/${userEmail}`);
@@ -208,7 +219,20 @@ const MovieDetails = () => {
               <Star size={18} color="#ffcc00" fill="#ffcc00" />
               <span style={{ fontSize: '15px', fontWeight: 'bold' }}>
                 {movie.vote_average?.toFixed(1)} (TMDB)
-                {userRating > 0 && <span style={{ color: '#8a3ffc', marginLeft: '8px' }}>• {t('yourRating', 'Твоя:')} {userRating}★</span>}
+                
+                {/* Виводимо середню оцінку MOON, якщо вона є */}
+                {moonAverage && (
+                  <span style={{ color: '#b19cd9', marginLeft: '8px' }}>
+                    • MOON: {moonAverage.toFixed(1)}★
+                  </span>
+                )}
+
+                {/* Виводимо особисту оцінку користувача */}
+                {userRating > 0 && (
+                  <span style={{ color: '#8a3ffc', marginLeft: '8px' }}>
+                    • {t('yourRating', 'Твоя:')} {userRating}★
+                  </span>
+                )}
               </span>
             </div>
 

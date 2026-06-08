@@ -309,6 +309,43 @@ app.get('/api/users/:userId/ratings', async (req, res) => {
     }
 });
 
+// Отримання середньої оцінки фільму від спільноти MOON
+app.get('/api/movie/:id/average', async (req, res) => {
+  try {
+    const movieId = req.params.id;
+    
+    // Шукаємо всі оцінки для цього фільму у Firestore
+    const ratingsRef = db.collection('ratings');
+    // Увага: якщо у базі movieId збережено як число, використай Number(movieId)
+    const snapshot = await ratingsRef.where('movieId', '==', movieId).get(); 
+
+    // Якщо ніхто ще не оцінив фільм
+    if (snapshot.empty) {
+      return res.json({ average: null, count: 0 });
+    }
+
+    let sum = 0;
+    let count = 0;
+
+    // Проходимося по всіх знайдених документах і сумуємо оцінки
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.rating) {
+        sum += data.rating;
+        count++;
+      }
+    });
+
+    const average = count > 0 ? (sum / count) : null;
+
+    res.json({ average: average, count: count });
+
+  } catch (error) {
+    console.error("Помилка розрахунку середньої оцінки:", error);
+    res.status(500).json({ error: "Помилка сервера" });
+  }
+});
+
 app.listen(PORT, () => {
     console.log(`Сервер Moon API запущено на http://localhost:${PORT}`);
     console.log(`Swagger документація: http://localhost:${PORT}/api-docs`);
