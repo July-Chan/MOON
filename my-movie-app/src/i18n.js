@@ -61,7 +61,8 @@ const resources = {
       "hideInfo": "Сховати",
       "moreInfo": "Детальніше",
       "noPosterText": "Без+Постера",
-      "unknownDate": "Невідомо"
+      "unknownDate": "Невідомо",
+      "addToListShort": "В список",
     }
   },
   en: {
@@ -123,7 +124,8 @@ const resources = {
       "hideInfo": "Hide Info",
       "moreInfo": "More Info",
       "noPosterText": "No+Poster",
-      "unknownDate": "Unknown"
+      "unknownDate": "Unknown",
+      "addToListShort": "To List",
     }
   }
 };
