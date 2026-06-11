@@ -42,29 +42,28 @@ const Discover = () => {
     fetchMovies(1);
   }, []);
 
-  // 🔥 НОВЕ: Відстежуємо, коли закінчилися картки
-  useEffect(() => {
-    if (currentIndex < 0 && movies.length > 0) {
-      // Якщо індекс впав нижче нуля, значить всі змахнули. Вантажимо наступну сторінку!
+
+const handleSwipe = (direction, movieToSwipe) => {
+  setShowInfo(false); 
+  setCurrentMovie(movieToSwipe);
+
+  if (direction === 'right') {
+    setIsRateModalOpen(true);
+  } else if (direction === 'down') {
+    setShowInfo(true);
+  }
+  
+  // Безпечно зменшуємо індекс і перевіряємо, чи не час вантажити нові
+  setCurrentIndex(prev => {
+    const nextIndex = prev - 1;
+    if (nextIndex < 0 && !isLoadingMore) {
       const nextPage = page + 1;
       setPage(nextPage);
       fetchMovies(nextPage);
     }
-  }, [currentIndex, movies.length, page]);
-
-  const handleSwipe = (direction, movieToSwipe) => {
-    setShowInfo(false); 
-    setCurrentMovie(movieToSwipe);
-
-    if (direction === 'right') {
-      setIsRateModalOpen(true);
-    } else if (direction === 'down') {
-      setShowInfo(true);
-    }
-    
-    // Зменшуємо індекс. Коли він стане -1, спрацює useEffect вище і завантажить нові!
-    setCurrentIndex(prev => prev - 1);
-  };
+    return nextIndex;
+  });
+};
 
   const swipeProgrammatically = (dir) => {
     if (currentIndex >= 0 && currentIndex < movies.length) {
