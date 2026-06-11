@@ -70,6 +70,7 @@ const Discover = () => {
 
   useEffect(() => {
     if (isAppReady) {
+      setPage(1);
       fetchMovies(1);
     }
   }, [isAppReady, i18n.language]);
