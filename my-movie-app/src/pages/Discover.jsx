@@ -217,16 +217,20 @@ const Discover = () => {
     );
   }
 
+  // ... (Твоя логіка вище залишається без змін)
+
   return (
-    <div className="discover-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '85vh', position: 'relative', overflow: 'hidden' }}>
+    <div className="discover-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 'calc(100dvh - 70px)', position: 'relative', overflow: 'hidden', padding: '10px' }}>
       
-      <div style={{ display: 'flex', alignItems: 'center', gap: '30px', width: '100%', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '15px', width: '100%', justifyContent: 'center' }}>
         
+        {/* Кнопка СКІП (зникає на мобільному) */}
         <button className="desktop-swipe-btn" onClick={() => swipeProgrammatically('left')} disabled={isLoadingMore} style={btnStyle}>
           <X size={30} color="#a0a0b5" />
         </button>
 
-        <div className="card-stack" style={{ position: 'relative', width: '320px', height: '480px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        {/* СТЕК КАРТОК (Адаптивний розмір) */}
+        <div className="card-stack" style={{ position: 'relative', width: '100%', maxWidth: '340px', height: '65vh', maxHeight: '500px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {isLoadingMore && <div style={{ color: '#8a3ffc', fontWeight: 'bold' }}>{t('radarSearching', 'Шукаємо нове...')}</div>}
 
           {!isLoadingMore && movies.map((movie, index) => (
@@ -236,6 +240,7 @@ const Discover = () => {
               className="swipe"
               onSwipe={(dir) => handleSwipe(dir, movie)}
               preventSwipe={['up', 'down']}
+              style={{ position: 'absolute', width: '100%', height: '100%' }} // 🔥 Жорстко фіксуємо картки
             >
               <div className="movie-swipe-card" style={{ ...cardStyle, backgroundImage: `linear-gradient(to bottom, transparent 40%, #0f0f1a), url(${movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://placehold.co/500x750/1a1a2e/ffffff?text=No+Poster'})` }}>
                 <h2 style={titleStyle}>{movie.title}</h2>
@@ -245,6 +250,7 @@ const Discover = () => {
           ))}
         </div>
 
+        {/* Кнопка ОЦІНИТИ (зникає на мобільному) */}
         <button className="desktop-swipe-btn" onClick={() => swipeProgrammatically('right')} disabled={isLoadingMore} style={{ ...btnStyle, borderColor: 'rgba(138, 63, 252, 0.5)', background: 'rgba(138, 63, 252, 0.2)' }}>
           <Star size={30} fill="#8a3ffc" color="#8a3ffc" />
         </button>
@@ -262,15 +268,15 @@ const Discover = () => {
             <button onClick={() => setIsRateModalOpen(false)} style={closeButtonStyle}><X size={20} /></button>
             
             <h3 style={{ margin: '0 0 10px 0', fontSize: '20px', color: 'white' }}>{t('rateMovieTitle', 'Оціни фільм')}</h3>
-            <p style={{ color: '#8a3ffc', fontSize: '15px', fontWeight: 'bold', marginBottom: '25px' }}>{currentMovie.title}</p>
+            <p style={{ color: '#8a3ffc', fontSize: '15px', fontWeight: 'bold', marginBottom: '25px', padding: '0 20px' }}>{currentMovie.title}</p>
             
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
               {[1, 2, 3, 4, 5].map((star) => {
                 const isFilled = star <= (hoverRating || 0);
                 return (
                   <Star
                     key={star}
-                    size={36}
+                    size={window.innerWidth > 768 ? 36 : 30} // На мобільному зірочки трохи менші
                     onMouseEnter={() => setHoverRating(star)}
                     onMouseLeave={() => setHoverRating(0)}
                     onClick={() => handleRate(star)}
@@ -288,7 +294,7 @@ const Discover = () => {
       {/* 📁 МОДАЛЬНЕ ВІКНО СПИСКІВ */}
       {isListModalOpen && currentMovie && (
         <div onClick={() => setIsListModalOpen(false)} style={modalOverlayStyle}>
-          <div onClick={(e) => e.stopPropagation()} style={{ ...modalContainerStyle, minWidth: '320px', padding: '30px' }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ ...modalContainerStyle, padding: '25px' }}>
             <button onClick={() => setIsListModalOpen(false)} style={closeButtonStyle}><X size={20} /></button>
             
             <h3 style={{ margin: '0 0 5px 0', fontSize: '18px', color: 'white' }}>{t('addToList', 'Додати до списку')}</h3>
@@ -297,12 +303,7 @@ const Discover = () => {
             </p>
 
             {listMessage && (
-              <div style={{ 
-                padding: '10px', borderRadius: '8px', marginBottom: '15px', fontSize: '14px',
-                background: listMessage.includes('🎉') ? 'rgba(0, 230, 115, 0.1)' : 'rgba(255, 77, 77, 0.1)',
-                color: listMessage.includes('🎉') ? '#00e673' : '#ff4d4d',
-                width: '100%', boxSizing: 'border-box'
-              }}>
+              <div style={{ padding: '10px', borderRadius: '8px', marginBottom: '15px', fontSize: '14px', background: listMessage.includes('🎉') ? 'rgba(0, 230, 115, 0.1)' : 'rgba(255, 77, 77, 0.1)', color: listMessage.includes('🎉') ? '#00e673' : '#ff4d4d', width: '100%', boxSizing: 'border-box' }}>
                 {listMessage}
               </div>
             )}
@@ -317,13 +318,7 @@ const Discover = () => {
                   <div
                     key={list.id}
                     onClick={() => handleAddMovieToList(list.id)}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 15px',
-                      background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)',
-                      borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s ease', textAlign: 'left'
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(138, 63, 252, 0.1)'; e.currentTarget.style.borderColor = 'rgba(138, 63, 252, 0.3)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'; }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 15px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s ease', textAlign: 'left' }}
                   >
                     <Folder size={18} color="#8a3ffc" fill="rgba(138, 63, 252, 0.2)" />
                     <span style={{ fontSize: '15px', fontWeight: '500', color: 'white' }}>{list.name}</span>
@@ -339,33 +334,30 @@ const Discover = () => {
       {showInfo && currentMovie && (
         <div className="info-panel" style={infoPanelStyle}>
           <h3 style={{ color: 'white', marginTop: 0 }}>{currentMovie.title}</h3>
-          <p style={{ color: '#a0a0b5', fontSize: '14px', lineHeight: '1.4' }}>
-            {currentMovie.overview ? `${currentMovie.overview.slice(0, 160)}...` : t('noDescription', 'Опис відсутній')}
+          <p style={{ color: '#a0a0b5', fontSize: '13px', lineHeight: '1.4', maxHeight: '100px', overflowY: 'auto', scrollbarWidth: 'none' }}>
+            {currentMovie.overview ? `${currentMovie.overview.slice(0, 200)}...` : t('noDescription', 'Опис відсутній')}
           </p>
           
-          <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', marginTop: '20px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '15px', alignItems: 'center' }}>
             <div 
               onClick={openListModal}
               style={{ ...infoBadgeStyle, borderColor: 'rgba(138, 63, 252, 0.4)', background: 'rgba(138, 63, 252, 0.05)' }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(138, 63, 252, 0.2)'; e.currentTarget.style.transform = 'scale(1.02)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(138, 63, 252, 0.05)'; e.currentTarget.style.transform = 'scale(1)'; }}
-              title={t('addToListTooltip', 'Додати цей фільм до своєї папки')}
             >
-              <FolderPlus size={18} color="#8a3ffc" />
-              <span style={{ fontSize: '14px', fontWeight: '600', color: '#b19cd9' }}>{t('addToList', 'В список')}</span>
+              <FolderPlus size={16} color="#8a3ffc" />
+              <span style={{ fontSize: '13px', fontWeight: '600', color: '#b19cd9' }}>{t('addToList', 'В список')}</span>
             </div>
             
             <div style={infoItemStyle}>
-              <Calendar size={18} color="#a0a0b5" />
-              <span style={{ fontSize: '14px', color: '#a0a0b5' }}>
+              <Calendar size={16} color="#a0a0b5" />
+              <span style={{ fontSize: '13px', color: '#a0a0b5' }}>
                 {currentMovie.release_date ? new Date(currentMovie.release_date).getFullYear() : '—'}
               </span>
             </div>
 
             {currentMovie.runtime && (
               <div style={infoItemStyle}>
-                <Clock size={18} color="#a0a0b5" />
-                <span style={{ fontSize: '14px', color: '#a0a0b5' }}>{currentMovie.runtime} {t('minutesAbbr', 'хв')}</span>
+                <Clock size={16} color="#a0a0b5" />
+                <span style={{ fontSize: '13px', color: '#a0a0b5' }}>{currentMovie.runtime} {t('minutesAbbr', 'хв')}</span>
               </div>
             )}
           </div>
@@ -375,17 +367,17 @@ const Discover = () => {
   );
 };
 
-// --- Стилі ---
-const cardStyle = { backgroundColor: '#1a1a2e', backgroundSize: 'cover', backgroundPosition: 'center', width: '100%', height: '100%', borderRadius: '20px', boxShadow: '0 15px 30px rgba(0,0,0,0.8)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '25px', cursor: 'grab' };
-const titleStyle = { color: 'white', margin: '0 0 5px 0', textShadow: '0 2px 5px rgba(0,0,0,0.8)', fontSize: '22px' };
-const metaStyle = { color: '#b19cd9', fontSize: '14px', fontWeight: 'bold' };
-const btnStyle = { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', width: '64px', height: '64px', cursor: 'pointer', display: window.innerWidth > 768 ? 'flex' : 'none', justifyContent: 'center', alignItems: 'center', transition: 'all 0.2s', zIndex: 10 };
-const infoBtnStyle = { marginTop: '30px', background: '#141424', border: '1px solid #4e4e6a', padding: '12px 25px', borderRadius: '30px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', zIndex: 10 };
-const modalOverlayStyle = { position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(10, 10, 18, 0.85)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 };
-const modalContainerStyle = { background: '#141424', border: '1px solid rgba(138, 63, 252, 0.4)', padding: '40px', borderRadius: '24px', textAlign: 'center', position: 'relative', minWidth: '300px', boxShadow: '0 20px 50px rgba(0,0,0,0.9)' };
-const closeButtonStyle = { position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: '#a0a0b5', cursor: 'pointer' };
-const infoPanelStyle = { position: 'absolute', bottom: '2%', background: '#141424', padding: '25px', borderRadius: '20px', width: '340px', zIndex: 100, border: '1px solid #8a3ffc', boxShadow: '0 10px 40px rgba(138, 63, 252, 0.15), 0 20px 40px rgba(0,0,0,0.5)' };
-const infoItemStyle = { display: 'flex', alignItems: 'center', gap: '6px', color: 'white' };
-const infoBadgeStyle = { display: 'flex', alignItems: 'center', gap: '8px', color: 'white', cursor: 'pointer', background: 'rgba(138, 63, 252, 0.1)', padding: '8px 14px', borderRadius: '10px', border: '1px solid rgba(138, 63, 252, 0.2)', transition: 'all 0.2s ease', boxSizing: 'border-box' };
+// --- Оновлені адаптивні стилі ---
+const cardStyle = { backgroundColor: '#1a1a2e', backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', width: '100%', height: '100%', borderRadius: '20px', boxShadow: '0 15px 30px rgba(0,0,0,0.8)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '20px', cursor: 'grab', userSelect: 'none' };
+const titleStyle = { color: 'white', margin: '0 0 5px 0', textShadow: '0 2px 5px rgba(0,0,0,0.9)', fontSize: '20px', lineHeight: '1.2' };
+const metaStyle = { color: '#b19cd9', fontSize: '13px', fontWeight: 'bold', textShadow: '0 1px 3px rgba(0,0,0,0.8)' };
+const btnStyle = { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', minWidth: '56px', height: '56px', cursor: 'pointer', display: window.innerWidth > 768 ? 'flex' : 'none', justifyContent: 'center', alignItems: 'center', transition: 'all 0.2s', zIndex: 10 };
+const infoBtnStyle = { marginTop: '20px', background: '#141424', border: '1px solid #4e4e6a', padding: '10px 20px', borderRadius: '30px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 10, fontSize: '14px' };
+const modalOverlayStyle = { position: 'fixed', top: 0, left: 0, width: '100vw', height: '100dvh', background: 'rgba(10, 10, 18, 0.85)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000, padding: '15px', boxSizing: 'border-box' };
+const modalContainerStyle = { background: '#141424', border: '1px solid rgba(138, 63, 252, 0.4)', padding: '30px 20px', borderRadius: '24px', textAlign: 'center', position: 'relative', width: '100%', maxWidth: '340px', boxShadow: '0 20px 50px rgba(0,0,0,0.9)', boxSizing: 'border-box' };
+const closeButtonStyle = { position: 'absolute', top: '15px', right: '15px', background: 'transparent', border: 'none', color: '#a0a0b5', cursor: 'pointer', padding: '5px' };
+const infoPanelStyle = { position: 'absolute', bottom: '2%', background: '#141424', padding: '20px', borderRadius: '20px', width: '90%', maxWidth: '340px', zIndex: 100, border: '1px solid #8a3ffc', boxShadow: '0 10px 40px rgba(138, 63, 252, 0.15), 0 20px 40px rgba(0,0,0,0.5)', boxSizing: 'border-box' };
+const infoItemStyle = { display: 'flex', alignItems: 'center', gap: '4px', color: 'white' };
+const infoBadgeStyle = { display: 'flex', alignItems: 'center', gap: '6px', color: 'white', cursor: 'pointer', background: 'rgba(138, 63, 252, 0.1)', padding: '6px 12px', borderRadius: '10px', border: '1px solid rgba(138, 63, 252, 0.2)', transition: 'all 0.2s ease', boxSizing: 'border-box' };
 
 export default Discover;
