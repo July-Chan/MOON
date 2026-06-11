@@ -23,12 +23,16 @@ const Discover = () => {
   const [currentMovie, setCurrentMovie] = useState(null);
   const [hoverRating, setHoverRating] = useState(0);
 
-  // --- Стейт для списків користувача ---
   const [userLists, setUserLists] = useState([]); 
   const [listMessage, setListMessage] = useState('');
 
   const userEmail = localStorage.getItem('userEmail');
 
+  // 🔥 НОВЕ: Зберігаємо ID фільмів з бази (оцінені + у списках) та статус готовності
+  const excludedIdsRef = useRef(new Set());
+  const [isAppReady, setIsAppReady] = useState(false);
+
+  // Пам'ять "бачених" (свайпнутих щойно) фільмів
   const getSeenMovies = () => JSON.parse(localStorage.getItem('moon_seen_movies')) || [];
   const addSeenMovie = (id) => {
     const seen = getSeenMovies();
@@ -37,12 +41,64 @@ const Discover = () => {
     }
   };
 
+  // 🔥 НОВЕ: Завантажуємо історію користувача перед стартом Радара
+  useEffect(() => {
+    const initializeDiscover = async () => {
+      if (userEmail) {
+        try {
+          // Робимо два запити паралельно для максимальної швидкості
+          const [ratingsRes, listsRes] = await Promise.all([
+            axios.get(`https://moon-z1lm.onrender.com/api/users/${userEmail}/ratings`),
+            axios.get(`https://moon-z1lm.onrender.com/api/lists?userId=${userEmail}`)
+          ]);
+
+          const excluded = new Set();
+
+          // Додаємо ID оцінених фільмів
+          if (Array.isArray(ratingsRes.data)) {
+            ratingsRes.data.forEach(r => excluded.add(String(r.movieId)));
+          }
+
+          // Додаємо ID фільмів зі списків
+          if (Array.isArray(listsRes.data)) {
+            listsRes.data.forEach(list => {
+              if (Array.isArray(list.movies)) {
+                list.movies.forEach(m => excluded.add(String(m.tmdbId)));
+              }
+            });
+          }
+
+          excludedIdsRef.current = excluded;
+          console.log("Відфільтровано фільмів з бази:", excluded.size);
+        } catch (error) {
+          console.error("Помилка при завантаженні історії:", error);
+        }
+      }
+      setIsAppReady(true); // Даємо зелене світло на завантаження TMDB
+    };
+
+    initializeDiscover();
+  }, [userEmail]);
+
+  // Завантажуємо фільми ТІЛЬКИ коли історія вже прочитана
+  useEffect(() => {
+    if (isAppReady) {
+      fetchMovies(1);
+    }
+  }, [isAppReady]);
+
   const fetchMovies = async (pageNum) => {
     setIsLoadingMore(true);
     try {
       const res = await axios.get(`https://moon-z1lm.onrender.com/api/movies/popular?language=uk-UA&page=${pageNum}`);
+      
       const seenIds = getSeenMovies();
-      const newMovies = res.data.filter(m => !seenIds.includes(m.id));
+      
+      // 🔥 НОВЕ: Фільтруємо і локальні свайпи, і ті, що вже є в базі користувача
+      const newMovies = res.data.filter(m => {
+        const idStr = String(m.id);
+        return !seenIds.includes(m.id) && !excludedIdsRef.current.has(idStr);
+      });
 
       if (newMovies.length === 0) {
         setPage(pageNum + 1);
@@ -62,9 +118,6 @@ const Discover = () => {
     }
   };
 
-  useEffect(() => { fetchMovies(1); }, []);
-
-  // --- Логіка оцінювання ---
   const handleRate = async (ratingValue) => {
     if (!userEmail) return alert(t('loginRequiredRate', 'Авторизуйтесь для оцінки!'));
     if (!currentMovie) return;
@@ -83,7 +136,6 @@ const Discover = () => {
     }
   };
 
-  // --- Логіка списків (НОВЕ) ---
   const openListModal = async () => {
     if (!userEmail) return alert(t('loginRequiredLists', 'Авторизуйтесь для керування списками!'));
     setIsListModalOpen(true);
@@ -154,19 +206,28 @@ const Discover = () => {
     }
   };
 
+  // Показуємо екран завантаження, поки перевіряється база даних користувача
+  if (!isAppReady) {
+    return (
+      <div className="discover-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '85vh' }}>
+        <p style={{ color: '#8a3ffc', fontWeight: 'bold', letterSpacing: '2px', animation: 'pulse 1.5s infinite' }}>
+          {t('loadingRadar', 'ІНІЦІАЛІЗАЦІЯ РАДАРА...')}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="discover-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '85vh', position: 'relative', overflow: 'hidden' }}>
       
       <div style={{ display: 'flex', alignItems: 'center', gap: '30px', width: '100%', justifyContent: 'center' }}>
         
-        {/* Кнопка СКІП */}
         <button className="desktop-swipe-btn" onClick={() => swipeProgrammatically('left')} disabled={isLoadingMore} style={btnStyle}>
           <X size={30} color="#a0a0b5" />
         </button>
 
-        {/* СТЕК КАРТОК */}
         <div className="card-stack" style={{ position: 'relative', width: '320px', height: '480px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          {isLoadingMore && <div style={{ color: '#8a3ffc', fontWeight: 'bold' }}>{t('radarSearching', 'Шукаємо...')}</div>}
+          {isLoadingMore && <div style={{ color: '#8a3ffc', fontWeight: 'bold' }}>{t('radarSearching', 'Шукаємо нове...')}</div>}
 
           {!isLoadingMore && movies.map((movie, index) => (
             <TinderCard
@@ -184,7 +245,6 @@ const Discover = () => {
           ))}
         </div>
 
-        {/* Кнопка ОЦІНИТИ */}
         <button className="desktop-swipe-btn" onClick={() => swipeProgrammatically('right')} disabled={isLoadingMore} style={{ ...btnStyle, borderColor: 'rgba(138, 63, 252, 0.5)', background: 'rgba(138, 63, 252, 0.2)' }}>
           <Star size={30} fill="#8a3ffc" color="#8a3ffc" />
         </button>
@@ -275,7 +335,7 @@ const Discover = () => {
         </div>
       )}
 
-      {/* 📖 ПАНЕЛЬ ІНФО (З новим блоком кнопок) */}
+      {/* 📖 ПАНЕЛЬ ІНФО */}
       {showInfo && currentMovie && (
         <div className="info-panel" style={infoPanelStyle}>
           <h3 style={{ color: 'white', marginTop: 0 }}>{currentMovie.title}</h3>
@@ -283,9 +343,7 @@ const Discover = () => {
             {currentMovie.overview ? `${currentMovie.overview.slice(0, 160)}...` : t('noDescription', 'Опис відсутній')}
           </p>
           
-          {/* 🔥 ТВІЙ БЛОК: Кнопка списку, Календар, Годинник */}
           <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', marginTop: '20px', alignItems: 'center' }}>
-            
             <div 
               onClick={openListModal}
               style={{ ...infoBadgeStyle, borderColor: 'rgba(138, 63, 252, 0.4)', background: 'rgba(138, 63, 252, 0.05)' }}
@@ -304,7 +362,6 @@ const Discover = () => {
               </span>
             </div>
 
-            {/* Зверни увагу: TMDB /popular не завжди повертає runtime. Але якщо він є - покажемо */}
             {currentMovie.runtime && (
               <div style={infoItemStyle}>
                 <Clock size={18} color="#a0a0b5" />
@@ -312,7 +369,6 @@ const Discover = () => {
               </div>
             )}
           </div>
-
         </div>
       )}
     </div>
@@ -329,8 +385,6 @@ const modalOverlayStyle = { position: 'fixed', top: 0, left: 0, width: '100vw', 
 const modalContainerStyle = { background: '#141424', border: '1px solid rgba(138, 63, 252, 0.4)', padding: '40px', borderRadius: '24px', textAlign: 'center', position: 'relative', minWidth: '300px', boxShadow: '0 20px 50px rgba(0,0,0,0.9)' };
 const closeButtonStyle = { position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: '#a0a0b5', cursor: 'pointer' };
 const infoPanelStyle = { position: 'absolute', bottom: '2%', background: '#141424', padding: '25px', borderRadius: '20px', width: '340px', zIndex: 100, border: '1px solid #8a3ffc', boxShadow: '0 10px 40px rgba(138, 63, 252, 0.15), 0 20px 40px rgba(0,0,0,0.5)' };
-
-// 🔥 Твої стилі для бейджів та інфо
 const infoItemStyle = { display: 'flex', alignItems: 'center', gap: '6px', color: 'white' };
 const infoBadgeStyle = { display: 'flex', alignItems: 'center', gap: '8px', color: 'white', cursor: 'pointer', background: 'rgba(138, 63, 252, 0.1)', padding: '8px 14px', borderRadius: '10px', border: '1px solid rgba(138, 63, 252, 0.2)', transition: 'all 0.2s ease', boxSizing: 'border-box' };
 
