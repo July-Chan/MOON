@@ -263,8 +263,11 @@ app.get('/api/movies/now-playing', async (req, res) => {
     try {
         const TMDB_API_KEY = process.env.TMDB_API_KEY;
         const lang = req.query.language || 'uk-UA';
+        const page = req.query.page || 1; // 🔥 Зчитуємо сторінку з URL (за замовчуванням 1)
+
         const response = await axios.get(
-            `https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=${lang}&page=1`        );
+            `https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=${lang}&page=${page}` // 🔥 Передаємо змінну
+        );
         res.json(response.data.results);
     } catch (error) {
         console.error('Помилка отримання новинок:', error);
@@ -277,8 +280,11 @@ app.get('/api/movies/popular', async (req, res) => {
     try {
         const TMDB_API_KEY = process.env.TMDB_API_KEY;
         const lang = req.query.language || 'uk-UA';
+        const page = req.query.page || 1; // 🔥 Зчитуємо сторінку з URL
+
         const response = await axios.get(
-            `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=${lang}&page=1`        );
+            `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=${lang}&page=${page}` // 🔥 Передаємо змінну
+        );
         res.json(response.data.results);
     } catch (error) {
         console.error('Помилка отримання популярних фільмів:', error);
