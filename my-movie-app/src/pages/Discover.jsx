@@ -7,7 +7,7 @@ import '../App.css';
 import './Discover.css'; 
 
 const Discover = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [movies, setMovies] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const currentIndexRef = useRef(-1);
@@ -72,12 +72,12 @@ const Discover = () => {
     if (isAppReady) {
       fetchMovies(1);
     }
-  }, [isAppReady]);
+  }, [isAppReady, i18n.language]);
 
   const fetchMovies = async (pageNum) => {
     setIsLoadingMore(true);
     try {
-      // Додаємо параметр мови до запиту TMDB
+      
       const langParam = t('tmdbLangParam', 'uk-UA'); 
       const res = await axios.get(`https://moon-z1lm.onrender.com/api/movies/popular?language=${langParam}&page=${pageNum}`);
       const seenIds = getSeenMovies();
