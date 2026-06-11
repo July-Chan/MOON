@@ -204,10 +204,11 @@ const Discover = () => {
   }
 
   // 🔥 ГОЛОВНЕ ВИПРАВЛЕННЯ: overflow: hidden винесено на найвищий рівень, щоб картки не обрізалися всередині контейнера
-  return (
+    return (
     <div className="discover-wrapper" style={{ position: 'relative', width: '100%', height: 'calc(100dvh - 70px)', overflow: 'hidden' }}>
       
-      <div className="discover-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '10px' }}>
+      {/* 🔥 ГОЛОВНА ЗМІНА ТУТ: justifyContent: 'flex-start' та стабільний paddingTop: '8vh' */}
+      <div className="discover-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', height: '100%', padding: '10px', paddingTop: '8vh', boxSizing: 'border-box' }}>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px', width: '100%', justifyContent: 'center' }}>
           
