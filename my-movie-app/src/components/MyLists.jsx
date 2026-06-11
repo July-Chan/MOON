@@ -46,7 +46,7 @@ const MyLists = () => {
     };
 
     const handleDeleteList = async (e, listId) => {
-        e.stopPropagation(); // Не дає перейти в папку при кліку на кошик
+        e.stopPropagation();
         if (!window.confirm(t('confirmDeleteFolder', 'Точно хочеш видалити цю папку?'))) return;
 
         try {
