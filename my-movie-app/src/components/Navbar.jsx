@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, User, Search, X, Menu } from 'lucide-react';
+import { Home, User, Search, X, Menu, Radar } from 'lucide-react'; // 🔥 Додали Radar
 import moonLogo from '../assets/moon_logo.svg';
 import { useTranslation } from 'react-i18next';
 import './Navbar.css';
@@ -25,7 +25,7 @@ const Navbar = () => {
 
   // 🚀 ФУНКЦІЯ ПОШУКУ
   const handleSearch = (e) => {
-    if (e && e.preventDefault) e.preventDefault(); // Безпечний захист
+    if (e && e.preventDefault) e.preventDefault();
     if (!searchQuery.trim()) return;
 
     setIsMobileMenuOpen(false); 
@@ -56,7 +56,7 @@ const Navbar = () => {
       {/* БЛОК З НАВІГАЦІЄЮ ТА ПОШУКОМ */}
       <div className={`navbar-content ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
         
-        {/* 🔎 РЯДОК ПОШУКУ (БЕЗ ТЕГУ FORM — ПОВНА ЗАБОРОНА НА ПЕРЕЗАВАНТАЖЕННЯ) */}
+        {/* 🔎 РЯДОК ПОШУКУ */}
         <div className="search-container" style={{ position: 'relative', flex: 1, maxWidth: '400px', margin: '0 30px' }}>
           <div 
             style={{ 
@@ -97,6 +97,7 @@ const Navbar = () => {
 
         {/* 🧭 КНОПКИ НАВІГАЦІЇ + ЗМІНА МОВИ */}
         <div className="nav-links-container" style={{ display: 'flex', gap: '15px', flexShrink: 0, alignItems: 'center' }}>
+          
           <Link 
             to="/" 
             onClick={() => setIsMobileMenuOpen(false)}
@@ -108,6 +109,21 @@ const Navbar = () => {
             <Home size={18} />
             <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: isActive('/') ? '700' : '500' }}>
               {t('home')}
+            </span>
+          </Link>
+
+          {/* 📡 НОВА КНОПКА: РАДАР */}
+          <Link 
+            to="/radar" 
+            onClick={() => setIsMobileMenuOpen(false)}
+            style={{
+              ...linkStyle, color: isActive('/radar') ? '#8a3ffc' : '#a0a0b5',
+              background: isActive('/radar') ? 'rgba(138, 63, 252, 0.12)' : 'transparent',
+            }}
+          >
+            <Radar size={18} />
+            <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: isActive('/radar') ? '700' : '500' }}>
+              {t('radar')}
             </span>
           </Link>
 

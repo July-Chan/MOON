@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   uk: {
     translation: {
-      // Існуючі ключі
+
       "home": "Головна",
       "account": "Акаунт",
       "searchPlaceholder": "Шукати фільм...",
@@ -15,8 +15,6 @@ const resources = {
       "loadingHome": "ЗАВАНТАЖЕННЯ...",
       "noDescription": "Опис фільму тимчасово відсутній.",
       "notEnoughRatings": "Поки що недостатньо оцінок. Оціни ще кілька фільмів, щоб алгоритм зміг підібрати персональні рекомендації!",
-      
-      // Нові ключі для сторінки деталей фільму (MovieDetails)
       "backBtn": "Назад",
       "movieNotFound": "Фільм не знайдено :(",
       "loginRequiredLists": "Будь ласка, увійдіть в акаунт, щоб керувати списками!",
@@ -56,12 +54,12 @@ const resources = {
       "addBtn": "ДОДАТИ",
       "moviesInList": "Фільми у списку:",
       "searchResultFor": "Результати для:",
-      "noResults": "На жаль, нічого не знайдено."
+      "noResults": "На жаль, нічого не знайдено.",
+      "radar": "Радар"
     }
   },
   en: {
     translation: {
-      // Існуючі ключі
       "home": "Home",
       "account": "Account",
       "searchPlaceholder": "Search movie...",
@@ -72,8 +70,6 @@ const resources = {
       "loadingHome": "LOADING...",
       "noDescription": "Movie description is temporarily unavailable.",
       "notEnoughRatings": "Not enough ratings yet. Rate a few more movies so the algorithm can generate personal recommendations!",
-      
-      // Нові ключі для сторінки деталей фільму (MovieDetails)
       "backBtn": "Back",
       "movieNotFound": "Movie not found :(",
       "loginRequiredLists": "Please log in to manage your lists!",
@@ -114,7 +110,8 @@ const resources = {
       "addBtn": "ADD",
       "moviesInList": "Movies in list:",
       "searchResultFor": "Results for:",
-      "noResults": "Sorry, no movies found."
+      "noResults": "Sorry, no movies found.",
+      "radar": "Radar"
     }
   }
 };
