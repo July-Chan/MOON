@@ -10,6 +10,7 @@ import FolderView from './pages/FolderView';
 import AdminPanel from './pages/AdminPanel';
 import Navbar from './components/Navbar';
 import SearchResults from './pages/SearchResults';
+import Discover from './pages/Discover';
 import './App.css';
 import './i18n';
 
@@ -41,6 +42,7 @@ function App() {
             <Route path="/lists/:id" element={<FolderView />} />
             <Route path="/admin" element={<AdminPanel />} />
             <Route path="/search" element={<SearchResults />} />
+            <Route path="/radar" element={<Discover />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" />} />
