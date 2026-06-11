@@ -22,3 +22,7 @@
 .discover-container .swipe:focus {
   outline: none;
 }
+
+.discover-container {
+  overflow: hidden !important;
+}
