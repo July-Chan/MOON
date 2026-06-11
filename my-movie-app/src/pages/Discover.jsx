@@ -3,6 +3,7 @@ import TinderCard from 'react-tinder-card';
 import axios from 'axios';
 import { Star, Info, FolderPlus, X, ChevronDown } from 'lucide-react';
 import '../App.css'; 
+import './Discover.css'; 
 
 const Discover = () => {
   const [movies, setMovies] = useState([]);

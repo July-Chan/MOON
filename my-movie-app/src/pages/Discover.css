@@ -1,0 +1,24 @@
+/* --- СТИЛІ ДЛЯ РАДАРА (СВАЙПЕРА) --- */
+
+.discover-container .card-stack {
+  position: relative;
+  width: 320px;
+  height: 480px;
+  /* Центруємо всі картки всередині контейнера */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.discover-container .swipe {
+  position: absolute !important; /* Жорстко фіксуємо картки одна над одною */
+  width: 100%;
+  height: 100%;
+  /* Додаємо плавності для повернення картки на місце, якщо її не до кінця свайпнули */
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+}
+
+/* Прибираємо дефолтний синій контур при кліку */
+.discover-container .swipe:focus {
+  outline: none;
+}
