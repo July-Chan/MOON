@@ -111,6 +111,14 @@ const Discover = () => {
     }
   };
 
+  const toggleInfo = () => {
+    const idx = currentIndexRef.current;
+    if (idx >= 0 && movies[idx]) {
+      setCurrentMovie(movies[idx]);
+      setShowInfo(!showInfo); // Перемикач: відкрити/закрити
+    }
+  };
+
   return (
     <div className="discover-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '85vh', position: 'relative', overflow: 'hidden' }}>
       
@@ -147,9 +155,10 @@ const Discover = () => {
         </button>
       </div>
 
-      <button onClick={() => swipeProgrammatically('down')} style={infoBtnStyle}>
-        <ChevronDown size={20} /> {t('moreInfo')}
-      </button>
+      <button onClick={toggleInfo} style={infoBtnStyle}>
+        <ChevronDown size={20} style={{ transform: showInfo ? 'rotate(180deg)' : 'none', transition: '0.3s' }} /> 
+        {showInfo ? 'Сховати інфо' : t('moreInfo')}
+      </button> 
 
       {/* 🔮 МОДАЛЬНЕ ВІКНО ОЦІНКИ (Твоє замовлення!) */}
       {isRateModalOpen && currentMovie && (
@@ -204,7 +213,6 @@ const infoBtnStyle = { marginTop: '30px', background: '#141424', border: '1px so
 const modalOverlayStyle = { position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(10, 10, 18, 0.85)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 };
 const modalContainerStyle = { background: '#141424', border: '1px solid rgba(138, 63, 252, 0.4)', padding: '40px', borderRadius: '24px', textAlign: 'center', position: 'relative', minWidth: '300px', boxShadow: '0 20px 50px rgba(0,0,0,0.9)' };
 const closeButtonStyle = { position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: '#a0a0b5', cursor: 'pointer' };
-const infoPanelStyle = { position: 'absolute', bottom: '5%', background: '#141424', padding: '25px', borderRadius: '20px', width: '320px', zIndex: 100, border: '1px solid #8a3ffc', boxShadow: '0 10px 40px rgba(0,0,0,0.8)' };
-const addToListBtnStyle = { width: '100%', background: '#8a3ffc', color: 'white', border: 'none', padding: '12px', borderRadius: '10px', display: 'flex', justifyContent: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold', marginTop: '15px' };
+const infoPanelStyle = { position: 'absolute', bottom: '2%', background: '#141424', padding: '25px', borderRadius: '20px', width: '320px', zIndex: 100, border: '1px solid #8a3ffc', boxShadow: '0 10px 40px rgba(138, 63, 252, 0.15), 0 20px 40px rgba(0,0,0,0.5)' };const addToListBtnStyle = { width: '100%', background: '#8a3ffc', color: 'white', border: 'none', padding: '12px', borderRadius: '10px', display: 'flex', justifyContent: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold', marginTop: '15px' };
 
 export default Discover;
