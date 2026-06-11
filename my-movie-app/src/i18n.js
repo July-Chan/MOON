@@ -55,7 +55,13 @@ const resources = {
       "moviesInList": "Фільми у списку:",
       "searchResultFor": "Результати для:",
       "noResults": "На жаль, нічого не знайдено.",
-      "radar": "Радар"
+      "radar": "Радар",
+      "loadingRadar": "ІНІЦІАЛІЗАЦІЯ РАДАРА...",
+      "radarSearching": "Шукаємо нове...",
+      "hideInfo": "Сховати",
+      "moreInfo": "Детальніше",
+      "noPosterText": "Без+Постера",
+      "unknownDate": "Невідомо"
     }
   },
   en: {
@@ -111,7 +117,13 @@ const resources = {
       "moviesInList": "Movies in list:",
       "searchResultFor": "Results for:",
       "noResults": "Sorry, no movies found.",
-      "radar": "Radar"
+      "radar": "Radar",
+      "loadingRadar": "INITIALIZING RADAR...",
+      "radarSearching": "Searching for new movies...",
+      "hideInfo": "Hide Info",
+      "moreInfo": "More Info",
+      "noPosterText": "No+Poster",
+      "unknownDate": "Unknown"
     }
   }
 };

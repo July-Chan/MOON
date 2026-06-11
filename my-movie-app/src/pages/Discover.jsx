@@ -17,7 +17,6 @@ const Discover = () => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [cardRefs, setCardRefs] = useState([]);
 
-  // --- Стейт для модальних вікон ---
   const [isRateModalOpen, setIsRateModalOpen] = useState(false);
   const [isListModalOpen, setIsListModalOpen] = useState(false);
   const [currentMovie, setCurrentMovie] = useState(null);
@@ -78,7 +77,9 @@ const Discover = () => {
   const fetchMovies = async (pageNum) => {
     setIsLoadingMore(true);
     try {
-      const res = await axios.get(`https://moon-z1lm.onrender.com/api/movies/popular?language=uk-UA&page=${pageNum}`);
+      // Додаємо параметр мови до запиту TMDB
+      const langParam = t('tmdbLangParam', 'uk-UA'); 
+      const res = await axios.get(`https://moon-z1lm.onrender.com/api/movies/popular?language=${langParam}&page=${pageNum}`);
       const seenIds = getSeenMovies();
       
       const newMovies = res.data.filter(m => {
@@ -105,7 +106,7 @@ const Discover = () => {
   };
 
   const handleRate = async (ratingValue) => {
-    if (!userEmail) return alert(t('loginRequiredRate', 'Авторизуйтесь для оцінки!'));
+    if (!userEmail) return alert(t('loginRequiredRate'));
     if (!currentMovie) return;
 
     try {
@@ -117,14 +118,14 @@ const Discover = () => {
       });
       setIsRateModalOpen(false);
       setHoverRating(0);
-      excludedIdsRef.current.add(String(currentMovie.id)); // Додаємо в локальний чорний список
+      excludedIdsRef.current.add(String(currentMovie.id));
     } catch (error) {
       console.error("Помилка збереження оцінки:", error);
     }
   };
 
   const openListModal = async () => {
-    if (!userEmail) return alert(t('loginRequiredLists', 'Авторизуйтесь для керування списками!'));
+    if (!userEmail) return alert(t('loginRequiredLists'));
     setIsListModalOpen(true);
     setListMessage('');
     
@@ -144,15 +145,15 @@ const Discover = () => {
         tmdbId: currentMovie.id,
         title: currentMovie.title,
         posterPath: currentMovie.poster_path ? `https://image.tmdb.org/t/p/w500${currentMovie.poster_path}` : 'https://placehold.co/500x750/1a1a2e/ffffff?text=No+Poster',
-        releaseDate: currentMovie.release_date || 'Невідомо'
+        releaseDate: currentMovie.release_date || t('unknownDate')
       });
 
-      setListMessage(t('movieAddedSuccess', 'Фільм успішно додано до списку! 🎉'));
-      excludedIdsRef.current.add(String(currentMovie.id)); // Додаємо в локальний чорний список
+      setListMessage(t('movieAddedSuccess'));
+      excludedIdsRef.current.add(String(currentMovie.id));
       setTimeout(() => setIsListModalOpen(false), 1500); 
     } catch (error) {
       console.error("Помилка додавання:", error);
-      setListMessage(error.response?.data?.error || t('movieAlreadyInList', 'Цей фільм уже є у списку.'));
+      setListMessage(error.response?.data?.error || t('movieAlreadyInList'));
     }
   };
 
@@ -196,30 +197,27 @@ const Discover = () => {
 
   if (!isAppReady) {
     return (
-<div className="discover-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', height: '100%', padding: '10px', paddingTop: window.innerWidth <= 768 ? '90px' : '4vh', boxSizing: 'border-box' }}>  <p style={{ color: '#8a3ffc', fontWeight: 'bold', letterSpacing: '2px', animation: 'pulse 1.5s infinite' }}>
-          {t('loadingRadar', 'ІНІЦІАЛІЗАЦІЯ РАДАРА...')}
+      <div className="discover-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '85vh' }}>
+        <p style={{ color: '#8a3ffc', fontWeight: 'bold', letterSpacing: '2px', animation: 'pulse 1.5s infinite' }}>
+          {t('loadingRadar')}
         </p>
       </div>
     );
   }
 
-  // 🔥 ГОЛОВНЕ ВИПРАВЛЕННЯ: overflow: hidden винесено на найвищий рівень, щоб картки не обрізалися всередині контейнера
-    return (
+  return (
     <div className="discover-wrapper" style={{ position: 'relative', width: '100%', height: 'calc(100dvh - 70px)', overflow: 'hidden' }}>
       
-      {/* 🔥 ГОЛОВНА ЗМІНА ТУТ: justifyContent: 'flex-start' та стабільний paddingTop: '8vh' */}
       <div className="discover-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', height: '100%', padding: '10px', paddingTop: '8vh', boxSizing: 'border-box' }}>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px', width: '100%', justifyContent: 'center' }}>
           
-          {/* Бокова кнопка СКІП (лише для ПК) */}
           <button className="desktop-swipe-btn" onClick={() => swipeProgrammatically('left')} disabled={isLoadingMore} style={btnDesktopStyle}>
             <X size={30} color="#a0a0b5" />
           </button>
 
-          {/* СТЕК КАРТОК (Тут більше немає overflow: hidden) */}
           <div className="card-stack" style={{ position: 'relative', width: '100%', maxWidth: '360px', height: '65vh', maxHeight: '550px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            {isLoadingMore && <div style={{ color: '#8a3ffc', fontWeight: 'bold' }}>{t('radarSearching', 'Шукаємо нове...')}</div>}
+            {isLoadingMore && <div style={{ color: '#8a3ffc', fontWeight: 'bold' }}>{t('radarSearching')}</div>}
 
             {!isLoadingMore && movies.map((movie, index) => (
               <TinderCard
@@ -230,7 +228,7 @@ const Discover = () => {
                 preventSwipe={['up', 'down']}
                 style={{ position: 'absolute', width: '100%', height: '100%' }} 
               >
-                <div className="movie-swipe-card" style={{ ...cardStyle, backgroundImage: `linear-gradient(to bottom, transparent 40%, #0f0f1a), url(${movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://placehold.co/500x750/1a1a2e/ffffff?text=No+Poster'})` }}>
+                <div className="movie-swipe-card" style={{ ...cardStyle, backgroundImage: `linear-gradient(to bottom, transparent 40%, #0f0f1a), url(${movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : `https://placehold.co/500x750/1a1a2e/ffffff?text=${t('noPosterText')}`})` }}>
                   <h2 style={titleStyle}>{movie.title}</h2>
                   <span style={metaStyle}>{movie.vote_average?.toFixed(1)}★ TMDB</span>
                 </div>
@@ -238,27 +236,22 @@ const Discover = () => {
             ))}
           </div>
 
-          {/* Бокова кнопка ОЦІНИТИ (лише для ПК) */}
           <button className="desktop-swipe-btn" onClick={() => swipeProgrammatically('right')} disabled={isLoadingMore} style={{ ...btnDesktopStyle, borderColor: 'rgba(138, 63, 252, 0.5)', background: 'rgba(138, 63, 252, 0.2)' }}>
             <Star size={30} fill="#8a3ffc" color="#8a3ffc" />
           </button>
         </div>
 
-        {/* 🔥 НОВА ПАНЕЛЬ КЕРУВАННЯ (З'являється під карткою на телефонах і ПК) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginTop: '25px', zIndex: 10 }}>
           
-          {/* Мобільна кнопка СКІП */}
           <button className="mobile-swipe-btn" onClick={() => swipeProgrammatically('left')} disabled={isLoadingMore} style={btnMobileStyle}>
             <X size={24} color="#a0a0b5" />
           </button>
 
-          {/* Кнопка "Про фільм" (По центру) */}
           <button onClick={toggleInfo} style={infoBtnStyle}>
             <ChevronDown size={20} style={{ transform: showInfo ? 'rotate(180deg)' : 'none', transition: '0.3s' }} /> 
-            {showInfo ? t('hideInfo', 'Сховати') : t('moreInfo', 'Детальніше')}
+            {showInfo ? t('hideInfo') : t('moreInfo')}
           </button> 
 
-          {/* Мобільна кнопка ОЦІНИТИ */}
           <button className="mobile-swipe-btn" onClick={() => swipeProgrammatically('right')} disabled={isLoadingMore} style={{ ...btnMobileStyle, borderColor: 'rgba(138, 63, 252, 0.5)', background: 'rgba(138, 63, 252, 0.15)' }}>
             <Star size={24} fill="#8a3ffc" color="#8a3ffc" />
           </button>
@@ -271,7 +264,7 @@ const Discover = () => {
             <div onClick={(e) => e.stopPropagation()} style={modalContainerStyle}>
               <button onClick={() => setIsRateModalOpen(false)} style={closeButtonStyle}><X size={20} /></button>
               
-              <h3 style={{ margin: '0 0 10px 0', fontSize: '20px', color: 'white' }}>{t('rateMovieTitle', 'Оціни фільм')}</h3>
+              <h3 style={{ margin: '0 0 10px 0', fontSize: '20px', color: 'white' }}>{t('rateMovieTitle')}</h3>
               <p style={{ color: '#8a3ffc', fontSize: '15px', fontWeight: 'bold', marginBottom: '25px', padding: '0 20px' }}>{currentMovie.title}</p>
               
               <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -301,13 +294,13 @@ const Discover = () => {
             <div onClick={(e) => e.stopPropagation()} style={{ ...modalContainerStyle, padding: '25px' }}>
               <button onClick={() => setIsListModalOpen(false)} style={closeButtonStyle}><X size={20} /></button>
               
-              <h3 style={{ margin: '0 0 5px 0', fontSize: '18px', color: 'white' }}>{t('addToList', 'Додати до списку')}</h3>
+              <h3 style={{ margin: '0 0 5px 0', fontSize: '18px', color: 'white' }}>{t('addToList')}</h3>
               <p style={{ color: '#a0a0b5', fontSize: '13px', marginBottom: '20px' }}>
-                {t('chooseFolderFor', 'Оберіть папку для фільму')} <strong style={{color: 'white'}}>{currentMovie.title}</strong>
+                {t('chooseFolderFor')} <strong style={{color: 'white'}}>{currentMovie.title}</strong>
               </p>
 
               {listMessage && (
-                <div style={{ padding: '10px', borderRadius: '8px', marginBottom: '15px', fontSize: '14px', background: listMessage.includes('🎉') ? 'rgba(0, 230, 115, 0.1)' : 'rgba(255, 77, 77, 0.1)', color: listMessage.includes('🎉') ? '#00e673' : '#ff4d4d', width: '100%', boxSizing: 'border-box' }}>
+                <div style={{ padding: '10px', borderRadius: '8px', marginBottom: '15px', fontSize: '14px', background: listMessage.includes('🎉') || listMessage.includes('Success') || listMessage.includes('успішно') ? 'rgba(0, 230, 115, 0.1)' : 'rgba(255, 77, 77, 0.1)', color: listMessage.includes('🎉') || listMessage.includes('Success') || listMessage.includes('успішно') ? '#00e673' : '#ff4d4d', width: '100%', boxSizing: 'border-box' }}>
                   {listMessage}
                 </div>
               )}
@@ -315,7 +308,7 @@ const Discover = () => {
               <div style={{ width: '100%', maxHeight: '250px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', scrollbarWidth: 'thin' }}>
                 {userLists.length === 0 ? (
                   <p style={{ color: '#4e4e6a', fontStyle: 'italic', fontSize: '14px', margin: '20px 0' }}>
-                    {t('noListsFound', 'У вас ще немає створених списків.')}
+                    {t('noListsFound')}
                   </p>
                 ) : (
                   userLists.map(list => (
@@ -339,7 +332,7 @@ const Discover = () => {
           <div className="info-panel" style={infoPanelStyle}>
             <h3 style={{ color: 'white', marginTop: 0 }}>{currentMovie.title}</h3>
             <p style={{ color: '#a0a0b5', fontSize: '13px', lineHeight: '1.4', maxHeight: '110px', overflowY: 'auto', scrollbarWidth: 'none' }}>
-              {currentMovie.overview ? currentMovie.overview : t('noDescription', 'Опис відсутній')}
+              {currentMovie.overview ? currentMovie.overview : t('noDescription')}
             </p>
             
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '15px', alignItems: 'center' }}>
@@ -348,7 +341,7 @@ const Discover = () => {
                 style={{ ...infoBadgeStyle, borderColor: 'rgba(138, 63, 252, 0.4)', background: 'rgba(138, 63, 252, 0.05)' }}
               >
                 <FolderPlus size={16} color="#8a3ffc" />
-                <span style={{ fontSize: '13px', fontWeight: '600', color: '#b19cd9' }}>{t('addToList', 'В список')}</span>
+                <span style={{ fontSize: '13px', fontWeight: '600', color: '#b19cd9' }}>{t('addToListShort')}</span>
               </div>
               
               <div style={infoItemStyle}>
@@ -361,7 +354,7 @@ const Discover = () => {
               {currentMovie.runtime && (
                 <div style={infoItemStyle}>
                   <Clock size={16} color="#a0a0b5" />
-                  <span style={{ fontSize: '13px', color: '#a0a0b5' }}>{currentMovie.runtime} {t('minutesAbbr', 'хв')}</span>
+                  <span style={{ fontSize: '13px', color: '#a0a0b5' }}>{currentMovie.runtime} {t('minutesAbbr')}</span>
                 </div>
               )}
             </div>
@@ -377,7 +370,6 @@ const cardStyle = { backgroundColor: '#1a1a2e', backgroundSize: 'cover', backgro
 const titleStyle = { color: 'white', margin: '0 0 5px 0', textShadow: '0 2px 5px rgba(0,0,0,0.9)', fontSize: '22px', lineHeight: '1.2' };
 const metaStyle = { color: '#b19cd9', fontSize: '14px', fontWeight: 'bold', textShadow: '0 1px 3px rgba(0,0,0,0.8)' };
 
-// Стилі для кнопок (ПК та Мобільні)
 const btnDesktopStyle = { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', minWidth: '60px', height: '60px', cursor: 'pointer', display: window.innerWidth > 768 ? 'flex' : 'none', justifyContent: 'center', alignItems: 'center', transition: 'all 0.2s', zIndex: 10 };
 const btnMobileStyle = { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', minWidth: '50px', height: '50px', cursor: 'pointer', display: window.innerWidth <= 768 ? 'flex' : 'none', justifyContent: 'center', alignItems: 'center', transition: 'all 0.2s', zIndex: 10 };
 
