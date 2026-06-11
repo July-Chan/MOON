@@ -278,17 +278,18 @@ app.get('/api/movies/now-playing', async (req, res) => {
 // 🔥 ПОПУЛЯРНІ ФІЛЬМИ
 app.get('/api/movies/popular', async (req, res) => {
     try {
-        const TMDB_API_KEY = process.env.TMDB_API_KEY;
-        const lang = req.query.language || 'uk-UA';
-        const page = req.query.page || 1; // 🔥 Зчитуємо сторінку з URL
+        const page = req.query.page || 1;
+        // 🔥 Витягуємо мову з URL (якщо немає - ставимо укр за замовчуванням)
+        const language = req.query.language || 'uk-UA';
 
+        // Передаємо цю мову в сам TMDB
         const response = await axios.get(
-            `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=${lang}&page=${page}` // 🔥 Передаємо змінну
+            `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.TMDB_API_KEY}&language=${language}&page=${page}`
         );
+
         res.json(response.data.results);
     } catch (error) {
-        console.error('Помилка отримання популярних фільмів:', error);
-        res.status(500).json({ error: 'Не вдалося завантажити популярні фільми' });
+        res.status(500).json({ error: 'Failed to fetch movies' });
     }
 });
 
