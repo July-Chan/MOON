@@ -279,7 +279,6 @@ app.get('/api/movies/now-playing', async (req, res) => {
 app.get('/api/movies/popular', async (req, res) => {
     try {
         const page = req.query.page || 1;
-        // 🔥 Витягуємо мову з URL (якщо немає - ставимо укр за замовчуванням)
         const language = req.query.language || 'uk-UA';
 
         // Передаємо цю мову в сам TMDB

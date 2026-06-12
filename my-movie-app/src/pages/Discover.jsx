@@ -75,12 +75,14 @@ const Discover = () => {
     }
   }, [isAppReady, i18n.language]);
 
-  const fetchMovies = async (pageNum) => {
+const fetchMovies = async (pageNum) => {
     setIsLoadingMore(true);
     try {
       
-      const langParam = t('tmdbLangParam', 'uk-UA'); 
+      const langParam = i18n.language.includes('en') ? 'en-US' : 'uk-UA'; 
+      
       const res = await axios.get(`https://moon-z1lm.onrender.com/api/movies/popular?language=${langParam}&page=${pageNum}`);
+      
       const seenIds = getSeenMovies();
       
       const newMovies = res.data.filter(m => {
