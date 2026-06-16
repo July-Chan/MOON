@@ -307,12 +307,23 @@
   }
 
   .create-list-btn {
-    width: 100% !important;
-    height: 48px !important;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    border-radius: 20px !important;
+    flex-shrink: 0 !important;
+    padding: 0 25px;
+    height: 48px; 
+    border-radius: 20px;
+    background-color: #8a3ffc;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(138, 63, 252, 0.3);
+    white-space: nowrap;
+
+    /* 🔥 ОЦЕЙ РЯДОК ПІДНІМЕ КНОПКУ СТРОГО В ОДНУ ЛІНІЮ З ІНПУТОМ */
+    transform: translateY(-2px); 
   }
 
   /* СІТКА ПАПОК: Строго 2 красиві колонки на мобільних */
