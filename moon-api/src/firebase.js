@@ -6,14 +6,12 @@ const serviceAccount = JSON.parse(
     await readFile(new URL('../serviceAccountKey.json', import.meta.url))
 );
 
-// Ініціалізує Firebase з правами адміністратора
 initializeApp({
     credential: cert(serviceAccount)
 });
 
-// Отримує доступ до бази даних
 const db = getFirestore();
 
-console.log(' Підключення до Firebase Firestore успішно встановлено!');
+console.log(' РџС–РґРєР»СЋС‡РµРЅРЅСЏ РґРѕ Firebase Firestore СѓСЃРїС–С€РЅРѕ РІСЃС‚Р°РЅРѕРІР»РµРЅРѕ!');
 
 export { db };
