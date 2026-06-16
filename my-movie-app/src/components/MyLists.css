@@ -29,7 +29,7 @@
   margin-bottom: 40px;
   max-width: 600px;
   width: 100%;
-  align-items: center; /* Вирівнюємо інпут та кнопку строго по центру */
+  align-items: stretch;
 }
 
 /* Зовнішня обгортка форми — повністю прозора й безрамочна */
@@ -66,6 +66,7 @@
   width: 100%;
   box-sizing: border-box;
   transition: all 0.3s ease;
+  height: 48px;
 }
 
 .create-list-input::placeholder {
@@ -104,6 +105,7 @@
   transition: all 0.2s ease;
   box-shadow: 0 4px 15px rgba(138, 63, 252, 0.3); /* Тільки чиста зовнішня тінь */
   white-space: nowrap;
+  height: 48px;
 }
 
 .create-list-btn:hover {
