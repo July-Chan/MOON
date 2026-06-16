@@ -99,27 +99,21 @@ app.get('/', (req, res) => {
     res.json({ message: 'API для додатку Moon успішно працює!' });
 });
 
-// 🎬 ОТРИМАННЯ ТА КЕШУВАННЯ ФІЛЬМУ (З ПІДТРИМКОЮ ЛОКАЛІЗАЦІЇ)
-// 🎬 ОТРИМАННЯ ТА КЕШУВАННЯ ФІЛЬМУ (З АКТОРСЬКИМ СКЛАДОМ ТА РЕЖИСЕРОМ)
 app.get('/api/movie/:id', async (req, res) => {
     const movieId = req.params.id;
-    // Беремо мову з запиту
     const lang = req.query.language || 'uk-UA';
 
     try {
         const TMDB_API_KEY = process.env.TMDB_API_KEY;
 
-        // 🔥 ДОДАНО: &append_to_response=credits
         const tmdbResponse = await axios.get(
             `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=${lang}&append_to_response=credits`
         );
         const tmdbData = tmdbResponse.data;
 
-        // 🔥 Шукаємо режисера
         const director = tmdbData.credits?.crew?.find(person => person.job === 'Director');
         const directorName = director ? director.name : null;
 
-        // 🔥 Шукаємо 5 головних акторів
         const topCast = tmdbData.credits?.cast?.slice(0, 5).map(actor => actor.name) || [];
 
         const movieRef = db.collection('movies').doc(movieId);
@@ -135,7 +129,7 @@ app.get('/api/movie/:id', async (req, res) => {
                 ...localData,
                 title: tmdbData.title,
                 overview: tmdbData.overview,
-                genres: tmdbData.genres.map(g => g.name), // Усі жанри
+                genres: tmdbData.genres.map(g => g.name),
                 director: directorName,
                 cast: topCast
             };
@@ -146,7 +140,7 @@ app.get('/api/movie/:id', async (req, res) => {
                 title: tmdbData.title,
                 overview: tmdbData.overview,
                 poster_path: tmdbData.poster_path,
-                backdrop_path: tmdbData.backdrop_path, // Важливо для твого банера!
+                backdrop_path: tmdbData.backdrop_path,
                 release_date: tmdbData.release_date,
                 genres: tmdbData.genres.map(g => g.name),
                 director: directorName,
@@ -169,7 +163,6 @@ app.get('/api/movie/:id', async (req, res) => {
 
 app.post('/api/movie/:id/rate', async (req, res) => {
     const movieId = req.params.id;
-    // Приймаємо додатково title та poster_path від фронтенду
     const { userId, rating, title, poster_path } = req.body;
 
     if (!userId || !rating) {
@@ -183,8 +176,8 @@ app.post('/api/movie/:id/rate', async (req, res) => {
             userId,
             movieId,
             rating: Number(rating),
-            title: title || "Без назви", // Зберігаємо для списку в профілі
-            poster_path: poster_path || null, // Зберігаємо для списку в профілі
+            title: title || "Без назви",
+            poster_path: poster_path || null,
             updatedAt: new Date()
         });
 
@@ -196,7 +189,6 @@ app.post('/api/movie/:id/rate', async (req, res) => {
     }
 });
 
-// 🔍 2. ОТРИМАТИ ОЦІНКУ КОНКРЕТНОГО КОРИСТУВАЧА (GET)
 app.get('/api/movie/:id/rate/:userId', async (req, res) => {
     const movieId = req.params.id;
     const userId = req.params.userId;
@@ -216,7 +208,6 @@ app.get('/api/movie/:id/rate/:userId', async (req, res) => {
     }
 });
 
-// 🗑 3. ВИДАТИ ОЦІНКУ ФІЛЬМУ (DELETE)
 app.delete('/api/movie/:id/rate/:userId', async (req, res) => {
     const movieId = req.params.id;
     const userId = req.params.userId;
@@ -232,7 +223,6 @@ app.delete('/api/movie/:id/rate/:userId', async (req, res) => {
     }
 });
 
-// 📊 СТАТИСТИКА АДМІНА
 app.get('/api/admin/stats', async (req, res) => {
     try {
         const listsSnapshot = await db.collection('lists').get();
@@ -258,12 +248,11 @@ app.get('/api/admin/stats', async (req, res) => {
     }
 });
 
-// 🍿 НОВИНКИ КІНО
 app.get('/api/movies/now-playing', async (req, res) => {
     try {
         const TMDB_API_KEY = process.env.TMDB_API_KEY;
         const lang = req.query.language || 'uk-UA';
-        const page = req.query.page || 1; // 🔥 Зчитуємо сторінку з URL (за замовчуванням 1)
+        const page = req.query.page || 1;
 
         const response = await axios.get(
             `https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=${lang}&page=${page}` // 🔥 Передаємо змінну
@@ -275,13 +264,11 @@ app.get('/api/movies/now-playing', async (req, res) => {
     }
 });
 
-// 🔥 ПОПУЛЯРНІ ФІЛЬМИ
 app.get('/api/movies/popular', async (req, res) => {
     try {
         const page = req.query.page || 1;
         const language = req.query.language || 'uk-UA';
 
-        // Передаємо цю мову в сам TMDB
         const response = await axios.get(
             `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.TMDB_API_KEY}&language=${language}&page=${page}`
         );
@@ -292,12 +279,10 @@ app.get('/api/movies/popular', async (req, res) => {
     }
 });
 
-// 🍿 4. ОТРИМАТИ ВСІ ОЦІНЕНІ ФІЛЬМИ КОРИСТУВАЧА (Для сторінки профілю)
 app.get('/api/users/:userId/ratings', async (req, res) => {
-    const userId = req.params.userId; // Тут буде email користувача
+    const userId = req.params.userId;
 
     try {
-        // Шукаємо в колекції ratings усі документи, де userId збігається з поточним
         const ratingsSnapshot = await db.collection('ratings')
             .where('userId', '==', userId)
             .get();
@@ -307,7 +292,6 @@ app.get('/api/users/:userId/ratings', async (req, res) => {
             ratedMovies.push(doc.data());
         });
 
-        // Повертаємо масив оцінених фільмів
         res.json(ratedMovies);
     } catch (error) {
         console.error("Помилка отримання оцінених фільмів користувача:", error);
@@ -315,17 +299,13 @@ app.get('/api/users/:userId/ratings', async (req, res) => {
     }
 });
 
-// Отримання середньої оцінки фільму від спільноти MOON
 app.get('/api/movie/:id/average', async (req, res) => {
   try {
     const movieId = req.params.id;
     
-    // Шукаємо всі оцінки для цього фільму у Firestore
     const ratingsRef = db.collection('ratings');
-    // Увага: якщо у базі movieId збережено як число, використай Number(movieId)
     const snapshot = await ratingsRef.where('movieId', '==', movieId).get(); 
 
-    // Якщо ніхто ще не оцінив фільм
     if (snapshot.empty) {
       return res.json({ average: null, count: 0 });
     }
@@ -333,7 +313,6 @@ app.get('/api/movie/:id/average', async (req, res) => {
     let sum = 0;
     let count = 0;
 
-    // Проходимося по всіх знайдених документах і сумуємо оцінки
     snapshot.forEach(doc => {
       const data = doc.data();
       if (data.rating) {
