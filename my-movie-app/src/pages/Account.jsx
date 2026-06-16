@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import MyLists from '../components/MyLists'; 
 import './Account.css';
+import '../App.css';
 import moonLogo from '../assets/moon_logo_ball.svg';
 import { useNavigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
