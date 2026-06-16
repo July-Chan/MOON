@@ -75,6 +75,7 @@
 
 .create-list-form {
   display: flex;
+  align-items: center;
   gap: 12px;
   margin-bottom: 40px;
   max-width: 500px;
@@ -135,12 +136,11 @@
 
 @media screen and (max-width: 480px) {
   .user-info h1 {
-    max-width: 100%; /* Повертаємо на всю ширину */
-    font-size: 22px; /* Трохи зменшуємо шрифт, щоб на мобілці виглядало акуратніше */
+    max-width: 100%;
+    font-size: 22px;
   }
   
-  /* Якщо всередині тегу h1 ім'я загорнуте в окремий span, 
-     можна примусово скинути його на новий рядок: */
+
   .user-info h1 span {
     display: block; 
     margin-top: 4px;
