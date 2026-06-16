@@ -291,15 +291,17 @@
   }
 
   /* На мобільних форма теж залишається безрамочною, а папка — зліва від інпута */
-  .create-list-form {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    width: 100% !important;
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-    gap: 12px !important;
+ .create-list-form {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  margin: 0 !important; /* 🔥 ВБИВАЄМО ПРИХОВАНИЙ БРАУЗЕРНИЙ ВІДСТУП ФОРМИ */
+  background: transparent !important; 
+  border: none !important;            
+  box-shadow: none !important;
+  padding: 0 !important;
+  gap: 12px; 
   }
 
   .create-list-input {
@@ -307,10 +309,10 @@
   }
 
   .create-list-btn {
-    flex-shrink: 0 !important;
+    flex-shrink: 0 !important; 
     padding: 0 25px;
     height: 48px; 
-    border-radius: 20px;
+    border-radius: 20px; /* Залишаємо її кругленькою, як ти хотіла */
     background-color: #8a3ffc;
     color: white;
     border: none;
@@ -319,10 +321,11 @@
     font-size: 15px;
     font-family: 'Inter', sans-serif;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 15px rgba(138, 63, 252, 0.3);
+    box-shadow: 0 4px 15px rgba(138, 63, 252, 0.3); 
     white-space: nowrap;
-
-    transform: translateY(-12px); 
+    
+    margin: 0 !important; /* Гарантуємо відсутність зовнішніх відступів */
+    transform: none !important; /* 🔥 ПРИБИРАЄМО ВСІ МИНУЛІ ХАКИ З КООРДИНАТАМИ */
   }
 
   /* СІТКА ПАПОК: Строго 2 красиві колонки на мобільних */
