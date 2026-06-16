@@ -114,6 +114,9 @@
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.3s ease;
+  margin: 0 !important;
+  align-self: center !important;
+  transform: translateY(-6px) !important;
 }
 
 .create-list-form button:hover {
