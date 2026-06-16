@@ -322,8 +322,7 @@
     box-shadow: 0 4px 15px rgba(138, 63, 252, 0.3);
     white-space: nowrap;
 
-    /* 🔥 ОЦЕЙ РЯДОК ПІДНІМЕ КНОПКУ СТРОГО В ОДНУ ЛІНІЮ З ІНПУТОМ */
-    transform: translateY(-2px); 
+    transform: translateY(-12px); 
   }
 
   /* СІТКА ПАПОК: Строго 2 красиві колонки на мобільних */
