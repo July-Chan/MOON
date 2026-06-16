@@ -149,3 +149,10 @@
     margin-top: 4px;
   }
 }
+
+.home-main-content button {
+  margin: 0 !important;
+  align-self: center !important;
+  transform: translateY(-5px) !important;
+  border-radius: 8px !important; /* Робимо її прямокутною під стиль інпуту */
+}
