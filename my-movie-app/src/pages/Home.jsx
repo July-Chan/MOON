@@ -164,7 +164,7 @@ const Home = () => {
 
       {/* 📊 СЕКЦІЯ: ПОПУЛЯРНО НА MOON */}
       <div className="home-section" style={{ paddingBottom: '40px' }}>
-          <h2>{t('popularTitle', 'Популярно на MOON')}</h2>
+          <h2>{t('popularMovies', 'Популярно на MOON')}</h2>
           
           <div className="movies-grid-layout">
               {popularMovies.map(movie => (
