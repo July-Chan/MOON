@@ -35,7 +35,7 @@ router.get('/movie/:id', async (req, res) => {
             console.log(`Фільм є у Firestore. Оновлюємо тексти та постери мовою: ${lang}`);
             const localData = doc.data();
 
-            // 🔥 ВИПРАВЛЕНО: Тепер ми беремо СВІЖИЙ poster_path та backdrop_path від TMDB, а не старий з бази
+            // 1. Формуємо оновлений об'єкт для відправки на фронтенд
             finalMovieData = {
                 ...localData,
                 title: tmdbData.title,
@@ -43,10 +43,20 @@ router.get('/movie/:id', async (req, res) => {
                 genres: tmdbData.genres.map(g => g.name),
                 director: directorName,
                 cast: topCast,
-                poster_path: tmdbData.poster_path,     // Оновлюємо постер!
-                backdrop_path: tmdbData.backdrop_path  // Оновлюємо задній фон!
+                poster_path: tmdbData.poster_path,     
+                backdrop_path: tmdbData.backdrop_path  
             };
 
+            // 🔥 2. ОСЬ ЦЬОГО НЕ ВИСТАЧАЛО: Перезаписуємо старі дані в базі Firestore!
+            await movieRef.update({
+                title: tmdbData.title,
+                overview: tmdbData.overview,
+                genres: tmdbData.genres.map(g => g.name),
+                director: directorName,
+                cast: topCast,
+                poster_path: tmdbData.poster_path,
+                backdrop_path: tmdbData.backdrop_path
+            });
 
         } else {
             console.log('Фільму немає у Firestore. Зберігаємо в базу...');
