@@ -47,15 +47,6 @@ router.get('/movie/:id', async (req, res) => {
                 backdrop_path: tmdbData.backdrop_path  // Оновлюємо задній фон!
             };
 
-            await movieRef.update({
-                title: tmdbData.title,
-                overview: tmdbData.overview,
-                genres: tmdbData.genres.map(g => g.name),
-                director: directorName,
-                cast: topCast,
-                poster_path: tmdbData.poster_path,
-                backdrop_path: tmdbData.backdrop_path
-            });
 
         } else {
             console.log('Фільму немає у Firestore. Зберігаємо в базу...');
