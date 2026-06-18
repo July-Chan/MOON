@@ -27,8 +27,17 @@ router.get('/movie/:id', async (req, res) => {
         const topCast = tmdbData.credits?.cast?.slice(0, 5).map(actor => actor.name) || [];
 
         // 🔥 ЗМІНА 2: Витягуємо саме локалізовані картинки з масиву images
-        const localizedPoster = tmdbData.images?.posters?.[0]?.file_path || tmdbData.poster_path;
-        const localizedBackdrop = tmdbData.images?.backdrops?.[0]?.file_path || tmdbData.backdrop_path;
+        const localizedPoster =
+         tmdbData.images?.posters?.find(
+         poster => poster.iso_639_1 === shortLang
+         )?.file_path
+         ||tmdbData.poster_path;
+
+        const localizedBackdrop =
+         tmdbData.images?.backdrops?.find(
+         backdrop => backdrop.iso_639_1 === shortLang
+         )?.file_path
+         || tmdbData.backdrop_path;
 
         const movieRef = db.collection('movies').doc(movieId);
         const doc = await movieRef.get();
@@ -57,9 +66,7 @@ router.get('/movie/:id', async (req, res) => {
                 overview: tmdbData.overview,
                 genres: tmdbData.genres.map(g => g.name),
                 director: directorName,
-                cast: topCast,
-                poster_path: localizedPoster,
-                backdrop_path: localizedBackdrop
+                cast: topCast
             });
 
         } else {
