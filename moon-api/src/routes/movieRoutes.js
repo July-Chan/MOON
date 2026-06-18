@@ -1,6 +1,7 @@
 ﻿const express = require('express');
 const axios = require('axios');
-const { db } = require('./firebaseAdmin'); // Підключення до Firebase Admin SDK
+const { db } = require('./firebaseAdmin');
+
 const router = express.Router();
 
 const TMDB_API_KEY = process.env.TMDB_API_KEY || 'c8282b948e28647029c446fa9bef20f8';
@@ -8,13 +9,23 @@ const TMDB_API_KEY = process.env.TMDB_API_KEY || 'c8282b948e28647029c446fa9bef20
 router.get('/movie/:id', async (req, res) => {
     const movieId = req.params.id;
     const lang = req.query.language || 'uk-UA';
-
-    // Визначаємо коротку мову для пошуку картинок (uk або en)
     const shortLang = lang.split('-')[0];
 
     try {
-        // 🔥 ЗМІНА 1: Додали ,images у запит
-        const tmdbResponse = await axios.get(
+        // 🔥 1. Основна інформація + кредити (ВАЖЛИВО: append_to_response)
+        const movieRes = await axios.get(
+            `https://api.themoviedb.org/3/movie/${movieId}`,
+            {
+                params: {
+                    api_key: TMDB_API_KEY,
+                    language: lang,
+                    append_to_response: 'credits'
+                }
+            }
+        );
+
+        // 🔥 2. Картинки
+        const imagesRes = await axios.get(
             `https://api.themoviedb.org/3/movie/${movieId}/images`,
             {
                 params: {
@@ -24,99 +35,67 @@ router.get('/movie/:id', async (req, res) => {
             }
         );
 
-        const movieResponse = await axios.get(
-            `https://api.themoviedb.org/3/movie/${movieId}`,
-            {
-                params: {
-                    api_key: TMDB_API_KEY,
-                    language: lang
-                }
-            }
+        const tmdbData = movieRes.data;
+        const imagesData = imagesRes.data;
+
+        // 🎬 Режисер
+        const director = tmdbData.credits?.crew?.find(
+            person => person.job === 'Director'
         );
-        const tmdbData = tmdbResponse.data;
+        const directorName = director?.name || null;
 
-        // Шукаємо режисера
-        const director = tmdbData.credits?.crew?.find(person => person.job === 'Director');
-        const directorName = director ? director.name : null;
+        // 🎭 Актори
+        const topCast =
+            tmdbData.credits?.cast?.slice(0, 5).map(a => a.name) || [];
 
-        // Шукаємо головних акторів
-        const topCast = tmdbData.credits?.cast?.slice(0, 5).map(actor => actor.name) || [];
-
-        // 🔥 ЗМІНА 2: Витягуємо саме локалізовані картинки з масиву images
+        // 🖼️ Постер (локалізація + fallback)
         const localizedPoster =
-         tmdbData.images?.posters?.find(
-         poster => poster.iso_639_1 === shortLang
-         )?.file_path
-         ||tmdbData.poster_path;
+            imagesData.posters?.find(p => p.iso_639_1 === shortLang)?.file_path ||
+            tmdbData.poster_path ||
+            null;
 
+        // 🖼️ Backdrop
         const localizedBackdrop =
-         tmdbData.images?.backdrops?.find(
-         backdrop => backdrop.iso_639_1 === shortLang
-         )?.file_path
-         || tmdbData.backdrop_path;
+            imagesData.backdrops?.find(b => b.iso_639_1 === shortLang)?.file_path ||
+            tmdbData.backdrop_path ||
+            null;
 
+        // 📦 Єдина структура даних
+        const baseData = {
+            id: tmdbData.id,
+            title: tmdbData.title,
+            overview: tmdbData.overview,
+            poster_path: localizedPoster,
+            backdrop_path: localizedBackdrop,
+            release_date: tmdbData.release_date,
+            genres: tmdbData.genres?.map(g => g.name) || [],
+            director: directorName,
+            cast: topCast,
+            vote_average: tmdbData.vote_average
+        };
+
+        // 🔥 Firestore
         const movieRef = db.collection('movies').doc(movieId);
         const doc = await movieRef.get();
 
-        let finalMovieData;
-
         if (doc.exists) {
-            console.log(`Фільм є у Firestore. Оновлюємо тексти та постери мовою: ${lang}`);
-            const localData = doc.data();
+            // оновлюємо актуальні дані (але НЕ дублюємо все вручну)
+            await movieRef.set(baseData, { merge: true });
 
-            console.log("LANG:", lang);
-            console.log("TMDB poster:", tmdbData.poster_path);
-            console.log("IMAGES:", tmdbData.images.posters.slice(0,5));
-            console.log("FINAL poster:", localizedPoster);
-
-            // 🔥 ЗМІНА 3: Використовуємо локалізовані постери для клієнта
-            finalMovieData = {
-                ...localData,
-                title: tmdbData.title,
-                overview: tmdbData.overview,
-                genres: tmdbData.genres.map(g => g.name),
-                director: directorName,
-                cast: topCast,
-                poster_path: localizedPoster,
-                backdrop_path: localizedBackdrop
-            };
-
-            // 🔥 ЗМІНА 4: Перезаписуємо базу даних новими локалізованими постерами
-            await movieRef.update({
-                title: tmdbData.title,
-                overview: tmdbData.overview,
-                genres: tmdbData.genres.map(g => g.name),
-                director: directorName,
-                cast: topCast
+            return res.json({
+                ...doc.data(),
+                ...baseData
             });
-
         } else {
-            console.log('Фільму немає у Firestore. Зберігаємо в базу...');
-
-            // 🔥 ЗМІНА 5: Для нових фільмів теж зберігаємо локалізовані постери
-            finalMovieData = {
-                id: tmdbData.id,
-                title: tmdbData.title,
-                overview: tmdbData.overview,
-                poster_path: localizedPoster,
-                backdrop_path: localizedBackdrop,
-                release_date: tmdbData.release_date,
-                genres: tmdbData.genres.map(g => g.name),
-                director: directorName,
-                cast: topCast,
-                vote_average: tmdbData.vote_average,
-                createdAt: new Date()
-            };
-
-            await movieRef.set(finalMovieData);
-            console.log('Фільм успішно збережено в Firestore!');
+            await movieRef.set(baseData);
+            return res.json(baseData);
         }
-
-        return res.json(finalMovieData);
 
     } catch (error) {
         console.error('Помилка отримання фільму:', error.message);
-        res.status(500).json({ error: 'Щось пішло не так при отриманні фільму' });
+        return res.status(500).json({
+            error: 'Щось пішло не так при отриманні фільму'
+        });
     }
 });
 
