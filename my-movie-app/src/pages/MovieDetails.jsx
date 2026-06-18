@@ -194,7 +194,11 @@ const MovieDetails = () => {
         {/* ПОСТЕР */}
         <div style={{ flexShrink: 0 }}>
           <img 
-            src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://placehold.co/500x750/1a1a2e/ffffff?text=No+Poster'} 
+            src={
+                  movie.poster_path?.startsWith('http')
+                    ? movie.poster_path
+                    : `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+            }
             alt={movie.title} 
             style={{ width: isMobile ? '200px' : '300px', borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}
           />
