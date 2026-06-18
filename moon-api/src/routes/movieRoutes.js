@@ -9,22 +9,26 @@ router.get('/movie/:id', async (req, res) => {
     const movieId = req.params.id;
     const lang = req.query.language || 'uk-UA';
 
-    // 🔥 Визначаємо коротку мову для пошуку картинок (uk або en)
+    // Визначаємо коротку мову для пошуку картинок (uk або en)
     const shortLang = lang.split('-')[0];
 
     try {
-        // 🔥 ДОДАНО: include_image_language, щоб TMDB шукав постери потрібною мовою, а якщо їх немає — давав оригінальні (null)
+        // 🔥 ЗМІНА 1: Додали ,images у запит
         const tmdbResponse = await axios.get(
-            `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=${lang}&append_to_response=credits&include_image_language=${shortLang},null`
+            `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=${lang}&append_to_response=credits,images&include_image_language=${shortLang},null,en`
         );
         const tmdbData = tmdbResponse.data;
 
-        // 🔥 ШУКАЄМО РЕЖИСЕРА
+        // Шукаємо режисера
         const director = tmdbData.credits?.crew?.find(person => person.job === 'Director');
         const directorName = director ? director.name : null;
 
-        // 🔥 ШУКАЄМО ГОЛОВНИХ АКТОРІВ
+        // Шукаємо головних акторів
         const topCast = tmdbData.credits?.cast?.slice(0, 5).map(actor => actor.name) || [];
+
+        // 🔥 ЗМІНА 2: Витягуємо саме локалізовані картинки з масиву images
+        const localizedPoster = tmdbData.images?.posters?.[0]?.file_path || tmdbData.poster_path;
+        const localizedBackdrop = tmdbData.images?.backdrops?.[0]?.file_path || tmdbData.backdrop_path;
 
         const movieRef = db.collection('movies').doc(movieId);
         const doc = await movieRef.get();
@@ -35,7 +39,7 @@ router.get('/movie/:id', async (req, res) => {
             console.log(`Фільм є у Firestore. Оновлюємо тексти та постери мовою: ${lang}`);
             const localData = doc.data();
 
-            // 1. Формуємо оновлений об'єкт для відправки на фронтенд
+            // 🔥 ЗМІНА 3: Використовуємо локалізовані постери для клієнта
             finalMovieData = {
                 ...localData,
                 title: tmdbData.title,
@@ -43,30 +47,31 @@ router.get('/movie/:id', async (req, res) => {
                 genres: tmdbData.genres.map(g => g.name),
                 director: directorName,
                 cast: topCast,
-                poster_path: tmdbData.poster_path,     
-                backdrop_path: tmdbData.backdrop_path  
+                poster_path: localizedPoster,
+                backdrop_path: localizedBackdrop
             };
 
-            // 🔥 2. ОСЬ ЦЬОГО НЕ ВИСТАЧАЛО: Перезаписуємо старі дані в базі Firestore!
+            // 🔥 ЗМІНА 4: Перезаписуємо базу даних новими локалізованими постерами
             await movieRef.update({
                 title: tmdbData.title,
                 overview: tmdbData.overview,
                 genres: tmdbData.genres.map(g => g.name),
                 director: directorName,
                 cast: topCast,
-                poster_path: tmdbData.poster_path,
-                backdrop_path: tmdbData.backdrop_path
+                poster_path: localizedPoster,
+                backdrop_path: localizedBackdrop
             });
 
         } else {
             console.log('Фільму немає у Firestore. Зберігаємо в базу...');
 
+            // 🔥 ЗМІНА 5: Для нових фільмів теж зберігаємо локалізовані постери
             finalMovieData = {
                 id: tmdbData.id,
                 title: tmdbData.title,
                 overview: tmdbData.overview,
-                poster_path: tmdbData.poster_path,
-                backdrop_path: tmdbData.backdrop_path,
+                poster_path: localizedPoster,
+                backdrop_path: localizedBackdrop,
                 release_date: tmdbData.release_date,
                 genres: tmdbData.genres.map(g => g.name),
                 director: directorName,
