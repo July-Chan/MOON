@@ -15,7 +15,23 @@ router.get('/movie/:id', async (req, res) => {
     try {
         // 🔥 ЗМІНА 1: Додали ,images у запит
         const tmdbResponse = await axios.get(
-            `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=${lang}&append_to_response=credits,images&include_image_language=${shortLang},null,en`
+            `https://api.themoviedb.org/3/movie/${movieId}/images`,
+            {
+                params: {
+                    api_key: TMDB_API_KEY,
+                    include_image_language: `${shortLang},en,null`
+                }
+            }
+        );
+
+        const movieResponse = await axios.get(
+            `https://api.themoviedb.org/3/movie/${movieId}`,
+            {
+                params: {
+                    api_key: TMDB_API_KEY,
+                    language: lang
+                }
+            }
         );
         const tmdbData = tmdbResponse.data;
 
@@ -47,6 +63,11 @@ router.get('/movie/:id', async (req, res) => {
         if (doc.exists) {
             console.log(`Фільм є у Firestore. Оновлюємо тексти та постери мовою: ${lang}`);
             const localData = doc.data();
+
+            console.log("LANG:", lang);
+            console.log("TMDB poster:", tmdbData.poster_path);
+            console.log("IMAGES:", tmdbData.images.posters.slice(0,5));
+            console.log("FINAL poster:", localizedPoster);
 
             // 🔥 ЗМІНА 3: Використовуємо локалізовані постери для клієнта
             finalMovieData = {
