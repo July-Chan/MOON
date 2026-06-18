@@ -81,6 +81,13 @@ const MovieDetails = () => {
     }
   };
 
+  const getImageUrl = (path) => {
+  if (!path) return '';
+  return path.startsWith('http')
+    ? path
+    : `https://image.tmdb.org/t/p/original${path}`;
+};
+
   const handleAddMovieToList = async (listId) => {
     try {
       const response = await fetch(`https://moon-z1lm.onrender.com/api/lists/${listId}/movies`, {
@@ -163,12 +170,20 @@ const MovieDetails = () => {
     <div className="home-container" style={{ padding: 0, overflowX: 'hidden', paddingTop: '60px', color: 'white' }}>
       
       {/* ФОНОВИЙ БАНЕР */}
-      <div style={{
-        position: 'relative', width: '100%', height: isMobile ? '40vh' : '50vh', 
-        backgroundImage: `linear-gradient(to bottom, rgba(15, 15, 26, 0.3), #0f0f1a), url(https://image.tmdb.org/t/p/original${movie.backdrop_path || movie.poster_path})`,
-        backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'flex-end',
-        padding: isMobile ? '0 20px 20px' : '0 50px 40px'
-      }}>
+    <div style={{
+      position: 'relative',
+      width: '100%',
+      height: isMobile ? '40vh' : '50vh',
+      backgroundImage: `
+        linear-gradient(to bottom, rgba(15, 15, 26, 0.3), #0f0f1a),
+        url(${getImageUrl(movie.backdrop_path || movie.poster_path)})
+      `,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      display: 'flex',
+      alignItems: 'flex-end',
+      padding: isMobile ? '0 20px 20px' : '0 50px 40px'
+    }}>
         <button 
           onClick={() => navigate(-1)} 
           style={{
