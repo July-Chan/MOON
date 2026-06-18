@@ -75,19 +75,16 @@ router.get('/movie/:id', async (req, res) => {
         };
 
         // 🔥 Firestore
-        const movieRef = db.collection('movies').doc(movieId);
+        const movieRef = db.collection('movies').doc(`${movieId}_${lang}`);
         const doc = await movieRef.get();
 
         if (doc.exists) {
             // оновлюємо актуальні дані (але НЕ дублюємо все вручну)
             await movieRef.set(baseData, { merge: true });
 
-            return res.json({
-                ...doc.data(),
-                ...baseData
-            });
+        return res.json(baseData);
         } else {
-            await movieRef.set(baseData);
+            await movieRef.set(baseData, { merge: true });
             return res.json(baseData);
         }
 
