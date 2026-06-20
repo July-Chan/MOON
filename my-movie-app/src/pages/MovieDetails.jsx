@@ -72,12 +72,7 @@ const MovieDetails = () => {
     
     try {
       // Заміни свій поточний fetch на цей:
-      const response = await fetch(`https://moon-z1lm.onrender.com/api/movie/${id}?language=${langParam}`, {
-          headers: {
-              'Cache-Control': 'no-cache',
-              'Pragma': 'no-cache'
-          }
-      });      const data = await response.json();
+const response = await fetch(`https://moon-z1lm.onrender.com/api/lists?userId=${userEmail}`);     const data = await response.json();
       if (Array.isArray(data)) {
         setUserLists(data);
       }
