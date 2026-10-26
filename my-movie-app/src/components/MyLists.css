@@ -3,8 +3,6 @@
    ========================================================================== */
 
 .lists-container {
-  min-height: 100vh;
-  background-color: #0f0f1a;
   color: white;
   padding: 110px 50px 40px; /* Відступ зверху під фіксований навбар */
   display: flex;
