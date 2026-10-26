@@ -108,7 +108,7 @@ const Account = () => {
             <main className="home-main-content">
                 <MyLists />
 
-                <div style={{ marginTop: '20px', paddingBottom: '20px' }}>
+                <div style={{ marginTop: '0px', paddingBottom: '20px' }}>
                     <h2 style={{ fontSize: '22px', color: 'white', marginBottom: '20px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px', textAlign: 'left' }}>
                         {t('ratedMoviesTitle', 'Оцінені фільми')}
                         <span style={{
