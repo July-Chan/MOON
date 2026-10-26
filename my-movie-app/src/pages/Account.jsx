@@ -11,30 +11,33 @@ import { useTranslation } from 'react-i18next';
 const Account = () => {
     const { logout } = useContext(AuthContext);
     const navigate = useNavigate();
-    const { t, i18n } = useTranslation(); // 🔥 Дістали i18n
+    const { t, i18n } = useTranslation();
     
     const userEmail = localStorage.getItem('userEmail');
     const userName = localStorage.getItem('userName') || t('defaultUserName', 'User');
 
     const [ratedMovies, setRatedMovies] = useState([]);
+    const [ratedCount, setRatedCount] = useState(0);
+    
 
-    // 🔥 ОНОВЛЕНИЙ БЛОК: Завантажуємо і ПЕРЕКЛАДАЄМО оцінки
     useEffect(() => {
         const fetchAndTranslateRatings = async () => {
             if (!userEmail) return;
 
             try {
-                // 1. Отримуємо збережені оцінки з бази (зі статичними назвами)
                 const res = await fetch(`https://moon-z1lm.onrender.com/api/users/${userEmail}/ratings`);
                 const data = await res.json();
 
+                if (Array.isArray(data)) {
+                    setRatedCount(data.length);
+                }
+
                 if (Array.isArray(data) && data.length > 0) {
-                    // 2. Формуємо мову для TMDB
+                    
                     const currentLang = i18n.language || '';
                     const langParam = currentLang.includes('uk') || currentLang.includes('ua') ? 'uk-UA' : 'en-US';
                     const TMDB_API_KEY = '15d2ea6d0dc1d476efbca3eba2b9bbfb'; // Твій ключ TMDB
 
-                    // 3. Для кожного фільму просимо в TMDB актуальну назву
                     const translatedPromises = data.map(async (movie) => {
                         try {
                             const tmdbRes = await fetch(`https://api.themoviedb.org/3/movie/${movie.movieId}?api_key=${TMDB_API_KEY}&language=${langParam}`);
@@ -57,6 +60,7 @@ const Account = () => {
                     setRatedMovies(sorted);
                 } else {
                     setRatedMovies([]);
+                    setRatedCount(0);
                 }
             } catch (err) {
                 console.error("Помилка завантаження оцінених фільмів:", err);
@@ -104,9 +108,20 @@ const Account = () => {
             <main className="home-main-content">
                 <MyLists />
 
-                <div style={{ marginTop: '50px', paddingBottom: '20px' }}>
+                <div style={{ marginTop: '20px', paddingBottom: '20px' }}>
                     <h2 style={{ fontSize: '22px', color: 'white', marginBottom: '20px', borderLeft: '4px solid #8a3ffc', paddingLeft: '15px', textAlign: 'left' }}>
                         {t('ratedMoviesTitle', 'Оцінені фільми')}
+                        <span style={{
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            color: '#b19cd9',
+                            backgroundColor: 'rgba(138, 63, 252, 0.2)',
+                            border: '1px solid #8a3ffc',
+                            borderRadius: '20px',
+                            padding: '2px 12px'
+                        }}>
+                            {ratedCount}
+                        </span>
                     </h2>
                     
                     {ratedMovies.length === 0 ? (

@@ -147,4 +147,9 @@
   }
 }
 
-
+.rated-count {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #b19cd9;
+  font-weight: 600;
+}
