@@ -273,7 +273,7 @@
    ========================================================================== */
 @media screen and (max-width: 768px) {
   .lists-container {
-    padding: 85px 12px 20px; 
+    padding: 0px 0px 20px; 
   }
 
   .lists-title {
